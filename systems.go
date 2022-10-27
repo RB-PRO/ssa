@@ -68,6 +68,18 @@ func make_singnal(n int) []float64 {
 	}
 	return waveform
 }
+func make_singnal_xn(n int) []float64 {
+	f, _ := excelize.OpenFile("xn.xlsx")
+	cells, _ := f.GetRows("main")
+	a := make([]float64, len(cells))
+
+	for i := 0; i < len(cells); i++ {
+		b, _ := strconv.ParseFloat(cells[i][0], 64)
+		a[i] = b
+	}
+
+	return a
+}
 func f(x float64, n int) float64 {
 	var waveX float64
 	waveX = math.Cos(2 * math.Pi * 0.03 * x)

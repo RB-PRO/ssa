@@ -18,8 +18,8 @@ type SDVs struct {
 func main() {
 	var L int = 40
 	var N int = 300
-	sig := make_singnal(N) // Создать сигнал с N
-	autoSSA(sig, 3, L, N)
+	sig := make_singnal_xn(N) // Создать сигнал с N
+	autoSSA(sig, 1, L, N)
 
 	safeToXlsx(sig, "signal") // Сохранить данные в xlsx
 
@@ -43,8 +43,23 @@ func autoSSA(s []float64, r int, L int, N int) []float64 {
 		sumMatrix := makeSumMatrix(SUV_arr[i])
 		x[i] = DiagAveraging(sumMatrix, i, R)
 	}
+
+	// тестовая штука сравнить результат с матлабом
+	sumsX := 0.0
+	xx := x
+	for _, val := range xx {
+		sumsX += val
+	}
+	for ind, val := range xx {
+		xx[ind] = (sumsX / val) * 100.0
+	}
+	safeToXlsx(x, "xzx")
+	safeToXlsx(xx, "xx")
+
 	Ik := HCA(x, R)
 	fmt.Println("HCA:", Ik)
+	safeToXlsx(Ik, "Ik")
+
 	yk := make([]float64, r)
 	//fmt.Println(len(Ik), r)
 	for k := 0; k < r; k++ {
@@ -72,6 +87,11 @@ func makeSumMatrix(SUV SDVs) *mat.Dense {
 	a := mat.DenseCopyOf(SUV.U)
 	b := mat.DenseCopyOf(SUV.V)
 	c := mat.DenseCopyOf(SUV.S)
+
+	fmt.Println("\n***")
+	fmt.Println(a.Dims())
+	fmt.Println(b.Dims())
+	fmt.Println(c.Dims())
 	output.Add(a, b)
 	output.Add(a, c)
 	return mat.DenseCopyOf(&output)
@@ -109,10 +129,16 @@ func DiagAveraging(SUV *mat.Dense, k int, N int) float64 {
 func SDV(X *mat.Dense, rank int) []SDVs {
 	SDVsout := make([]SDVs, rank)
 	for i := 0; i < rank; i++ {
-		X_y, _ := X.Dims()
-		kk := X.Slice(0, X_y, i, i+X_y) // Взять часть матрицы X
-		kek := mat.DenseCopyOf(kk)      // Преобразовать в Dense
-		SDVsout[i] = SDV_single(kek)    // Сохранить значение
+		/*
+			// Это с дроблением на матрицы
+			X_y, _ := X.Dims()
+			kk := X.Slice(0, X_y, i, i+X_y) // Взять часть матрицы X
+			kek := mat.DenseCopyOf(kk)      // Преобразовать в Dense
+			SDVsout[i] = SDV_single(kek)    // Сохранить значение
+		*/
+
+		// это без дробления на матрицы
+		SDVsout[i] = SDV_single(X)
 	}
 	return SDVsout
 }
@@ -134,8 +160,10 @@ func SDV_single(matT *mat.Dense) SDVs {
 	svdMat.UTo(SDVout.U)
 	lenX_s, lenY_s := matT.Dims()
 	//fmt.Println(lenY_s)
-	valuesMat := make([]float64, lenY_s)
+	valuesMat := make([]float64, lenX_s)
+	//fmt.Println(len(valuesMat))
 	svdMat.Values(valuesMat)
+
 	SDVout.S = mat.NewDense(lenX_s, lenY_s, nil)
 	for ind, val := range valuesMat {
 		SDVout.S.Set(ind, ind, val)
