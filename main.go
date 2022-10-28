@@ -16,6 +16,15 @@ type SDVs struct {
 }
 
 func main() {
+	XX := mat.NewDense(4, 5, []float64{1, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
+
+	//XX := mat.NewDense(4, 5, []float64{1, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
+	SDVsEL := SDV_single(XX)
+	realyPrint(XX, "XX")
+	realyPrint(SDVsEL.U, "SDVsEL.U")
+	realyPrint(SDVsEL.S, "SDVsEL.S")
+	realyPrint(SDVsEL.V, "SDVsEL.V")
+
 	var L int = 40
 	var N int = 300
 	sig := make_singnal_xn(N) // Создать сигнал с N
@@ -24,6 +33,7 @@ func main() {
 	safeToXlsx(sig, "signal") // Сохранить данные в xlsx
 
 	makeGraph2(N, "png"+OpSystemFilder+"sig.png")
+
 }
 
 func autoSSA(s []float64, r int, L int, N int) []float64 {
@@ -88,7 +98,7 @@ func makeSumMatrix(SUV SDVs) *mat.Dense {
 	b := mat.DenseCopyOf(SUV.V)
 	c := mat.DenseCopyOf(SUV.S)
 
-	fmt.Println("\n***")
+	fmt.Println("\n************************************************************************************")
 	fmt.Println(a.Dims())
 	fmt.Println(b.Dims())
 	fmt.Println(c.Dims())
@@ -157,6 +167,7 @@ func SDV_single(matT *mat.Dense) SDVs {
 	SDVout.V = new(mat.Dense)
 	SDVout.U = new(mat.Dense)
 	svdMat.VTo(SDVout.V)
+	SDVout.V = mat.DenseCopyOf(SDVout.V.T())
 	svdMat.UTo(SDVout.U)
 	lenX_s, lenY_s := matT.Dims()
 	//fmt.Println(lenY_s)
