@@ -20,10 +20,25 @@ func main() {
 
 	//XX := mat.NewDense(4, 5, []float64{1, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
 	SDVsEL := SDV_single(XX)
+	fmt.Print("XX ")
+	fmt.Println(XX.Dims())
 	realyPrint(XX, "XX")
+	fmt.Print("SDVsEL.U ")
+	fmt.Println(SDVsEL.U.Dims())
 	realyPrint(SDVsEL.U, "SDVsEL.U")
+	fmt.Print("SDVsEL.S ")
+	fmt.Println(SDVsEL.S.Dims())
 	realyPrint(SDVsEL.S, "SDVsEL.S")
+	fmt.Print("SDVsEL.V ")
+	fmt.Println(SDVsEL.V.Dims())
 	realyPrint(SDVsEL.V, "SDVsEL.V")
+
+	var multip *mat.Dense
+	multip.Mul(SDVsEL.U, SDVsEL.S)
+	multip.Mul(multip, SDVsEL.V)
+	fmt.Print("multip ")
+	fmt.Println(multip.Dims())
+	realyPrint(multip, "multip")
 
 	var L int = 40
 	var N int = 300
