@@ -1,4 +1,5 @@
-clear all; close all; clc;
+clear; close all; clc;
+
 filename = 'xx.xlsx';
 data = readtable(filename);
 A = table2array(data);

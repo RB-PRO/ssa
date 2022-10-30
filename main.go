@@ -16,34 +16,68 @@ type SDVs struct {
 }
 
 func main() {
-	XX := mat.NewDense(4, 5, []float64{1, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
+	/*
+		XX := mat.NewDense(4, 5, []float64{1, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
+		var svd mat.SVD
+		ok := svd.Factorize(XX, mat.SVDFull)
+		if !ok {
+			log.Fatal("failed to factorize A")
+		}
+		realyPrint(XX, "M")
+		fmt.Println("---------------------------")
+		u := new(mat.Dense)
+		v := new(mat.Dense)
+		svd.UTo(u)
+		svd.VTo(v)
+		XXr, XXc := XX.Dims()
+		ss := make([]float64, XXr)
+		svd.Values(ss)
 
-	//XX := mat.NewDense(4, 5, []float64{1, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
-	SDVsEL := SDV_single(XX)
-	fmt.Print("XX ")
-	fmt.Println(XX.Dims())
-	realyPrint(XX, "XX")
-	fmt.Print("SDVsEL.U ")
-	fmt.Println(SDVsEL.U.Dims())
-	realyPrint(SDVsEL.U, "SDVsEL.U")
-	fmt.Print("SDVsEL.S ")
-	fmt.Println(SDVsEL.S.Dims())
-	realyPrint(SDVsEL.S, "SDVsEL.S")
-	fmt.Print("SDVsEL.V ")
-	fmt.Println(SDVsEL.V.Dims())
-	realyPrint(SDVsEL.V, "SDVsEL.V")
+		s := mat.NewDense(XXr, XXc, nil)
+		for ind, val := range ss {
+			s.Set(ind, ind, val)
+		}
 
-	var multip *mat.Dense
-	multip.Mul(SDVsEL.U, SDVsEL.S)
-	multip.Mul(multip, SDVsEL.V)
-	fmt.Print("multip ")
-	fmt.Println(multip.Dims())
-	realyPrint(multip, "multip")
+		realyPrint(u, "U")
+		realyPrint(s, "S")
+		realyPrint(v, "V")
+	*/
+	/*
+		SDVsEL := SDV_single(XX)
+		fmt.Print("XX ")
+		fmt.Println(XX.Dims())
+		realyPrint(XX, "XX")
+		fmt.Print("SDVsEL.U ")
+		fmt.Println(SDVsEL.U.Dims())
+		realyPrint(SDVsEL.U, "SDVsEL.U")
+		fmt.Print("SDVsEL.S ")
+		fmt.Println(SDVsEL.S.Dims())
+		realyPrint(SDVsEL.S, "SDVsEL.S")
+		fmt.Print("SDVsEL.V ")
+		fmt.Println(SDVsEL.V.Dims())
+		realyPrint(SDVsEL.V, "SDVsEL.V")
+
+		var multip mat.Dense
+		aa := mat.Matrix(SDVsEL.U)
+		bb := mat.Matrix(SDVsEL.S)
+		cc := mat.Matrix(SDVsEL.V)
+		fmt.Print("multip ")
+		fmt.Println(multip.Dims())
+		multip.Mul(aa, bb)
+		fc := mat.Formatted(&multip, mat.Prefix("         "), mat.Squeeze())
+		fmt.Printf("multip = %.2v", fc)
+
+		multip.Mul(aa, cc)
+		fmt.Print("multip ")
+		fmt.Println(multip.Dims())
+		fc = mat.Formatted(&multip, mat.Prefix("         "), mat.Squeeze())
+		fmt.Printf("multip = %.2v", fc)
+	*/
 
 	var L int = 40
 	var N int = 300
 	sig := make_singnal_xn(N) // Создать сигнал с N
-	autoSSA(sig, 1, L, N)
+	autoSSA(sig, 3, L, N)
 
 	safeToXlsx(sig, "signal") // Сохранить данные в xlsx
 
@@ -58,10 +92,6 @@ func autoSSA(s []float64, r int, L int, N int) []float64 {
 	R := makeRank(X)
 
 	SUV_arr := SDV(X, R)
-
-	safeToXlsxMatrix(SUV_arr[0].U, "U")
-	safeToXlsxMatrix(SUV_arr[0].V, "V")
-	safeToXlsxMatrix(SUV_arr[0].S, "S")
 
 	x := make([]float64, R)
 	for i := 0; i < R; i++ {
@@ -81,7 +111,7 @@ func autoSSA(s []float64, r int, L int, N int) []float64 {
 	safeToXlsx(x, "xzx")
 	safeToXlsx(xx, "xx")
 
-	Ik := HCA(x, R)
+	Ik := HCA(x, r)
 	fmt.Println("HCA:", Ik)
 	safeToXlsx(Ik, "Ik")
 
@@ -98,7 +128,7 @@ func autoSSA(s []float64, r int, L int, N int) []float64 {
 	return yk
 }
 
-func HCA(x []float64, R int) []float64 {
+func HCA(x []float64, r int) []float64 {
 
 	return []float64{0.0, 1.0, 2.0}
 }
@@ -109,16 +139,12 @@ func sumOfIk(a float64) float64 {
 
 func makeSumMatrix(SUV SDVs) *mat.Dense {
 	var output mat.Dense
-	a := mat.DenseCopyOf(SUV.U)
-	b := mat.DenseCopyOf(SUV.V)
-	c := mat.DenseCopyOf(SUV.S)
+	u := mat.DenseCopyOf(SUV.U)
+	v := mat.DenseCopyOf(SUV.V)
+	s := mat.DenseCopyOf(SUV.S)
 
-	fmt.Println("\n************************************************************************************")
-	fmt.Println(a.Dims())
-	fmt.Println(b.Dims())
-	fmt.Println(c.Dims())
-	output.Add(a, b)
-	output.Add(a, c)
+	output.Mul(v, s)
+	output.Mul(&output, u)
 	return mat.DenseCopyOf(&output)
 }
 
@@ -168,8 +194,6 @@ func SDV(X *mat.Dense, rank int) []SDVs {
 	return SDVsout
 }
 func SDV_single(matT *mat.Dense) SDVs {
-	//matT := mat.NewDense(5, 4, []float64{1, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
-	//matT := mat.NewDense(5, 4, []float64{1, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
 	safeToXlsxMatrix(matT, "matT")
 
 	var SDVout SDVs
@@ -182,7 +206,7 @@ func SDV_single(matT *mat.Dense) SDVs {
 	SDVout.V = new(mat.Dense)
 	SDVout.U = new(mat.Dense)
 	svdMat.VTo(SDVout.V)
-	SDVout.V = mat.DenseCopyOf(SDVout.V.T())
+
 	svdMat.UTo(SDVout.U)
 	lenX_s, lenY_s := matT.Dims()
 	//fmt.Println(lenY_s)
@@ -194,6 +218,12 @@ func SDV_single(matT *mat.Dense) SDVs {
 	for ind, val := range valuesMat {
 		SDVout.S.Set(ind, ind, val)
 	}
+
+	//fmt.Println(SDVout.S.Dims())
+
+	SDVout.S = mat.DenseCopyOf(SDVout.S.T())
+
+	//fmt.Println(SDVout.S.Dims())
 
 	return SDVout
 }
