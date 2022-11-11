@@ -86,46 +86,53 @@ func main() {
 }
 
 func autoSSA(s []float64, r int, L int, N int) []float64 {
-
+	// % Step 1: Build trajectory matrix
 	X := BuildTrajectoryMatrix(s, L, N) // Создать матрицу траекторий
 	safeToXlsxMatrix(X, "X")
+
 	R := makeRank(X)
+	fmt.Println("Rank:", R)
 
-	SUV_arr := SDV(X, R)
+	// Step 2: SVD
+	/*
+		SUV_arr := SDV(X, R)
+		x := make([]float64, R)
+		for i := 0; i < R; i++ {
+			sumMatrix := makeSumMatrix(SUV_arr[i])
+			x[i] = DiagAveraging(sumMatrix, i, R)
+		}
+	*/
+	sdv := SDV_single(X)
+	/*
+		// тестовая штука сравнить результат с матлабом
+		sumsX := 0.0
+		xx := x
+		for _, val := range xx {
+			sumsX += val
+		}
+		for ind, val := range xx {
+			xx[ind] = (sumsX / val) * 100.0
+		}
+		safeToXlsx(x, "xzx")
+		safeToXlsx(xx, "xx")
 
-	x := make([]float64, R)
-	for i := 0; i < R; i++ {
-		sumMatrix := makeSumMatrix(SUV_arr[i])
-		x[i] = DiagAveraging(sumMatrix, i, R)
-	}
+		Ik := HCA(x, r)
+		fmt.Println("HCA:", Ik)
+		safeToXlsx(Ik, "Ik")
 
-	// тестовая штука сравнить результат с матлабом
-	sumsX := 0.0
-	xx := x
-	for _, val := range xx {
-		sumsX += val
-	}
-	for ind, val := range xx {
-		xx[ind] = (sumsX / val) * 100.0
-	}
-	safeToXlsx(x, "xzx")
-	safeToXlsx(xx, "xx")
+		yk := make([]float64, r)
+		//fmt.Println(len(Ik), r)
+		for k := 0; k < r; k++ {
+			yk[k] = sumOfIk(Ik[k])
+		}
 
-	Ik := HCA(x, r)
-	fmt.Println("HCA:", Ik)
-	safeToXlsx(Ik, "Ik")
+		makeGraphOfArray(x, "png"+OpSystemFilder+"x.png")
 
-	yk := make([]float64, r)
-	//fmt.Println(len(Ik), r)
-	for k := 0; k < r; k++ {
-		yk[k] = sumOfIk(Ik[k])
-	}
-
-	makeGraphOfArray(x, "png"+OpSystemFilder+"x.png")
-
-	safeToXlsx(x, "DiagAveraging") // Сохранить данные в xlsx
-	makeGraph2(R, "png"+OpSystemFilder+"DiagAveraging.png")
-	return yk
+		safeToXlsx(x, "DiagAveraging") // Сохранить данные в xlsx
+		makeGraph2(R, "png"+OpSystemFilder+"DiagAveraging.png")
+		return yk
+	*/
+	return []float64{0.0, 1.0, 2.0}
 }
 
 func HCA(x []float64, r int) []float64 {
@@ -204,24 +211,24 @@ func SDV_single(matT *mat.Dense) SDVs {
 	}
 
 	SDVout.V = new(mat.Dense)
-	SDVout.U = new(mat.Dense)
+	SDVout.S = new(mat.Dense)
 	svdMat.VTo(SDVout.V)
 
-	svdMat.UTo(SDVout.U)
+	svdMat.UTo(SDVout.S)
 	lenX_s, lenY_s := matT.Dims()
 	//fmt.Println(lenY_s)
 	valuesMat := make([]float64, lenX_s)
 	//fmt.Println(len(valuesMat))
 	svdMat.Values(valuesMat)
 
-	SDVout.S = mat.NewDense(lenX_s, lenY_s, nil)
+	SDVout.U = mat.NewDense(lenX_s, lenY_s, nil)
 	for ind, val := range valuesMat {
-		SDVout.S.Set(ind, ind, val)
+		SDVout.U.Set(ind, ind, val)
 	}
 
 	//fmt.Println(SDVout.S.Dims())
 
-	SDVout.S = mat.DenseCopyOf(SDVout.S.T())
+	SDVout.U = mat.DenseCopyOf(SDVout.U.T())
 
 	//fmt.Println(SDVout.S.Dims())
 
