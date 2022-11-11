@@ -43,11 +43,12 @@ function [y,d]=ssa(x,L,I)
     
 % Step 2: SVD
 
-   S=X*X'; 
+   S=X*X';
    [EigenVectors,EigenValues]=eig(S);
      
    [d,i]=sort(-diag(EigenValues));  % sort(X) sorts the elements of X in ascending order.
-   d=-d; EigenVectors=EigenVectors(:,i); 
+   d=-d;    
+   EigenVectors=EigenVectors(:,i); 
 
 %    
    sev=sum(d);   

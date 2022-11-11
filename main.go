@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"sort"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -16,64 +18,6 @@ type SDVs struct {
 }
 
 func main() {
-	/*
-		XX := mat.NewDense(4, 5, []float64{1, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0})
-		var svd mat.SVD
-		ok := svd.Factorize(XX, mat.SVDFull)
-		if !ok {
-			log.Fatal("failed to factorize A")
-		}
-		realyPrint(XX, "M")
-		fmt.Println("---------------------------")
-		u := new(mat.Dense)
-		v := new(mat.Dense)
-		svd.UTo(u)
-		svd.VTo(v)
-		XXr, XXc := XX.Dims()
-		ss := make([]float64, XXr)
-		svd.Values(ss)
-
-		s := mat.NewDense(XXr, XXc, nil)
-		for ind, val := range ss {
-			s.Set(ind, ind, val)
-		}
-
-		realyPrint(u, "U")
-		realyPrint(s, "S")
-		realyPrint(v, "V")
-	*/
-	/*
-		SDVsEL := SDV_single(XX)
-		fmt.Print("XX ")
-		fmt.Println(XX.Dims())
-		realyPrint(XX, "XX")
-		fmt.Print("SDVsEL.U ")
-		fmt.Println(SDVsEL.U.Dims())
-		realyPrint(SDVsEL.U, "SDVsEL.U")
-		fmt.Print("SDVsEL.S ")
-		fmt.Println(SDVsEL.S.Dims())
-		realyPrint(SDVsEL.S, "SDVsEL.S")
-		fmt.Print("SDVsEL.V ")
-		fmt.Println(SDVsEL.V.Dims())
-		realyPrint(SDVsEL.V, "SDVsEL.V")
-
-		var multip mat.Dense
-		aa := mat.Matrix(SDVsEL.U)
-		bb := mat.Matrix(SDVsEL.S)
-		cc := mat.Matrix(SDVsEL.V)
-		fmt.Print("multip ")
-		fmt.Println(multip.Dims())
-		multip.Mul(aa, bb)
-		fc := mat.Formatted(&multip, mat.Prefix("         "), mat.Squeeze())
-		fmt.Printf("multip = %.2v", fc)
-
-		multip.Mul(aa, cc)
-		fmt.Print("multip ")
-		fmt.Println(multip.Dims())
-		fc = mat.Formatted(&multip, mat.Prefix("         "), mat.Squeeze())
-		fmt.Printf("multip = %.2v", fc)
-	*/
-
 	var L int = 40
 	var N int = 300
 	sig := make_singnal_xn(N) // Создать сигнал с N
@@ -90,51 +34,79 @@ func autoSSA(s []float64, r int, L int, N int) []float64 {
 	X := BuildTrajectoryMatrix(s, L, N) // Создать матрицу траекторий
 	safeToXlsxMatrix(X, "X")
 
+	// % Step 2: SVD
+
+	var S mat.Dense
+	S.Mul(mat.Matrix(X), X.T())
+	safeToXlsxM(S, "S")
+
 	R := makeRank(X)
 	fmt.Println("Rank:", R)
 
-	// Step 2: SVD
-	/*
-		SUV_arr := SDV(X, R)
-		x := make([]float64, R)
-		for i := 0; i < R; i++ {
-			sumMatrix := makeSumMatrix(SUV_arr[i])
-			x[i] = DiagAveraging(sumMatrix, i, R)
-		}
-	*/
-	sdv := SDV_single(X)
-	/*
-		// тестовая штука сравнить результат с матлабом
-		sumsX := 0.0
-		xx := x
-		for _, val := range xx {
-			sumsX += val
-		}
-		for ind, val := range xx {
-			xx[ind] = (sumsX / val) * 100.0
-		}
-		safeToXlsx(x, "xzx")
-		safeToXlsx(xx, "xx")
+	// ***************************************************
 
-		Ik := HCA(x, r)
-		fmt.Println("HCA:", Ik)
-		safeToXlsx(Ik, "Ik")
+	EigenVectors, EigenValues := eig(S)
+	safeToXlsxM(EigenVectors, "EigenVectors")
+	safeToXlsxM(EigenValues, "EigenValues")
 
-		yk := make([]float64, r)
-		//fmt.Println(len(Ik), r)
-		for k := 0; k < r; k++ {
-			yk[k] = sumOfIk(Ik[k])
-		}
+	// ***************************************************
 
-		makeGraphOfArray(x, "png"+OpSystemFilder+"x.png")
+	EigenValues.Scale(-1.0, &EigenValues)
+	aa := diag(EigenValues, R)
+	i_R := make([]int, R) // Пока что примитивная сортировка. без I
+	for ind := range i_R {
+		i_R[ind] = 40 - ind
+	}
 
-		safeToXlsx(x, "DiagAveraging") // Сохранить данные в xlsx
-		makeGraph2(R, "png"+OpSystemFilder+"DiagAveraging.png")
-		return yk
-	*/
+	fmt.Println("diag", aa)
+	sort.Float64s(aa)
+	fmt.Println("sort", aa)
+	for ind := range aa {
+		aa[ind] *= -1.0
+	}
+	fmt.Println("minusOdin", aa)
+	// ***************************************************
+
 	return []float64{0.0, 1.0, 2.0}
 }
 
+// Returns diagonal matrix D of eigenvalues and matrix V whose columns are the corresponding right eigenvectors, so that A*V = V*D
+func eig(matr mat.Dense) (mat.Dense, mat.Dense) {
+	a, err := AsSymDense(&matr)
+	if err != nil {
+		panic(err)
+	}
+	var eigsym mat.EigenSym
+	ok := eigsym.Factorize(a, true)
+	if !ok {
+		log.Fatal("Symmetric eigendecomposition failed")
+	}
+	var ev mat.Dense
+	eigsym.VectorsTo(&ev)
+	return ev, make_diag_danse(eigsym.Values(nil))
+}
+
+// AsSymDense attempts return a SymDense from the provided Dense.
+func AsSymDense(m *mat.Dense) (*mat.SymDense, error) {
+	r, c := m.Dims()
+	if r != c {
+		return nil, errors.New("matrix must be square")
+	}
+	mT := m.T()
+	vals := make([]float64, r*c)
+	idx := 0
+	for i := 0; i < r; i++ {
+		for j := 0; j < c; j++ {
+			if mT.At(i, j) != m.At(i, j) {
+				return nil, errors.New("matrix is not symmetric")
+			}
+			vals[idx] = m.At(i, j)
+			idx++
+		}
+	}
+
+	return mat.NewSymDense(r, vals), nil
+}
 func HCA(x []float64, r int) []float64 {
 
 	return []float64{0.0, 1.0, 2.0}
@@ -184,68 +156,6 @@ func DiagAveraging(SUV *mat.Dense, k int, N int) float64 {
 	}
 	return gk
 }
-func SDV(X *mat.Dense, rank int) []SDVs {
-	SDVsout := make([]SDVs, rank)
-	for i := 0; i < rank; i++ {
-		/*
-			// Это с дроблением на матрицы
-			X_y, _ := X.Dims()
-			kk := X.Slice(0, X_y, i, i+X_y) // Взять часть матрицы X
-			kek := mat.DenseCopyOf(kk)      // Преобразовать в Dense
-			SDVsout[i] = SDV_single(kek)    // Сохранить значение
-		*/
-
-		// это без дробления на матрицы
-		SDVsout[i] = SDV_single(X)
-	}
-	return SDVsout
-}
-func SDV_single(matT *mat.Dense) SDVs {
-	safeToXlsxMatrix(matT, "matT")
-
-	var SDVout SDVs
-	var svdMat mat.SVD
-	ok := svdMat.Factorize(matT, mat.SVDFull)
-	if !ok {
-		log.Fatal("failed to factorize A")
-	}
-
-	SDVout.V = new(mat.Dense)
-	SDVout.S = new(mat.Dense)
-	svdMat.VTo(SDVout.V)
-
-	svdMat.UTo(SDVout.S)
-	lenX_s, lenY_s := matT.Dims()
-	//fmt.Println(lenY_s)
-	valuesMat := make([]float64, lenX_s)
-	//fmt.Println(len(valuesMat))
-	svdMat.Values(valuesMat)
-
-	SDVout.U = mat.NewDense(lenX_s, lenY_s, nil)
-	for ind, val := range valuesMat {
-		SDVout.U.Set(ind, ind, val)
-	}
-
-	//fmt.Println(SDVout.S.Dims())
-
-	SDVout.U = mat.DenseCopyOf(SDVout.U.T())
-
-	//fmt.Println(SDVout.S.Dims())
-
-	return SDVout
-}
-func makeRank(matr *mat.Dense) int {
-	var svd mat.SVD
-	ok := svd.Factorize(matr, mat.SVDFull)
-	if !ok {
-		log.Fatal("failed to factorize A")
-	}
-	rank := svd.Rank(rcond)
-	if rank == 0 {
-		log.Fatal("zero rank system")
-	}
-	return (rank)
-}
 
 func BuildTrajectoryMatrix(s []float64, L int, N int) *mat.Dense {
 	K := N - L + 1
@@ -259,11 +169,19 @@ func BuildTrajectoryMatrix(s []float64, L int, N int) *mat.Dense {
 	}
 	return matr
 }
-func make_diag_danse(arr []float64) *mat.Dense {
+func make_diag_danse(arr []float64) mat.Dense {
 	lensOfArray := len(arr)
 	dens := mat.NewDense(lensOfArray, lensOfArray, nil)
 	for i := 0; i < len(arr); i++ {
 		dens.Set(i, i, arr[i])
 	}
-	return dens
+	return *dens
+}
+
+func diag(mat mat.Dense, R int) []float64 {
+	ret := make([]float64, R)
+	for ind := range ret {
+		ret[ind] = mat.At(ind, ind)
+	}
+	return ret
 }

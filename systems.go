@@ -40,6 +40,21 @@ func safeToXlsxMatrix(X *mat.Dense, xlsxName string) {
 	}
 	file_graph.Close()
 }
+func safeToXlsxM(X mat.Dense, xlsxName string) {
+	file_graph := excelize.NewFile()
+	file_graph.NewSheet("main")
+	file_graph.DeleteSheet("Sheet1")
+	n, m := X.Dims()
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
+			file_graph.SetCellValue("main", getColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
+		}
+	}
+	if err := file_graph.SaveAs("files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
+		fmt.Println(err)
+	}
+	file_graph.Close()
+}
 
 /*
 func make_singnal(n int) []float64 { //waveform := make_singnal(1000, 0.01)
@@ -163,5 +178,10 @@ func aTa(matr *mat.Dense) *mat.Dense { // Multipy matrix AT*A
 
 func realyPrint(matr *mat.Dense, name string) {
 	fmatr := mat.Formatted(matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
+	fmt.Printf(name+" =%.3v\n", fmatr)
+}
+
+func realyPrint2(matr mat.Dense, name string) {
+	fmatr := mat.Formatted(&matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
 	fmt.Printf(name+" =%.3v\n", fmatr)
 }

@@ -1,7 +1,7 @@
 all: run
 
 run:
-	go run main.go systems.go
+	go run main.go systems.go sdv.go
 
 pull:
 	git pull git@github.com:RB-PRO/ssa.git
