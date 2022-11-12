@@ -3,185 +3,187 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
-	"sort"
 
 	"gonum.org/v1/gonum/mat"
 )
 
 const rcond = 1e-15
 
-type SDVs struct {
-	V *mat.Dense
-	U *mat.Dense
-	S *mat.Dense
-}
-
 func main() {
 	var L int = 40
 	var N int = 300
 	sig := make_singnal_xn(N) // Создать сигнал с N
-	autoSSA(sig, 3, L, N)
+
+	//autoSSA(sig, 3, L, N)
+	C, LBD, RC := SSA(N, L, sig, 2)
+	safeToXlsxM(C, "C")
+	safeToXlsx(LBD, "LBD")
+	safeToXlsxM(RC, "RC")
 
 	safeToXlsx(sig, "signal") // Сохранить данные в xlsx
-
 	makeGraph2(N, "png"+OpSystemFilder+"sig.png")
-
 }
 
-func autoSSA(s []float64, r int, L int, N int) []float64 {
-	// % Step 1: Build trajectory matrix
-	X := BuildTrajectoryMatrix(s, L, N) // Создать матрицу траекторий
-	safeToXlsxMatrix(X, "X")
+func SSA(N int, M int, X []float64, nET int) (mat.Dense, []float64, mat.Dense) {
+	//  Calculate covariance matrix (trajectory approach)
+	// it ensures a positive semi-definite covariance matrix
+	Y := BuildTrajectoryMatrix(X, M, N) // Создать матрицу траекторий
+	safeToXlsxMatrix(Y, "Y")
 
-	// % Step 2: SVD
+	var Cemb mat.Dense
+	Cemb.Mul(Y, Y.T())
+	Cemb.Scale(1.0/float64(N-M+1), &Cemb)
 
-	var S mat.Dense
-	S.Mul(mat.Matrix(X), X.T())
-	safeToXlsxM(S, "S")
+	safeToXlsxM(Cemb, "Cemb")
 
-	R := makeRank(X)
-	fmt.Println("Rank:", R)
+	C := Cemb
 
-	// ***************************************************
+	// Choose covariance estimation
+	RHO, LBD := eig(C)
+	safeToXlsxM(RHO, "RHO")
+	safeToXlsxM(LBD, "LBD")
+	LBD_diag := diag(LBD, LBD.DiagView().Diag())
+	LBD_sort, _ := InsertionSort(LBD_diag)
 
-	EigenVectors, EigenValues := eig(S)
-	safeToXlsxM(EigenVectors, "EigenVectors")
-	safeToXlsxM(EigenValues, "EigenValues")
-
-	// ***************************************************
-
-	EigenValues.Scale(-1.0, &EigenValues)
-	aa := diag(EigenValues, R)
-	i_R := make([]int, R) // Пока что примитивная сортировка. без I
-	for ind := range i_R {
-		i_R[ind] = 40 - ind
+	// Перевернуть матрицу по вертикали
+	_, col_RHO := RHO.Dims()
+	for j := 0; j < col_RHO/2; j++ {
+		a := colDense(RHO, j)
+		b := colDense(RHO, col_RHO-1-j)
+		RHO.SetCol(j, b)
+		RHO.SetCol(col_RHO-1-j, a)
 	}
+	safeToXlsxM(RHO, "RHO_new")
 
-	fmt.Println("diag", aa)
-	sort.Float64s(aa)
-	fmt.Println("sort", aa)
-	for ind := range aa {
-		aa[ind] *= -1.0
-	}
-	fmt.Println("minusOdin", aa)
-	// ***************************************************
+	// Calculate principal components PC
+	// The principal components are given as the scalar product
+	// between Y, the time-delayed embedding of X, and the eigenvectors RHO
+	var PC mat.Dense
+	PC.Mul(Y.T(), &RHO)
+	safeToXlsxM(PC, "PC")
 
-	return []float64{0.0, 1.0, 2.0}
-}
+	// Calculate reconstructed components RC
+	// In order to determine the reconstructed components RC,
+	// we have to invert the projecting PC = Y*RHO;i.e. RC = Y*RHO*RHO'=PC*RHO'
+	// Averaging along anti-diagonals gives the RCs for the original input X
 
-// Returns diagonal matrix D of eigenvalues and matrix V whose columns are the corresponding right eigenvectors, so that A*V = V*D
-func eig(matr mat.Dense) (mat.Dense, mat.Dense) {
-	a, err := AsSymDense(&matr)
-	if err != nil {
-		panic(err)
-	}
-	var eigsym mat.EigenSym
-	ok := eigsym.Factorize(a, true)
-	if !ok {
-		log.Fatal("Symmetric eigendecomposition failed")
-	}
-	var ev mat.Dense
-	eigsym.VectorsTo(&ev)
-	return ev, make_diag_danse(eigsym.Values(nil))
-}
+	RC := mat.NewDense(N, nET, nil)
+	r_PC, _ := PC.Dims()
+	r_RHO, _ := RHO.Dims()
+	for m := 0; m < nET; m++ {
+		// invert projection
+		var buf mat.Dense
+		b1 := mat.NewDense(r_PC, 1, colDense(PC, m))
+		b2 := mat.NewDense(r_RHO, 1, colDense(RHO, m))
+		buf.Mul(b1, b2.T())
+		safeToXlsxM(buf, "buf")
 
-// AsSymDense attempts return a SymDense from the provided Dense.
-func AsSymDense(m *mat.Dense) (*mat.SymDense, error) {
-	r, c := m.Dims()
-	if r != c {
-		return nil, errors.New("matrix must be square")
-	}
-	mT := m.T()
-	vals := make([]float64, r*c)
-	idx := 0
-	for i := 0; i < r; i++ {
-		for j := 0; j < c; j++ {
-			if mT.At(i, j) != m.At(i, j) {
-				return nil, errors.New("matrix is not symmetric")
+		// Перевернуть матрицу по горизонтали
+		row_buf, _ := buf.Dims()
+		for j := 0; j < row_buf/2; j++ {
+			a := rowDense(buf, j)
+			b := rowDense(buf, row_buf-1-j)
+			buf.SetRow(j, b)
+			buf.SetRow(row_buf-1-j, a)
+		}
+		safeToXlsxM(buf, "buf2")
+
+		// Anti-diagonal averaging
+		for n := 0; n < N; n++ {
+			diag_buf, error_subdiagonal := subdiagonal(buf, -(N-M+1)+n+1)
+			if error_subdiagonal != nil {
+				panic(error_subdiagonal)
 			}
-			vals[idx] = m.At(i, j)
-			idx++
+			RC.Set(n, m, averge(diag_buf))
+		}
+
+	}
+	return C, LBD_sort, *RC
+}
+
+// Среднее значение каждого столбца
+func mean(m mat.Dense) []float64 {
+	_, c_m := m.Dims()
+	outputArray := make([]float64, c_m)
+	for ind := range outputArray {
+		vect := colDense(m, ind)
+		outputArray[ind] = averge(vect)
+	}
+	return outputArray
+}
+
+// Среднее массива float64
+func averge(array []float64) float64 {
+	var sum float64
+	for _, val := range array {
+		sum += val
+	}
+	return sum / float64(len(array))
+}
+
+// Вернуть subdiagonal
+func subdiagonal(m mat.Dense, k int) ([]float64, error) {
+	var outputArray []float64
+	r_m, c_m := m.Dims()
+	if k == 0 {
+		for i := 0; i < r_m && i < c_m; i++ {
+			outputArray = append(outputArray, m.At(i, i))
+		}
+	} else if k < 0 {
+		if k > r_m {
+			return nil, errors.New("k > matrix ROW")
+		}
+		for i := 0; i-k < r_m && i < c_m; i++ {
+			outputArray = append(outputArray, m.At(i-k, i))
+		}
+	} else if k > 0 {
+		if k > c_m {
+			return nil, errors.New("k > matrix COL")
+		}
+		for i := 0; i+k < c_m && i < r_m; i++ {
+			outputArray = append(outputArray, m.At(i, i+k))
 		}
 	}
-
-	return mat.NewSymDense(r, vals), nil
-}
-func HCA(x []float64, r int) []float64 {
-
-	return []float64{0.0, 1.0, 2.0}
-}
-func sumOfIk(a float64) float64 {
-
-	return 0.0
+	return outputArray, nil
 }
 
-func makeSumMatrix(SUV SDVs) *mat.Dense {
-	var output mat.Dense
-	u := mat.DenseCopyOf(SUV.U)
-	v := mat.DenseCopyOf(SUV.V)
-	s := mat.DenseCopyOf(SUV.S)
-
-	output.Mul(v, s)
-	output.Mul(&output, u)
-	return mat.DenseCopyOf(&output)
-}
-
-// Computation- and space-eﬃcient implementation of SSA - Anton Korobeynikov
-func DiagAveraging(SUV *mat.Dense, k int, N int) float64 {
-	var gk float64
-	K, L := SUV.Dims()
-	//fmt.Println("***\nK", K, "L", L)
-	//realyPrint(SUV.U, "SUV.U")
-	if 0 < k && k < L {
-		for j := 0; j < k; j++ {
-			//fmt.Println("j", j, "k-j", k-j)
-			gk += SUV.At(j, k-j)
-		}
-		gk *= 1 / float64(k)
+// Вернуть колонку из матрицы
+func colDense(m mat.Dense, ind int) []float64 {
+	row, _ := m.Dims()
+	outputArray := make([]float64, row)
+	for i := 0; i < row; i++ {
+		outputArray[i] = m.At(i, ind)
 	}
-	if L <= k && k <= K {
-		for j := 0; j < k; j++ {
-			//fmt.Println("j", j, "k-j", k-j)
-			gk += SUV.At(j, k-j)
-		}
-		gk *= 1 / float64(L)
-	}
-	if K < k && k < N {
-		for j := k - K + 1; j < k; j++ {
-			//fmt.Println("j", j, "k-j", k-j)
-			gk += SUV.At(j, k-j)
-		}
-		gk *= 1 / (float64(N) - float64(k) + 1)
-	}
-	return gk
+	return outputArray
 }
 
-func BuildTrajectoryMatrix(s []float64, L int, N int) *mat.Dense {
-	K := N - L + 1
-	matr := mat.NewDense(L, K, nil)
-	n, m := matr.Dims()
-	for i := 0; i < n; i++ {
-		for j := 0; j < m; j++ {
-			//fmt.Println(i, "*", L, "+", j, "=", i*L+j, "//", s[i*L+j])
-			matr.Set(i, j, s[i+j])
+// Вернуть строку из матрицы
+func rowDense(m mat.Dense, ind int) []float64 {
+	_, col := m.Dims()
+	outputArray := make([]float64, col)
+	for j := 0; j < col; j++ {
+		outputArray[j] = m.At(ind, j)
+	}
+	return outputArray
+}
+func matPrint(X mat.Matrix) {
+	fa := mat.Formatted(X, mat.Prefix(""), mat.Squeeze())
+	fmt.Printf("%v\n", fa)
+}
+func InsertionSort(array []float64) ([]float64, []int) {
+	indexArray := make([]int, len(array))
+	for ind := range indexArray {
+		indexArray[ind] = (ind) + 1
+	}
+	for i := 1; i < len(array); i++ {
+		j := i
+		for j > 0 {
+			if array[j-1] < array[j] {
+				array[j-1], array[j] = array[j], array[j-1]
+				indexArray[j-1], indexArray[j] = indexArray[j], indexArray[j-1]
+			}
+			j = j - 1
 		}
 	}
-	return matr
-}
-func make_diag_danse(arr []float64) mat.Dense {
-	lensOfArray := len(arr)
-	dens := mat.NewDense(lensOfArray, lensOfArray, nil)
-	for i := 0; i < len(arr); i++ {
-		dens.Set(i, i, arr[i])
-	}
-	return *dens
-}
-
-func diag(mat mat.Dense, R int) []float64 {
-	ret := make([]float64, R)
-	for ind := range ret {
-		ret[ind] = mat.At(ind, ind)
-	}
-	return ret
+	return array, indexArray
 }

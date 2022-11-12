@@ -7,6 +7,12 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
+type SDVs struct {
+	V *mat.Dense
+	U *mat.Dense
+	S *mat.Dense
+}
+
 func aaT(matr *mat.Dense) *mat.Dense { // Multipy matrix AT*A
 	a := mat.Matrix(matr)
 	aT := a.T()
