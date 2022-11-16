@@ -11,8 +11,12 @@ const rcond = 1e-15
 
 func main() {
 	var L int = 40
-	var N int = 300
-	sig := make_singnal_xn(N) // Создать сигнал с N
+	sig, N := make_singnal_xn("xn")
+	fmp, fmpN := make_singnal_xn("fmp")
+	pw, pwN := make_singnal_xn("pw")
+	fmt.Println("fmp:", fmpN, "//", "pw", pwN)
+	safeToXlsx(fmp, "fmp") // Сохранить данные в xlsx
+	safeToXlsx(pw, "pw")   // Сохранить данные в xlsx
 
 	//autoSSA(sig, 3, L, N)
 	C, LBD, RC := SSA(N, L, sig, 2)
