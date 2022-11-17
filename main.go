@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -10,22 +11,62 @@ import (
 const rcond = 1e-15
 
 func main() {
-	var L int = 40
-	sig, N := make_singnal_xn("xn")
 	fmp, fmpN := make_singnal_xn("fmp")
 	pw, pwN := make_singnal_xn("pw")
 	fmt.Println("fmp:", fmpN, "//", "pw", pwN)
 	safeToXlsx(fmp, "fmp") // Сохранить данные в xlsx
 	safeToXlsx(pw, "pw")   // Сохранить данные в xlsx
 
-	//autoSSA(sig, 3, L, N)
-	C, LBD, RC := SSA(N, L, sig, 2)
-	safeToXlsxM(C, "C")
-	safeToXlsx(LBD, "LBD")
-	safeToXlsxM(RC, "RC")
+	ssa_spw(pw, fmp)
 
-	safeToXlsx(sig, "signal") // Сохранить данные в xlsx
-	makeGraph2(N, "png"+OpSystemFilder+"sig.png")
+	//C, LBD, RC := SSA(N, L, sig, 2)
+	//safeToXlsxM(C, "C")
+	//safeToXlsx(LBD, "LBD")
+	//safeToXlsxM(RC, "RC")
+
+	//makeGraph2(N, "png"+OpSystemFilder+"sig.png")
+}
+
+func ssa_spw(pw, fmp []float64) {
+	// Сегменты отсчётов pw
+	N := len(pw) // Количество отсчетов pw
+	win := 1024
+	res := N - win*int(math.Floor(float64(N)/float64(win)))
+	nPart := 20 // Количество долей res
+	res = int(math.Floor(float64(res) / float64(nPart)))
+	overlap := (float64(win) - float64(res)) / float64(win)
+	S := 1
+	Imin := 1
+	Imax := win
+
+	var ns []float64
+	for Imax <= N {
+		ns = append(ns, float64(S)) // номер текущего сегмента pw
+		Imin = Imin + res
+		Imax = Imax + res
+		S++
+	}
+	S--                    // кол-во перекрывающихся сегментов pw в пределах N
+	NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
+
+	for j := 1; j <= S; j++ {
+		for i := 1; i <= win; i++ {
+			k := (j - 1) * res
+			spw[i][j] = pw[k+i] // текущий сегмент pw длинною win
+		}
+	}
+
+	fmt.Println("ns", ns)
+	fmt.Println("N", N)
+	fmt.Println("win", win)
+	fmt.Println("res", res)
+	fmt.Println("nPart", nPart)
+	fmt.Println("overlap", overlap)
+	fmt.Println("S", S)
+	fmt.Println("Imin", Imin)
+	fmt.Println("Imax", Imax)
+	fmt.Println("NSF", NSF)
+
 }
 
 func SSA(N int, M int, X []float64, nET int) (mat.Dense, []float64, mat.Dense) {
