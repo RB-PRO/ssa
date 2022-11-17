@@ -2,13 +2,12 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"log"
-	"sort"
 
 	"gonum.org/v1/gonum/mat"
 )
 
+/*
 func autoSSA(s []float64, r int, L int, N int) []float64 {
 	// % Step 1: Build trajectory matrix
 	X := BuildTrajectoryMatrix(s, L, N) // Создать матрицу траекторий
@@ -49,7 +48,7 @@ func autoSSA(s []float64, r int, L int, N int) []float64 {
 
 	return []float64{0.0, 1.0, 2.0}
 }
-
+*/
 // Returns diagonal matrix D of eigenvalues and matrix V whose columns are the corresponding right eigenvectors, so that A*V = V*D
 func eig(matr mat.Dense) (mat.Dense, mat.Dense) {
 	a, err := AsSymDense(&matr)
@@ -137,14 +136,14 @@ func DiagAveraging(SUV *mat.Dense, k int, N int) float64 {
 	return gk
 }
 
-func BuildTrajectoryMatrix(s []float64, L int, N int) *mat.Dense {
+func BuildTrajectoryMatrix(s mat.Vector, L int, N int) *mat.Dense {
 	K := N - L + 1
 	matr := mat.NewDense(L, K, nil)
 	n, m := matr.Dims()
 	for i := 0; i < n; i++ {
 		for j := 0; j < m; j++ {
 			//fmt.Println(i, "*", L, "+", j, "=", i*L+j, "//", s[i*L+j])
-			matr.Set(i, j, s[i+j])
+			matr.Set(i, j, s.AtVec(i+j))
 		}
 	}
 	return matr

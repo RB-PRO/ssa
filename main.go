@@ -49,27 +49,115 @@ func ssa_spw(pw, fmp []float64) {
 	S--                    // кол-во перекрывающихся сегментов pw в пределах N
 	NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
 
-	for j := 1; j <= S; j++ {
-		for i := 1; i <= win; i++ {
-			k := (j - 1) * res
-			spw[i][j] = pw[k+i] // текущий сегмент pw длинною win
+	//spw := dinamicArray(win, S)
+	spw := mat.NewDense(win, S, nil)
+	/*
+		spw := make([][]float64, win)
+		for index := range spw {
+			spw[index] = make([]float64, S)
+		}
+	*/
+	fmt.Println("Размеры spw:", win, S)
+	for j := 0; j < S; j++ {
+		for i := 0; i < win; i++ {
+			k := (j) * res
+			//spw[i][j] = pw[k+i] // текущий сегмент pw длинною win
+			spw.Set(i, j, pw[k+i])
 		}
 	}
 
-	fmt.Println("ns", ns)
-	fmt.Println("N", N)
-	fmt.Println("win", win)
-	fmt.Println("res", res)
-	fmt.Println("nPart", nPart)
-	fmt.Println("overlap", overlap)
-	fmt.Println("S", S)
-	fmt.Println("Imin", Imin)
+	// Set general parameters
+	cad := 30              // 30 кадров/сек
+	dt := 1 / float64(cad) // интервал дискретизации времени, сек
+	tim := make([]float64, N)
+	for index := 1; index < N; index++ {
+		tim[index] = tim[index-1] + dt
+	}
+
+	ns2 := make([]int, S)
+	for index := range ns2 {
+		ns2[index] = (index + 1)
+	}
+
+	L := make([]float64, S)
+	for index := range L { // цикл по сегментам pw
+		L[index] = math.Floor(float64(cad) / fmp[index]) // кол-во отсчетов основного тона pw
+	}
+
+	K := 5
+	M := int(float64(K) * max(L)) // параметр вложения в траекторное пространство
+	// SSA - анализ сегментов pw
+	seg := 100 // номер сегмента pw для визуализации
+	nET := 4   // кол-во сингулярных троек для сегментов pw
+
+	//var sET12 mat.Dense
+	sET12_sum2 := mat.NewDense(win, 2, nil) // НЕ ФАКТ, ЧТО К-во строк win
+	sET12 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
+	for j := 0; j < S; j++ {                // цикл по сегментам  S
+		//C, LBD, RC := SSA(win, M, spw[:][j], nET)
+		_, _, RC := SSA(win, M, spw.ColView(j), nET)
+		fmt.Println(j, S)
+		RC_T := mat.DenseCopyOf(RC.T())
+
+		sET12_sum2.SetCol(0, RC_T.RawRowView(0))
+		sET12_sum2.SetCol(1, RC_T.RawRowView(1))
+		sET12.SetCol(j, sum2(*sET12_sum2))
+		sET12_sum2.Zero()
+	}
+	safeToXlsxMatrix(sET12, "sET12")
+
+	fmt.Println("dt", cad)
+	fmt.Println("dt", dt)
 	fmt.Println("Imax", Imax)
+	fmt.Println("Imin", Imin)
+	fmt.Println("K", K)
+	fmt.Println("M", M)
+	fmt.Println("N", N)
+	fmt.Println("nET", nET)
+	fmt.Println("nPart", nPart)
+	fmt.Println("ns", ns)
 	fmt.Println("NSF", NSF)
+	fmt.Println("overlap", overlap)
+	fmt.Println("res", res)
+	fmt.Println("S", S)
+	safeToXlsx(tim, "tim")
+	safeToXlsx(L, "L")
+	fmt.Println("win", win)
+	fmt.Println("seg", seg)
 
 }
 
-func SSA(N int, M int, X []float64, nET int) (mat.Dense, []float64, mat.Dense) {
+// Горизонтальная сумма массива
+func sum2(a mat.Dense) []float64 {
+	var output []float64
+	r, _ := a.Dims()
+	for i := 0; i < r; i++ {
+		output = append(output, mat.Sum(a.RowView(i)))
+	}
+	return output
+}
+
+// МАксимальный элемент массива
+func max(arr []float64) float64 {
+	max_num := arr[0]
+	for i := 0; i < len(arr); i++ {
+		if arr[i] > max_num {
+			max_num = arr[i]
+		}
+	}
+	return max_num
+}
+
+// Создать динамический двумерный массив
+func dinamicArray(r, c int) [][]float64 {
+	spw := make([][]float64, r)
+	for index := range spw {
+		spw[index] = make([]float64, c)
+	}
+	return spw
+}
+
+func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) {
 	//  Calculate covariance matrix (trajectory approach)
 	// it ensures a positive semi-definite covariance matrix
 	Y := BuildTrajectoryMatrix(X, M, N) // Создать матрицу траекторий
