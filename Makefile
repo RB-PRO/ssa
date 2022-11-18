@@ -1,7 +1,7 @@
 all: run
 
 run:
-	go run main.go systems.go sdv.go astres.go
+	go run main.go ssa_spw.go ssa.go denseFunc.go systems.go signal.go
 
 pull:
 	git pull git@github.com:RB-PRO/ssa.git
@@ -14,4 +14,3 @@ pullW:
 
 pushW:
 	git push https://github.com/RB-PRO/ssa.git
-

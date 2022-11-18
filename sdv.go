@@ -80,6 +80,7 @@ func SDV_single(matT *mat.Dense) SDVs {
 
 	return SDVout
 }
+
 func makeRank(matr *mat.Dense) int {
 	var svd mat.SVD
 	ok := svd.Factorize(matr, mat.SVDFull)
