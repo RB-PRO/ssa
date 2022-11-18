@@ -32,6 +32,7 @@ func max(arr []float64) float64 {
 	return max_num
 }
 
+/*
 // Создать динамический двумерный массив
 func dinamicArray(r, c int) [][]float64 {
 	spw := make([][]float64, r)
@@ -51,6 +52,7 @@ func mean(m mat.Dense) []float64 {
 	}
 	return outputArray
 }
+*/
 
 // Среднее массива float64
 func averge(array []float64) float64 {
@@ -142,6 +144,5 @@ func AsSymDense(m *mat.Dense) (*mat.SymDense, error) {
 			idx++
 		}
 	}
-
 	return mat.NewSymDense(r, vals), nil
 }

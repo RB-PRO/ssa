@@ -10,20 +10,15 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 	//  Calculate covariance matrix (trajectory approach)
 	// it ensures a positive semi-definite covariance matrix
 	Y := BuildTrajectoryMatrix(X, M, N) // Создать матрицу траекторий
-	safeToXlsxMatrix(Y, "Y")
 
 	var Cemb mat.Dense
 	Cemb.Mul(Y, Y.T())
 	Cemb.Scale(1.0/float64(N-M+1), &Cemb)
 
-	safeToXlsxM(Cemb, "Cemb")
-
 	C := Cemb
 
 	// Choose covariance estimation
 	RHO, LBD := eig(C)
-	safeToXlsxM(RHO, "RHO")
-	safeToXlsxM(LBD, "LBD")
 	LBD_diag := diag(LBD, LBD.DiagView().Diag())
 	LBD_sort, _ := InsertionSort(LBD_diag)
 
@@ -35,14 +30,12 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 		RHO.SetCol(j, b)
 		RHO.SetCol(col_RHO-1-j, a)
 	}
-	safeToXlsxM(RHO, "RHO_new")
 
 	// Calculate principal components PC
 	// The principal components are given as the scalar product
 	// between Y, the time-delayed embedding of X, and the eigenvectors RHO
 	var PC mat.Dense
 	PC.Mul(Y.T(), &RHO)
-	safeToXlsxM(PC, "PC")
 
 	// Calculate reconstructed components RC
 	// In order to determine the reconstructed components RC,
@@ -58,7 +51,6 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 		b1 := mat.NewDense(r_PC, 1, colDense(PC, m))
 		b2 := mat.NewDense(r_RHO, 1, colDense(RHO, m))
 		buf.Mul(b1, b2.T())
-		safeToXlsxM(buf, "buf")
 
 		// Перевернуть матрицу по горизонтали
 		row_buf, _ := buf.Dims()
@@ -68,7 +60,6 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 			buf.SetRow(j, b)
 			buf.SetRow(row_buf-1-j, a)
 		}
-		safeToXlsxM(buf, "buf2")
 
 		// Anti-diagonal averaging
 		for n := 0; n < N; n++ {

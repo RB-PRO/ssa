@@ -29,19 +29,11 @@ func ssa_spw(pw, fmp []float64) {
 	S--                    // кол-во перекрывающихся сегментов pw в пределах N
 	NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
 
-	//spw := dinamicArray(win, S)
 	spw := mat.NewDense(win, S, nil)
-	/*
-		spw := make([][]float64, win)
-		for index := range spw {
-			spw[index] = make([]float64, S)
-		}
-	*/
 	fmt.Println("Размеры spw:", win, S)
 	for j := 0; j < S; j++ {
 		for i := 0; i < win; i++ {
 			k := (j) * res
-			//spw[i][j] = pw[k+i] // текущий сегмент pw длинною win
 			spw.Set(i, j, pw[k+i])
 		}
 	}
