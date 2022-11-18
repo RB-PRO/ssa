@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"strconv"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -67,7 +68,7 @@ func ssa_spw(pw, fmp []float64) {
 	sET12 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
 	for j := 0; j < S; j++ {                // цикл по сегментам  S
 		//C, LBD, RC := SSA(win, M, spw[:][j], nET)
-		_, _, RC := SSA(win, M, spw.ColView(j), nET)
+		_, LBD, RC := SSA(win, M, spw.ColView(j), nET)
 		fmt.Println(j, S)
 		RC_T := mat.DenseCopyOf(RC.T())
 
@@ -75,7 +76,11 @@ func ssa_spw(pw, fmp []float64) {
 		sET12_sum2.SetCol(1, RC_T.RawRowView(1))
 		sET12.SetCol(j, sum2(*sET12_sum2))
 		sET12_sum2.Zero()
+
+		makeGraphOfArray(LBD, "png"+OpSystemFilder+"LBD"+strconv.Itoa(j)+".png")
 	}
+
+	// *****************
 	safeToXlsxMatrix(sET12, "sET12")
 
 	fmt.Println("dt", cad)
@@ -116,4 +121,8 @@ func InsertionSort(array []float64) ([]float64, []int) {
 		}
 	}
 	return array, indexArray
+}
+
+func sumsetLBD(a, b []float64) []float64 {
+
 }
