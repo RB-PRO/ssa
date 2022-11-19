@@ -111,6 +111,23 @@ func makeGraphOfArray(vals []float64, filename string) error {
 	plot.SavePlot(filename)
 	return nil
 }
+func makeGraphOfVecDense(vec mat.VecDense, filename string) error {
+	dimensions := 2
+	persist := false
+	debug := false
+	plot, _ := glot.NewPlot(dimensions, persist, debug)
+	fct := func(x float64) float64 { return (vec.At(int(x), 0)) }
+	groupName := strings.Replace(filename, ".png", "", 1)
+	groupName = strings.Replace(filename, "png/", "", 1)
+	style := "lines"
+	x := make([]float64, vec.Len())
+	for i := 0; i < vec.Len(); i++ {
+		x[i] = float64(i)
+	}
+	plot.AddFunc2d(groupName, style, x, fct)
+	plot.SavePlot(filename)
+	return nil
+}
 func makeGraph2(n int, filename string) error {
 	dimensions := 2
 	persist := false

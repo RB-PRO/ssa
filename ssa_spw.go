@@ -66,7 +66,13 @@ func ssa_spw(pw, fmp []float64) {
 	//var sET12 mat.Dense
 	sET12_sum2 := mat.NewDense(win, 2, nil) // НЕ ФАКТ, ЧТО К-во строк win
 	sET12 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
-	for j := 0; j < S; j++ {                // цикл по сегментам  S
+
+	fmt.Println(win)
+	fmt.Println(M)
+	fmt.Println(nET)
+	fmt.Println("***************")
+
+	for j := 0; j < S; j++ { // цикл по сегментам  S
 		//C, LBD, RC := SSA(win, M, spw[:][j], nET)
 		_, LBD, RC := SSA(win, M, spw.ColView(j), nET)
 		fmt.Println(j, S)
@@ -77,10 +83,15 @@ func ssa_spw(pw, fmp []float64) {
 		sET12.SetCol(j, sum2(*sET12_sum2))
 		sET12_sum2.Zero()
 
-		makeGraphOfArray(LBD, "png"+OpSystemFilder+"LBD"+strconv.Itoa(j)+".png")
+		if j == seg {
+
+			makeGraphOfArray(LBD, "png"+OpSystemFilder+"LBD"+strconv.Itoa(j)+".png")
+
+		}
 	}
 
 	// *****************
+
 	safeToXlsxMatrix(sET12, "sET12")
 
 	fmt.Println("dt", cad)
@@ -121,8 +132,4 @@ func InsertionSort(array []float64) ([]float64, []int) {
 		}
 	}
 	return array, indexArray
-}
-
-func sumsetLBD(a, b []float64) []float64 {
-
 }
