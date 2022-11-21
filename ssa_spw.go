@@ -72,9 +72,10 @@ func ssa_spw(pw, fmp []float64) {
 	fmt.Println(nET)
 	fmt.Println("***************")
 
-	for j := 0; j < S; j++ { // цикл по сегментам  S
+	for j := 100; j <= 100; j++ {
+		//for j := 0; j < S; j++ { // цикл по сегментам  S
 		//C, LBD, RC := SSA(win, M, spw[:][j], nET)
-		_, LBD, RC := SSA(win, M, spw.ColView(j), nET)
+		C, LBD, RC := SSA(win, M, spw.ColView(j), nET)
 		fmt.Println(j, S)
 		RC_T := mat.DenseCopyOf(RC.T())
 
@@ -84,9 +85,16 @@ func ssa_spw(pw, fmp []float64) {
 		sET12_sum2.Zero()
 
 		if j == seg {
+			fmt.Println("C RANGE")
+			fmt.Println(C.Dims())
+			safeToXlsxM(C, "C")
+			imagesc(C, "C")
 
-			makeGraphOfArray(LBD, "png"+OpSystemFilder+"LBD"+strconv.Itoa(j)+".png")
+			makeGraphOfArray(LBD, "LBD-"+strconv.Itoa(j))
 
+			makeGraphYX_VecDense(*mat.NewVecDense(len(tim), tim), *(mat.VecDenseCopyOf(spw.ColView(j))), "sET12")
+			//tim(1:win),spw(:,j)
+			//tim(1:win),sET12(:,j)
 		}
 	}
 
