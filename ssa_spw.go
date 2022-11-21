@@ -91,6 +91,12 @@ func ssa_spw(pw, fmp []float64) {
 	}
 
 	// *****************
+	// Оценка АКФ сингулярных троек для сегментов pw
+	lag := int(math.Floor(float64(win) / 10.0)) // % наибольший лаг АКФ <= win/10
+	lagS := 2 * lag
+	Acf_sET12 := ACF_estimation_of_singular_triples(lagS, win, S, *sET12)
+	safeToXlsxM(Acf_sET12, "Acf_sET12")
+	// *****************
 
 	safeToXlsxMatrix(sET12, "sET12")
 
@@ -113,6 +119,27 @@ func ssa_spw(pw, fmp []float64) {
 	fmt.Println("win", win)
 	fmt.Println("seg", seg)
 
+}
+
+// Оценка АКФ сингулярных троек для сегментов pw
+func ACF_estimation_of_singular_triples(lagS, win, S int, sET12 mat.Dense) mat.Dense {
+	var Acf_sET12 mat.Dense
+	for j := 0; j < S; j++ {
+		Acf_sET12.SetCol(j, AcfMed(lagS, win, sET12.ColView(j)))
+	}
+	return Acf_sET12
+}
+func AcfMed(lagS, win int, sET12_vec mat.Vector) []float64 {
+	// lagS - параметр погружения временного ряда (ВР) TS в траекторное пространство
+	// win  - количество отсчетов ВР TS
+	// TS   - ВР, содержащий win отсчетов
+	TS := mat.VecDenseCopyOf(sET12_vec)
+	Y := mat.NewDense(win-lagS+1, lagS, nil)
+	for m := 0; m < lagS; m++ {
+		Y.SetCol(m, TS.SliceVec(m, win-lagS+m)) // vector in []float
+	}
+	//Y(:,m) = TS(m:win-lagS+m)//; % m-й столбец траекторной матрица ВР TS
+	return []float64{}
 }
 
 // Сортировка с возвратом номеров изначальных элементов
