@@ -3,9 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
+	"strconv"
 	"strings"
 
 	"github.com/Arafatk/glot"
+	"github.com/xuri/excelize/v2"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -83,16 +86,81 @@ func vecDense_in_float64(vec mat.VecDense) []float64 {
 }
 
 func imagesc(C mat.Dense, filename string) {
-	r1 := color{r: 0, g: 0, b: 255}
+	r1 := color{r: 0, g: 255, b: 255}
 	r2 := color{r: 255, g: 255, b: 0}
 
-	colorOutput := colorSet(r1, r2, 2)
+	min_val := minDense(C)
+	max_val := maxDense(C)
+	delta := max_val - min_val
 
-	fmt.Println(colorOutput)
+	// create xlsx
+	file_graph := excelize.NewFile()
+	file_graph.NewSheet("main")
+	file_graph.DeleteSheet("Sheet1")
 
+	//err := file_graph.SetSheetProps("main", opts*SheetPropsOptions)
+
+	r, c := C.Dims()
+	file_graph.SetColWidth("main", getColumnName(1), getColumnName(c), 5)
+	for i := 0; i < r; i++ {
+		file_graph.SetRowHeight("main", i, 35)
+		for j := 0; j < c; j++ {
+			k := uint8(math.Round((C.At(i, j) - min_val) / delta * 100.0))
+			colorOutput := colorSet(r1, r2, k)
+
+			r := fmt.Sprintf("%x", colorOutput.r)
+			g := fmt.Sprintf("%x", colorOutput.g)
+			b := fmt.Sprintf("%x", colorOutput.b)
+
+			style, err := file_graph.NewStyle(`{"fill":{"type":"pattern","color":["#` + r + g + b + `"],"pattern":1}}`)
+			if err != nil {
+				fmt.Println(err)
+			}
+			cell := getColumnName(j+1) + strconv.Itoa(i+1)
+			file_graph.SetCellStyle("main", cell, cell, style)
+		}
+	}
+	if err := file_graph.SetRowVisible("main", r, true); err != nil {
+		fmt.Println(err)
+	}
+	if err := file_graph.SetColVisible("main", "A:"+getColumnName(c), true); err != nil {
+		fmt.Println(err)
+	}
+	if err := file_graph.SaveAs("files" + OpSystemFilder + filename + ".xlsx"); err != nil {
+		fmt.Println(err)
+	}
+	file_graph.Close()
 }
 
-// Узнать цвет градиента
+// Узнать цвет градиента. k=[0;100]
 func colorSet(r1, r2 color, k uint8) color {
 	return color{r: r1.r*(1-k) + r2.r*k, g: r1.g*(1-k) + r2.g*k, b: r1.b*(1-k) + r2.b*k}
+}
+
+// минимальное значение элемента матрицы
+func minDense(matr mat.Dense) float64 {
+	var min float64 = matr.At(0, 0)
+	r, c := matr.Dims()
+	for i := 0; i < r; i++ {
+		for j := 0; j < c; j++ {
+			if min > matr.At(i, j) {
+				min = matr.At(i, j)
+			}
+		}
+	}
+	return min
+}
+
+// максимальное значение элемента матрицы
+func maxDense(matr mat.Dense) float64 {
+	var max float64 = matr.At(0, 0)
+	r, c := matr.Dims()
+	for i := 0; i < r; i++ {
+		for j := 0; j < c; j++ {
+			if max < matr.At(i, j) {
+				max = matr.At(i, j)
+			}
+		}
+	}
+	return max
 }

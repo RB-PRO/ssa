@@ -64,14 +64,17 @@ func safeToXlsxM(X mat.Dense, xlsxName string) {
 	}
 	file_graph.Close()
 }
-func getColumnName(col int) string {
-	name := make([]byte, 0, 3) // max 16,384 columns (2022)
-	const aLen = 'Z' - 'A' + 1 // alphabet length
-	for ; col > 0; col /= aLen + 1 {
-		name = append(name, byte('A'+(col-1)%aLen))
-	}
-	for i, j := 0, len(name)-1; i < j; i, j = i+1, j-1 {
-		name[i], name[j] = name[j], name[i]
-	}
-	return string(name)
+func getColumnName(col int) string { /*
+		name := make([]byte, 0, 3) // max 16,384 columns (2022)
+		const aLen = 'Z' - 'A' + 1 // alphabet length
+		for ; col > 0; col /= aLen + 1 {
+			name = append(name, byte('A'+(col-1)%aLen))
+		}
+		for i, j := 0, len(name)-1; i < j; i, j = i+1, j-1 {
+			name[i], name[j] = name[j], name[i]
+		}
+		return string(name)
+	*/
+	asd, _ := excelize.ColumnNumberToName(col)
+	return asd
 }

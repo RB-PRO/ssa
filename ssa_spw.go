@@ -85,18 +85,24 @@ func ssa_spw(pw, fmp []float64) {
 		sET12_sum2.Zero()
 
 		if j == seg {
-			fmt.Println("C RANGE")
-			fmt.Println(C.Dims())
-			safeToXlsxM(C, "C")
 			imagesc(C, "C")
 
 			makeGraphOfArray(LBD, "LBD-"+strconv.Itoa(j))
 
 			makeGraphYX_VecDense(*mat.NewVecDense(len(tim), tim), *(mat.VecDenseCopyOf(spw.ColView(j))), "sET12")
-			//tim(1:win),spw(:,j)
-			//tim(1:win),sET12(:,j)
 		}
 	}
+
+	/*
+		lag := math.Floor(float64(win) / 10.0)
+		lagS := 2 * lag
+
+		var Acf_sET12 mat.Dense
+		for j := 0; j < S; j++ {
+			Acf_sET12.SetCol(j)
+			//Acf_sET12(:,j) = AcfMed(lagS,win,sET12(:,j))//; % ������������� ��� j-�� ��������
+		}
+	*/
 
 	// *****************
 
