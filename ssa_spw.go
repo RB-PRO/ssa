@@ -89,12 +89,11 @@ func ssa_spw(pw, fmp []float64) {
 
 			makeGraphOfArray(LBD, "LBD-"+strconv.Itoa(j))
 
-			fmt.Println("GRAPH")
 			err_makeGraphYX := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
-				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))),
-				"sET12")
+				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))))
+
 			if err_makeGraphYX != nil {
 				fmt.Println(err_makeGraphYX)
 			}
