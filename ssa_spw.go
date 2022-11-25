@@ -104,10 +104,14 @@ func ssa_spw(pw, fmp []float64) {
 		}
 	*/
 
+	safeToXlsxMatrix(sET12, "sET12")
+
 	// *****************
 	// Оценка АКФ сингулярных троек для сегментов pw
 	lag := int(math.Floor(float64(win) / 10.0)) // % наибольший лаг АКФ <= win/10
 	lagS := 2 * lag
+	fmt.Println("--- sET12 ---")
+	fmt.Println(sET12.At(0, 0), sET12.At(0, 1), "\n", sET12.At(1, 0), sET12.At(1, 1))
 	Acf_sET12 := ACF_estimation_of_singular_triples(lagS, win, S, *sET12)
 	safeToXlsxM(Acf_sET12, "Acf_sET12")
 	// *****************
@@ -137,23 +141,53 @@ func ssa_spw(pw, fmp []float64) {
 
 // Оценка АКФ сингулярных троек для сегментов pw
 func ACF_estimation_of_singular_triples(lagS, win, S int, sET12 mat.Dense) mat.Dense {
-	var Acf_sET12 mat.Dense
+	//var Acf_sET12 mat.Dense
+	Acf_sET12 := mat.NewDense(lagS, S, nil)
 	for j := 0; j < S; j++ {
 		Acf_sET12.SetCol(j, AcfMed(lagS, win, sET12.ColView(j)))
 	}
-	return Acf_sET12
+	return *Acf_sET12
 }
 func AcfMed(lagS, win int, sET12_vec mat.Vector) []float64 {
 	// lagS - параметр погружения временного ряда (ВР) TS в траекторное пространство
 	// win  - количество отсчетов ВР TS
 	// TS   - ВР, содержащий win отсчетов
-	TS := mat.VecDenseCopyOf(sET12_vec)
-	Y := mat.NewDense(win-lagS+1, lagS, nil)
-	for m := 0; m < lagS; m++ {
-		Y.SetCol(m, TS.SliceVec(m, win-lagS+m)) // vector in []float
-	}
+
+	/*
+		fmt.Println("----- AcfMed ------")
+		TS := mat.VecDenseCopyOf(sET12_vec)
+		fmt.Println(lagS, win, TS.Len())
+
+		Y := mat.NewDense(win-lagS+1, lagS, nil)
+		fmt.Println("Y.Dims()")
+		fmt.Println(Y.Dims())
+
+		for m := 0; m < lagS; m++ {
+			matV := TS.SliceVec(m, win-lagS+m+1)
+			floa := vec_in_ArrFloat(matV)
+			fmt.Println(m, "floa: ", len(floa))
+			Y.SetCol(m, floa) // vector in []float
+		}
+	*/
+	//Y := BuildTrajectoryMatrix(sET12_vec, win-lagS+1, win)
+	//fmt.Println(sET12_vec)
+	Y := BuildTrajectoryMatrix222(sET12_vec, lagS, win)
+	safeToXlsxM(Y, "YYYY")
+	fmt.Println("Y.Dims()")
+	fmt.Println(Y.Dims())
+	fmt.Println(Y.At(0, 0), Y.At(0, 1))
+	fmt.Println(Y.At(1, 0), Y.At(1, 1))
+
 	//Y(:,m) = TS(m:win-lagS+m)//; % m-й столбец траекторной матрица ВР TS
-	return []float64{}
+	return []float64{1.0, 2.0, 3.0}
+}
+
+func vec_in_ArrFloat(a mat.Vector) []float64 {
+	b := make([]float64, a.Len())
+	for i := 0; i < a.Len(); i++ {
+		b[i] = a.AtVec(i)
+	}
+	return b
 }
 
 // Сортировка с возвратом номеров изначальных элементов
