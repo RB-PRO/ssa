@@ -144,6 +144,10 @@ func ssa_spw(pw, fmp []float64) {
 	safeToXlsxM(Acf_sET12, "Acf_sET12")
 	// *****************
 	// Визуализация АКФ сингулярных троек для сегментов pw
+	lgl := make([]float64, lag)
+	for m := 0; m < len(lgl); m++ {
+		lgl[m] = float64(m + 1)
+	}
 	time := make([]float64, lag)
 	for m := 1; m < len(time); m++ {
 		time[m] = time[m-1] + dt
@@ -153,9 +157,70 @@ func ssa_spw(pw, fmp []float64) {
 	matlab_mat_Dense(Acf_sET12, 5, "Acf_sET12")
 	// *****************
 	// Огибающая по критерию локальных максимумов abs(acf_sET12)
+	//power := 0.75 // параметр спрямляющего преобразования
+	EnvAcf_sET12 := *mat.NewDense(lag, S, nil)
+	//AcfNrm_sET12 := *mat.NewDense(lag, S, nil)
+	for j := 0; j < S; j++ { // цикл по сегментам АКФ
+		Acf_sET12_col := *mat.VecDenseCopyOf(Acf_sET12.ColView(j))
+		absTS := absVector(Acf_sET12_col)
+		at1 := absTS.AtVec(0)
+		at2 := absTS.AtVec(1)
 
+		maxTS := *mat.NewVecDense(lag, nil)
+		maxTS.SetVec(0, at1)
+
+		maxN := *mat.NewVecDense(lag, nil)
+		maxN.SetVec(0, at2)
+		Nmax := 0
+
+		for m := 2; m < lag; m++ {
+			at3 := absTS.AtVec(m)
+			if (at1 <= at2) && (at2 >= at3) {
+				Nmax++                          // номер очередного узла интерполяции (счетчик максимумов)
+				maxN.SetVec(Nmax, float64(m-1)) // номер очередного максимума для ряда absTS
+				maxTS.SetVec(Nmax, at2)         // отсчет очередного узла интерполяции
+			}
+			at1 = at2
+			at2 = at3
+		}
+		Nmax++                               // количество узлов интерполяции
+		maxN.SetVec(Nmax, float64(lag))      // номер отсчета absTS финального узла интерполяции
+		maxTS.SetVec(Nmax, absTS.AtVec(lag)) // отсчет absTS финального узла интерполяции
+		NumMax := maxN.SliceVec(0, Nmax+1)
+
+		// Интерполяция огибающей АКФ
+		EnvAcf_sET12.SetCol(j, interpl(NumMax, maxTS.SliceVec(0, Nmax+1), lgl))
+	}
 	// *****************
 
+}
+
+func interpl(NumMax, maxTS mat.Vector, lgl []float64) []float64 {
+
+	fmt.Println("NumMax")
+	fmt.Println(NumMax.Len())
+	fmt.Println(NumMax.AtVec(0), NumMax.AtVec(1), NumMax.AtVec(2))
+	fmt.Println()
+
+	fmt.Println("maxTS")
+	fmt.Println(maxTS.Len())
+	fmt.Println(maxTS.AtVec(0), maxTS.AtVec(1), maxTS.AtVec(2))
+	fmt.Println()
+
+	fmt.Println("lgl")
+	fmt.Println(len(lgl))
+	fmt.Println(lgl[0:5])
+	fmt.Println()
+
+	return []float64{}
+}
+
+// модуль от всех значений вектора
+func absVector(vect mat.VecDense) mat.VecDense {
+	for i := 0; i < vect.Len(); i++ {
+		vect.SetVec(i, math.Abs(vect.AtVec(i)))
+	}
+	return vect
 }
 
 // Оценка АКФ сингулярных троек для сегментов pw
