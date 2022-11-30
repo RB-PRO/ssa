@@ -1,0 +1,85 @@
+clear; close all; clc;
+
+%% Compare reconstruction and original time series
+    %% Covariance matrix - Picture 1
+    C=loadData(1,"C");
+    figure();
+    set(gcf,'name','Covariance matrix');
+    clf;
+    imagesc(C);
+    axis square;
+    set(gca,'clim',[-1 1]);
+    colorbar;
+
+    %% Eigenvalues - Picture 2
+    LBD=loadData(2,"LBD");
+    figure();
+    set(gcf,'name','Eigenvalues')
+    clf;
+    plot(LBD,'o-');
+
+    %% Original time series and reconstruction - Picture 3
+    seg = 100; % номер сегмента pw для визуализации
+    win = 1024;
+    spw=loadData(3,"spw");
+    tim=loadData(3,"tim")';
+    sET12=loadData(3,"sET12");
+    figure();
+    set(gcf,'name','Original time series and reconstruction'); clf;
+    plot(tim(1:win),spw(:,seg),'b-',tim(1:win),sET12(:,seg),'r-');
+    legend('Original','sET12'); xlabel("t,s",'interp','none'); ylabel("sET",'interp','none');
+    
+    %% Original time series and reconstruction - Picture 4
+    seg = 100; % номер сегмента pw для визуализации
+    win = 1024;
+    spw=loadData(4,"spw");
+    tim=loadData(4,"tim")';
+    sET34=loadData(4,"sET34");
+    figure();
+    set(gcf,'name','Original time series and reconstruction'); clf;
+    plot(tim(1:win),spw(:,seg),'b-',tim(1:win),sET34(:,seg),'r-');
+    legend('Original','sET34'); xlabel("t,s",'interp','none'); ylabel("sET",'interp','none');
+    
+    %% Визуализация АКФ сингулярных троек для сегментов pw
+    lag  = floor(win/10); % наибольший лаг АКФ <= win/10
+    lagS = 2*lag;
+    ns=loadData(5,"ns");
+    Time=loadData(5,"Time");
+    Acf_sET12=loadData(5,"Acf_sET12");
+    figure();
+    set(gcf,'name','АКФ сингулярных троек sET12 сегментов pw'); clf;
+    % mesh(ns,lgl,Acf_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
+    % xlabel("ns",'interp','none'); ylabel("lag",'interp','none');
+    mesh(ns,Time,Acf_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
+    xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
+    zlabel("Acf",'interp','none'); grid on;
+    
+    %%
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

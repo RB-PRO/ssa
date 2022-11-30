@@ -1,7 +1,7 @@
 all: run
 
 run:
-	go run main.go ssa_spw.go ssa.go denseFunc.go systems.go signal.go graph.go
+	go run main.go ssa_spw.go ssa.go denseFunc.go systems.go signal.go graph.go matlabSave.go
 
 pull:
 	git pull git@github.com:RB-PRO/ssa.git

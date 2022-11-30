@@ -109,8 +109,10 @@ for j=1:S % цикл по сегментам АКФ
    absTS = abs(Acf_sET12(:,j));
    AT1   = absTS(1);
    AT2   = absTS(2);
-   maxTS = zeros(lag,1); maxTS(1) = AT1;
-   maxN  = zeros(lag,1); maxN(1)  = 1;
+   maxTS = zeros(lag,1); 
+   maxTS(1) = AT1;
+   maxN  = zeros(lag,1); 
+   maxN(1)  = 1;
    Nmax = 1;
    for m=3:lag
       AT3 = absTS(m);
@@ -126,8 +128,8 @@ for j=1:S % цикл по сегментам АКФ
    maxN(Nmax)  = lag; % номер отсчета absTS финального узла интерполяции
    maxTS(Nmax) = absTS(lag); % отсчет absTS финального узла интерполяции
    NumMax = maxN(1:Nmax); % номера максимумов ВР absTS
-% Интерполяция огибающей АКФ
-% 'pchip','cubic','v5cubic','makima','spline'
+    % Интерполяция огибающей АКФ
+    % 'pchip','cubic','v5cubic','makima','spline'
    EnvAcf_sET12(:,j) = interp1(NumMax,maxTS(1:Nmax),lgl,'pchip');
    AcfNrm_sET12(:,j) = Acf_sET12(1:lag,j)./EnvAcf_sET12(:,j); % нормированные АКФ
 end

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"strconv"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -91,20 +90,28 @@ func ssa_spw(pw, fmp []float64) {
 
 		if j == seg {
 			imagesc(C, "C")
+			matlab_mat_Dense(C, 1, "C")
 
-			makeGraphOfArray(LBD, "LBD-"+strconv.Itoa(j))
+			makeGraphOfArray(LBD, "LBD")
+			matlab_arr_float(LBD, 2, "LBD")
 
 			err_makeGraphYX_sET12 := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
 				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))),
 				"sET12")
+			matlab_arr_float(tim, 3, "tim")
+			matlab_mat_Dense(*spw, 3, "spw")
+			matlab_mat_Dense(*sET12, 3, "sET12")
 
 			err_makeGraphYX_sET34 := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
 				*(mat.NewVecDense(len(vec_in_ArrFloat(sET34.ColView(j))), vec_in_ArrFloat(sET34.ColView(j)))),
 				"sET34")
+			matlab_arr_float(tim, 4, "tim")
+			matlab_mat_Dense(*spw, 4, "spw")
+			matlab_mat_Dense(*sET34, 4, "sET34")
 
 			if err_makeGraphYX_sET12 != nil {
 				fmt.Println(err_makeGraphYX_sET12)
@@ -136,7 +143,18 @@ func ssa_spw(pw, fmp []float64) {
 	Acf_sET12 := ACF_estimation_of_singular_triples(lagS, win, S, *sET12)
 	safeToXlsxM(Acf_sET12, "Acf_sET12")
 	// *****************
-	// Визуализация АКФ сингулярных троек для сегментов pw - НЕ СДЕЛАНО
+	// Визуализация АКФ сингулярных троек для сегментов pw
+	time := make([]float64, lag)
+	for m := 1; m < len(time); m++ {
+		time[m] = time[m-1] + dt
+	}
+	matlab_arr_float(ns, 5, "ns")
+	matlab_arr_float(time, 5, "time")
+	matlab_mat_Dense(Acf_sET12, 5, "Acf_sET12")
+	// *****************
+	// Огибающая по критерию локальных максимумов abs(acf_sET12)
+
+	// *****************
 
 }
 
