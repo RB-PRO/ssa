@@ -97,12 +97,14 @@ func ssa_spw(pw, fmp []float64) {
 			err_makeGraphYX_sET12 := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
-				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))))
+				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))),
+				"sET12")
 
 			err_makeGraphYX_sET34 := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
-				*(mat.NewVecDense(len(vec_in_ArrFloat(sET34.ColView(j))), vec_in_ArrFloat(sET34.ColView(j)))))
+				*(mat.NewVecDense(len(vec_in_ArrFloat(sET34.ColView(j))), vec_in_ArrFloat(sET34.ColView(j)))),
+				"sET34")
 
 			if err_makeGraphYX_sET12 != nil {
 				fmt.Println(err_makeGraphYX_sET12)

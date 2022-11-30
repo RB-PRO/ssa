@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-const OpSystemFilder string = "\\"
+const OpSystemFilder string = "//"
 
 const rcond = 1e-15
 

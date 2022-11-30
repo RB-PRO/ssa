@@ -69,15 +69,15 @@ func makeGraphYX_float64(x, y []float64, filename string) error {
 }
 
 // Построить график по координатам X и Y. Источник - mat.VecDense
-func makeGraphYX_VecDense(x, y1, y2 mat.VecDense) error {
+func makeGraphYX_VecDense(x, y1, y2 mat.VecDense, filename string) error {
 	x_arr := vecDense_in_float64(x)
 	y1_arr := vecDense_in_float64(y1)
 	y2_arr := vecDense_in_float64(y2)
 	if len(x_arr) != len(y1_arr) {
-		return errors.New("Length y1 of different for sET12")
+		return errors.New("Length y1 of different for " + filename)
 	}
 	if len(x_arr) != len(y2_arr) {
-		return errors.New("Length y2 of different for sET12")
+		return errors.New("Length y2 of different for " + filename)
 	}
 
 	dimensions := 2
@@ -85,9 +85,9 @@ func makeGraphYX_VecDense(x, y1, y2 mat.VecDense) error {
 	debug := false
 	plot, _ := glot.NewPlot(dimensions, persist, debug)
 	plot.AddPointGroup("origin", "lines", [][]float64{x_arr, y1_arr})
-	plot.AddPointGroup("sET12", "lines", [][]float64{x_arr, y2_arr})
+	plot.AddPointGroup(filename, "lines", [][]float64{x_arr, y2_arr})
 
-	plot.SavePlot("png" + OpSystemFilder + "sET12" + ".png")
+	plot.SavePlot("png" + OpSystemFilder + filename + ".png")
 	return nil
 }
 
