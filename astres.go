@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"strings"
-
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -98,26 +95,4 @@ func DiagAveraging(SUV *mat.Dense, k int, N int) float64 {
 		gk *= 1 / (float64(N) - float64(k) + 1)
 	}
 	return gk
-}
-
-func aTa(matr *mat.Dense) *mat.Dense { // Multipy matrix AT*A
-	a := mat.Matrix(matr)
-	aT := a.T()
-	ad := mat.DenseCopyOf(a)
-	aTd := mat.DenseCopyOf(aT)
-	n1, _ := aTd.Dims()
-	_, m2 := ad.Dims()
-	output := mat.NewDense(n1, m2, nil)
-	output.Mul(aTd, ad)
-	return output
-}
-
-func realyPrint(matr *mat.Dense, name string) {
-	fmatr := mat.Formatted(matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
-	fmt.Printf(name+" =%.3v\n", fmatr)
-}
-
-func realyPrint2(matr mat.Dense, name string) {
-	fmatr := mat.Formatted(&matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
-	fmt.Printf(name+" =%.3v\n", fmatr)
 }

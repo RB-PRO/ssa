@@ -7,6 +7,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -30,6 +32,18 @@ func max(arr []float64) float64 {
 		}
 	}
 	return max_num
+}
+
+func aTa(matr mat.Dense) mat.Dense { // Multipy matrix AT*A
+	a := mat.Matrix(&matr)
+	aT := a.T()
+	ad := mat.DenseCopyOf(a)
+	aTd := mat.DenseCopyOf(aT)
+	n1, _ := aTd.Dims()
+	_, m2 := ad.Dims()
+	output := mat.NewDense(n1, m2, nil)
+	output.Mul(aTd, ad)
+	return *output
 }
 
 /*
@@ -145,4 +159,13 @@ func AsSymDense(m *mat.Dense) (*mat.SymDense, error) {
 		}
 	}
 	return mat.NewSymDense(r, vals), nil
+}
+func realyPrint(matr *mat.Dense, name string) {
+	fmatr := mat.Formatted(matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
+	fmt.Printf(name+" =%.3v\n", fmatr)
+}
+
+func realyPrint2(matr mat.Dense, name string) {
+	fmatr := mat.Formatted(&matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
+	fmt.Printf(name+" =%.3v\n", fmatr)
 }

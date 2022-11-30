@@ -15,7 +15,7 @@ func ssa_spw(pw, fmp []float64) {
 	res := N - win*int(math.Floor(float64(N)/float64(win)))
 	nPart := 20 // Количество долей res
 	res = int(math.Floor(float64(res) / float64(nPart)))
-	overlap := (float64(win) - float64(res)) / float64(win)
+	//overlap := (float64(win) - float64(res)) / float64(win)
 	S := 1
 	Imin := 1
 	Imax := win
@@ -27,8 +27,8 @@ func ssa_spw(pw, fmp []float64) {
 		Imax = Imax + res
 		S++
 	}
-	S--                    // кол-во перекрывающихся сегментов pw в пределах N
-	NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
+	S-- // кол-во перекрывающихся сегментов pw в пределах N
+	//NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
 
 	spw := mat.NewDense(win, S, nil)
 	fmt.Println("Размеры spw:", win, S)
@@ -65,18 +65,18 @@ func ssa_spw(pw, fmp []float64) {
 
 	//var sET12 mat.Dense
 	sET12_sum2 := mat.NewDense(win, 2, nil) // НЕ ФАКТ, ЧТО К-во строк win
+	sET34_sum2 := mat.NewDense(win, 2, nil) // НЕ ФАКТ, ЧТО К-во строк win
 	sET12 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
+	sET34 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
 
 	fmt.Println(win)
 	fmt.Println(M)
 	fmt.Println(nET)
 	fmt.Println("***************")
 
-	for j := 100; j <= 100; j++ {
-		//for j := 0; j < S; j++ { // цикл по сегментам  S
-		//C, LBD, RC := SSA(win, M, spw[:][j], nET)
+	for j := 0; j < S; j++ {
 		C, LBD, RC := SSA(win, M, spw.ColView(j), nET)
-		fmt.Println(j, S)
+		//fmt.Println(j, S)
 		RC_T := mat.DenseCopyOf(RC.T())
 
 		sET12_sum2.SetCol(0, RC_T.RawRowView(0))
@@ -84,18 +84,31 @@ func ssa_spw(pw, fmp []float64) {
 		sET12.SetCol(j, sum2(*sET12_sum2))
 		sET12_sum2.Zero()
 
+		sET34_sum2.SetCol(0, RC_T.RawRowView(2))
+		sET34_sum2.SetCol(1, RC_T.RawRowView(3))
+		sET34.SetCol(j, sum2(*sET34_sum2))
+		sET34_sum2.Zero()
+
 		if j == seg {
 			imagesc(C, "C")
 
 			makeGraphOfArray(LBD, "LBD-"+strconv.Itoa(j))
 
-			err_makeGraphYX := makeGraphYX_VecDense(
+			err_makeGraphYX_sET12 := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
 				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))))
 
-			if err_makeGraphYX != nil {
-				fmt.Println(err_makeGraphYX)
+			err_makeGraphYX_sET34 := makeGraphYX_VecDense(
+				*mat.NewVecDense(win, tim[0:win]),
+				*(mat.VecDenseCopyOf(spw.ColView(j))),
+				*(mat.NewVecDense(len(vec_in_ArrFloat(sET34.ColView(j))), vec_in_ArrFloat(sET34.ColView(j)))))
+
+			if err_makeGraphYX_sET12 != nil {
+				fmt.Println(err_makeGraphYX_sET12)
+			}
+			if err_makeGraphYX_sET34 != nil {
+				fmt.Println(err_makeGraphYX_sET34)
 			}
 		}
 	}
@@ -107,42 +120,21 @@ func ssa_spw(pw, fmp []float64) {
 		var Acf_sET12 mat.Dense
 		for j := 0; j < S; j++ {
 			Acf_sET12.SetCol(j)
-			//Acf_sET12(:,j) = AcfMed(lagS,win,sET12(:,j))//; % ������������� ��� j-�� ��������
+			//Acf_sET12(:,j) = AcfMed(lagS,win,sET12(:,j))//; %
 		}
 	*/
 
 	safeToXlsxMatrix(sET12, "sET12")
+	safeToXlsxMatrix(sET34, "sET34")
 
 	// *****************
 	// Оценка АКФ сингулярных троек для сегментов pw
 	lag := int(math.Floor(float64(win) / 10.0)) // % наибольший лаг АКФ <= win/10
 	lagS := 2 * lag
-	fmt.Println("--- sET12 ---")
-	fmt.Println(sET12.At(0, 0), sET12.At(0, 1), "\n", sET12.At(1, 0), sET12.At(1, 1))
 	Acf_sET12 := ACF_estimation_of_singular_triples(lagS, win, S, *sET12)
 	safeToXlsxM(Acf_sET12, "Acf_sET12")
 	// *****************
-
-	safeToXlsxMatrix(sET12, "sET12")
-
-	fmt.Println("dt", cad)
-	fmt.Println("dt", dt)
-	fmt.Println("Imax", Imax)
-	fmt.Println("Imin", Imin)
-	fmt.Println("K", K)
-	fmt.Println("M", M)
-	fmt.Println("N", N)
-	fmt.Println("nET", nET)
-	fmt.Println("nPart", nPart)
-	fmt.Println("ns", ns)
-	fmt.Println("NSF", NSF)
-	fmt.Println("overlap", overlap)
-	fmt.Println("res", res)
-	fmt.Println("S", S)
-	safeToXlsx(tim, "tim")
-	safeToXlsx(L, "L")
-	fmt.Println("win", win)
-	fmt.Println("seg", seg)
+	// Визуализация АКФ сингулярных троек для сегментов pw - НЕ СДЕЛАНО
 
 }
 
@@ -151,42 +143,87 @@ func ACF_estimation_of_singular_triples(lagS, win, S int, sET12 mat.Dense) mat.D
 	//var Acf_sET12 mat.Dense
 	Acf_sET12 := mat.NewDense(lagS, S, nil)
 	for j := 0; j < S; j++ {
-		Acf_sET12.SetCol(j, AcfMed(lagS, win, sET12.ColView(j)))
+		Acf_sET12.SetCol(j, AcfMed(lagS, win, *mat.VecDenseCopyOf(sET12.ColView(j))))
 	}
 	return *Acf_sET12
 }
-func AcfMed(lagS, win int, sET12_vec mat.Vector) []float64 {
+func AcfMed(lagS, win int, sET12_vec mat.VecDense) []float64 {
 	// lagS - параметр погружения временного ряда (ВР) TS в траекторное пространство
 	// win  - количество отсчетов ВР TS
 	// TS   - ВР, содержащий win отсчетов
 
-	/*
-		fmt.Println("----- AcfMed ------")
-		TS := mat.VecDenseCopyOf(sET12_vec)
-		fmt.Println(lagS, win, TS.Len())
+	acf := make([]float64, lagS)
 
-		Y := mat.NewDense(win-lagS+1, lagS, nil)
-		fmt.Println("Y.Dims()")
-		fmt.Println(Y.Dims())
-
-		for m := 0; m < lagS; m++ {
-			matV := TS.SliceVec(m, win-lagS+m+1)
-			floa := vec_in_ArrFloat(matV)
-			fmt.Println(m, "floa: ", len(floa))
-			Y.SetCol(m, floa) // vector in []float
-		}
-	*/
-	//Y := BuildTrajectoryMatrix(sET12_vec, win-lagS+1, win)
-	//fmt.Println(sET12_vec)
 	Y := BuildTrajectoryMatrix222(sET12_vec, lagS, win)
-	safeToXlsxM(Y, "YYYY")
-	fmt.Println("Y.Dims()")
-	fmt.Println(Y.Dims())
-	fmt.Println(Y.At(0, 0), Y.At(0, 1))
-	fmt.Println(Y.At(1, 0), Y.At(1, 1))
 
-	//Y(:,m) = TS(m:win-lagS+m)//; % m-й столбец траекторной матрица ВР TS
-	return []float64{1.0, 2.0, 3.0}
+	cor := aTa(Y) // lagS*lagS матрица корреляц-х произведений
+	lon := lagS
+
+	CorPro := diag_of_Dense(cor, 0) // ВР корреляц-го произведения для лага 0
+	acf[0] = median(CorPro)         // медиана главной диагонали CorPro
+	for m := 1; m < lagS; m++ {
+		lon--
+		diag_cor_minus_1 := diag_of_Dense(cor, m)
+		if m < lagS {
+			acf[m] = median(diag_cor_minus_1) / acf[0]
+		}
+	}
+	acf[0] = 1.0
+	return acf
+}
+
+// Диагональ матрицы в зависимости от корреляции k
+func diag_of_Dense(matr mat.Dense, k int) mat.VecDense {
+	r, c := matr.Dims()
+	var matr2 mat.Matrix
+	switch {
+	case k > 0:
+		matr2 = matr.Slice(0, r, k, c)
+		break
+	case k < 0:
+		matr2 = matr.Slice(-k, r, 0, c)
+		break
+	default:
+		matr2 = matr.Slice(0, r, 0, c)
+		break
+	}
+
+	vect := mat.NewVecDense(mat.DenseCopyOf(matr2).DiagView().Diag(), nil)
+
+	for i := 0; i < vect.Len(); i++ {
+		vect.SetVec(i, matr2.At(i, i))
+	}
+	return *vect
+}
+
+// Получить медианное значение массива
+func median(dataVect mat.VecDense) float64 {
+	dataVect = sortVecDense(dataVect)
+	var median float64
+	l := dataVect.Len()
+	if l == 0 {
+		return 0
+	} else if l%2 == 0 {
+		median = (dataVect.AtVec(l/2-1) + dataVect.AtVec(l/2)) / 2
+	} else {
+		median = dataVect.AtVec(l / 2)
+	}
+	return median
+}
+
+// Сортировка вектора массива по возрастанию.
+func sortVecDense(dataVect mat.VecDense) mat.VecDense {
+	dataVectLength := dataVect.Len()
+	for i := 1; i < dataVectLength; i++ {
+		j := i - 1
+		for j >= 0 && dataVect.AtVec(j) > dataVect.AtVec(j+1) {
+			vspom := dataVect.AtVec(j)
+			dataVect.SetVec(j, dataVect.AtVec(j+1))
+			dataVect.SetVec(j, vspom)
+			j--
+		}
+	}
+	return dataVect
 }
 
 func vec_in_ArrFloat(a mat.Vector) []float64 {

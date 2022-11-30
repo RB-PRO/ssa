@@ -89,15 +89,13 @@ func BuildTrajectoryMatrix(s mat.Vector, L int, N int) *mat.Dense {
 }
 
 // Матрица траекторий
-func BuildTrajectoryMatrix222(s mat.Vector, L int, N int) mat.Dense {
-	K := N - L + 1
-	matr := mat.NewDense(L, K, nil)
-	n, m := matr.Dims()
-	for i := 0; i < n; i++ {
-		for j := 0; j < m; j++ {
-			//fmt.Println(i, "*", L, "+", j, "=", i*L+j, "//", s.AtVec(i*L+j))
-			matr.Set(i, j, s.AtVec(i+j))
-		}
+func BuildTrajectoryMatrix222(s mat.VecDense, lagS, win int) mat.Dense {
+	matr := mat.NewDense(win-lagS+1, lagS, nil)
+	_, c := matr.Dims()
+	//fmt.Println("Len matr", r, c)
+	for m := 0; m < c; m++ {
+		//fmt.Println(m, win-lagS+m+1)
+		matr.SetCol(m, vec_in_ArrFloat(s.SliceVec(m, win-lagS+m+1)))
 	}
 	return *matr
 }
