@@ -190,10 +190,15 @@ func ssa_spw(pw, fmp []float64) {
 		NumMax := maxN.SliceVec(0, Nmax+1)
 
 		// Интерполяция огибающей АКФ
-		EnvAcf_sET12.SetCol(j, interpl(NumMax, maxTS.SliceVec(0, Nmax+1), lgl))
+		asd := pchip(vec_in_ArrFloat(NumMax),
+			vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
+			(lgl),
+			NumMax.Len(), len(lgl))
+		EnvAcf_sET12.SetCol(j, asd)
+		//EnvAcf_sET12.SetCol(j, interpl(NumMax, maxTS.SliceVec(0, Nmax+1), lgl))
 	}
 	// *****************
-
+	safeToXlsxM(EnvAcf_sET12, "EnvAcf_sET12")
 }
 
 // func interpl(NumMax, maxTS mat.Vector, lgl []float64) []float64 {
