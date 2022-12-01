@@ -170,15 +170,16 @@ func ssa_spw(pw, fmp []float64) {
 		maxTS.SetVec(0, at1)
 
 		maxN := *mat.NewVecDense(lag, nil)
-		maxN.SetVec(0, at2)
-		Nmax := 0
+		maxN.SetVec(0, 1)
+
+		var Nmax int
 
 		for m := 2; m < lag; m++ {
 			at3 := absTS.AtVec(m)
 			if (at1 <= at2) && (at2 >= at3) {
-				Nmax++                          // номер очередного узла интерполяции (счетчик максимумов)
-				maxN.SetVec(Nmax, float64(m-1)) // номер очередного максимума для ряда absTS
-				maxTS.SetVec(Nmax, at2)         // отсчет очередного узла интерполяции
+				Nmax++                        // номер очередного узла интерполяции (счетчик максимумов)
+				maxN.SetVec(Nmax, float64(m)) // номер очередного максимума для ряда absTS
+				maxTS.SetVec(Nmax, at2)       // отсчет очередного узла интерполяции
 			}
 			at1 = at2
 			at2 = at3
@@ -195,22 +196,35 @@ func ssa_spw(pw, fmp []float64) {
 
 }
 
+// func interpl(NumMax, maxTS mat.Vector, lgl []float64) []float64 {
 func interpl(NumMax, maxTS mat.Vector, lgl []float64) []float64 {
 
-	fmt.Println("NumMax")
-	fmt.Println(NumMax.Len())
-	fmt.Println(NumMax.AtVec(0), NumMax.AtVec(1), NumMax.AtVec(2))
-	fmt.Println()
+	// https://russianblogs.com/article/26831691722/
+	// https://github.com/liaoyinan/pchip
 
-	fmt.Println("maxTS")
-	fmt.Println(maxTS.Len())
-	fmt.Println(maxTS.AtVec(0), maxTS.AtVec(1), maxTS.AtVec(2))
-	fmt.Println()
-
-	fmt.Println("lgl")
-	fmt.Println(len(lgl))
-	fmt.Println(lgl[0:5])
-	fmt.Println()
+	/*
+		 //	function y = hermite( x0,y0,y1,x )
+		 // Интерполяционный полином Эрмита
+		 // x0 - абсцисса точки
+		 // y0 - значение функции
+		 // y1 - значение производной
+		 // m точек интерполяции вводятся с массивом x
+		n=length(x0);m=length(x);
+		for k=1:m
+		    yy=0.0;
+		    for i=1:n
+		     h=1.0;
+		     a=0.0;
+		      for j=1:n
+		         if j~=i
+		           h=h*((x(k)-x0(j))/(x0(i)-x0(j)))^2;
+		           a=1/(x0(i)-x0(j))+a;
+		         end
+		      end
+		      yy=yy+h*((x0(i)-x(k))*(2*a*y0(i)-y1(i))+y0(i));
+		end
+		y(k)=yy;
+	*/
 
 	return []float64{}
 }

@@ -130,7 +130,7 @@ for j=1:S % цикл по сегментам АКФ
    NumMax = maxN(1:Nmax); % номера максимумов ВР absTS
     % Интерполяция огибающей АКФ
     % 'pchip','cubic','v5cubic','makima','spline'
-   EnvAcf_sET12(:,j) = interp1(NumMax,maxTS(1:Nmax),lgl,'pchip');
+   EnvAcf_sET12(:,j) = interp1(NumMax,maxTS(1:Nmax),lgl,'pchip'); % pchip(NumMax,maxTS(1:Nmax),lgl);
    AcfNrm_sET12(:,j) = Acf_sET12(1:lag,j)./EnvAcf_sET12(:,j); % нормированные АКФ
 end
 figure();
