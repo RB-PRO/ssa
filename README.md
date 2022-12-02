@@ -1,6 +1,6 @@
 # SSA - Метод "Гусеница"
 
-)![title img](https://i.ytimg.com/vi/kSZfGrSF7gA/maxresdefault.jpg)
+![gofer](https://i.ibb.co/72yJnQ5/gofer2.png)
 
 ## Запуск программы
 
@@ -22,7 +22,7 @@ $ make run
 
 ### Выходные данные
 
-На данный момент выводятся следующие данные из следуюзщих папок:
+На данный момент выводятся следующие данные из следующих папок:
 
 #### File_For_Matlab
 
