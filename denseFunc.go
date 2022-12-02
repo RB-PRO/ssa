@@ -8,6 +8,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 
 	"gonum.org/v1/gonum/mat"
@@ -46,15 +47,15 @@ func aTa(matr mat.Dense) mat.Dense { // Multipy matrix AT*A
 	return *output
 }
 
-/*
-// Создать динамический двумерный массив
-func dinamicArray(r, c int) [][]float64 {
-	spw := make([][]float64, r)
-	for index := range spw {
-		spw[index] = make([]float64, c)
+// модуль от всех значений вектора
+func absVector(vect mat.VecDense) mat.VecDense {
+	for i := 0; i < vect.Len(); i++ {
+		vect.SetVec(i, math.Abs(vect.AtVec(i)))
 	}
-	return spw
+	return vect
 }
+
+/*
 
 // Среднее значение каждого столбца
 func mean(m mat.Dense) []float64 {
@@ -168,4 +169,78 @@ func realyPrint(matr *mat.Dense, name string) {
 func realyPrint2(matr mat.Dense, name string) {
 	fmatr := mat.Formatted(&matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
 	fmt.Printf(name+" =%.3v\n", fmatr)
+}
+
+// Получить медианное значение массива
+func median(dataVect mat.VecDense) float64 {
+	dataVect = sortVecDense(dataVect)
+	var median float64
+	l := dataVect.Len()
+	if l == 0 {
+		return 0
+	} else if l%2 == 0 {
+		median = (dataVect.AtVec(l/2-1) + dataVect.AtVec(l/2)) / 2
+	} else {
+		median = dataVect.AtVec(l / 2)
+	}
+	return median
+}
+
+// Сортировка вектора массива по возрастанию.
+func sortVecDense(dataVect mat.VecDense) mat.VecDense {
+	dataVectLength := dataVect.Len()
+	for i := 1; i < dataVectLength; i++ {
+		j := i - 1
+		for j >= 0 && dataVect.AtVec(j) > dataVect.AtVec(j+1) {
+			vspom := dataVect.AtVec(j)
+			dataVect.SetVec(j, dataVect.AtVec(j+1))
+			dataVect.SetVec(j, vspom)
+			j--
+		}
+	}
+	return dataVect
+}
+
+func vec_in_ArrFloat(a mat.Vector) []float64 {
+	b := make([]float64, a.Len())
+	for i := 0; i < a.Len(); i++ {
+		b[i] = a.AtVec(i)
+	}
+	return b
+}
+
+// Диагональ матрицы в зависимости от корреляции k // reference MatLab diag(A,n)
+func diag_of_Dense(matr mat.Dense, k int) mat.VecDense {
+	r, c := matr.Dims()
+	var matr2 mat.Matrix
+	switch {
+	case k > 0:
+		matr2 = matr.Slice(0, r, k, c)
+		break
+	case k < 0:
+		matr2 = matr.Slice(-k, r, 0, c)
+		break
+	default:
+		matr2 = matr.Slice(0, r, 0, c)
+		break
+	}
+
+	vect := mat.NewVecDense(mat.DenseCopyOf(matr2).DiagView().Diag(), nil)
+
+	for i := 0; i < vect.Len(); i++ {
+		vect.SetVec(i, matr2.At(i, i))
+	}
+	return *vect
+}
+
+// Поэлементно разделить нулевое значение столбца Matrix на Vector на вектор
+func vector_DivElemVec(a mat.Matrix, b mat.Vector) mat.VecDense {
+	var div_vectors mat.VecDense
+	var div_Dense mat.Dense
+	div_Dense.CloneFrom(a)
+	//fmt.Println(div_Dense.Dims())
+	asd := div_Dense.ColView(0)
+	//fmt.Println(">", asd.Len(), b.Len())
+	div_vectors.DivElemVec(asd, b)
+	return div_vectors
 }

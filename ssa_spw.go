@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 
 	"gonum.org/v1/gonum/mat"
@@ -86,9 +87,11 @@ func ssa_spw(pw, fmp []float64) {
 		if j == seg {
 			imagesc(C, "C")
 			matlab_mat_Dense(C, 1, "C")
-
+			log.Println("Covariance matrix")
 			makeGraphOfArray(LBD, "LBD")
+
 			matlab_arr_float(LBD, 2, "LBD")
+			log.Println("Eigenvalues")
 
 			err_makeGraphYX_sET12 := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
@@ -98,6 +101,7 @@ func ssa_spw(pw, fmp []float64) {
 			matlab_arr_float(tim, 3, "tim")
 			matlab_mat_Dense(*spw, 3, "spw")
 			matlab_mat_Dense(*sET12, 3, "sET12")
+			log.Println("Original time series and reconstruction sET12")
 
 			err_makeGraphYX_sET34 := makeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
@@ -107,6 +111,7 @@ func ssa_spw(pw, fmp []float64) {
 			matlab_arr_float(tim, 4, "tim")
 			matlab_mat_Dense(*spw, 4, "spw")
 			matlab_mat_Dense(*sET34, 4, "sET34")
+			log.Println("Original time series and reconstruction sET34")
 
 			if err_makeGraphYX_sET12 != nil {
 				fmt.Println(err_makeGraphYX_sET12)
@@ -116,17 +121,6 @@ func ssa_spw(pw, fmp []float64) {
 			}
 		}
 	}
-
-	/*
-		lag := math.Floor(float64(win) / 10.0)
-		lagS := 2 * lag
-
-		var Acf_sET12 mat.Dense
-		for j := 0; j < S; j++ {
-			Acf_sET12.SetCol(j)
-			//Acf_sET12(:,j) = AcfMed(lagS,win,sET12(:,j))//; %
-		}
-	*/
 
 	safeToXlsxMatrix(sET12, "sET12")
 	safeToXlsxMatrix(sET34, "sET34")
@@ -150,6 +144,8 @@ func ssa_spw(pw, fmp []float64) {
 	matlab_arr_float(ns, 5, "ns")
 	matlab_arr_float(time, 5, "time")
 	matlab_mat_Dense(Acf_sET12, 5, "Acf_sET12")
+	log.Println("Визуализация АКФ сингулярных троек для сегментов pw")
+
 	// *****************
 	// Огибающая по критерию локальных максимумов abs(acf_sET12)
 	//power := 0.75 // параметр спрямляющего преобразования
@@ -202,178 +198,12 @@ func ssa_spw(pw, fmp []float64) {
 	matlab_arr_float(ns, 6, "ns")
 	matlab_arr_float(time, 6, "time")
 	matlab_mat_Dense(EnvAcf_sET12, 6, "EnvAcf_sET12")
+	log.Println("Огибающие АКФ сингулярных троек sET12 сегментов pw")
 
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
 	matlab_arr_float(ns, 7, "ns")
 	matlab_arr_float(time, 7, "time")
 	matlab_mat_Dense(AcfNrm_sET12, 7, "AcfNrm_sET12")
+	log.Println("Нормированные АКФ сингулярных троек sET12 сегментов pw")
 
-}
-
-// Поэлементно разделить вектор на вектор
-func vector_DivElemVec(a mat.Matrix, b mat.Vector) mat.VecDense {
-	var div_vectors mat.VecDense
-	var div_Dense mat.Dense
-	div_Dense.CloneFrom(a)
-	//fmt.Println(div_Dense.Dims())
-	asd := div_Dense.ColView(0)
-	//fmt.Println(">", asd.Len(), b.Len())
-	div_vectors.DivElemVec(asd, b)
-	return div_vectors
-}
-
-// func interpl(NumMax, maxTS mat.Vector, lgl []float64) []float64 {
-func interpl(NumMax, maxTS mat.Vector, lgl []float64) []float64 {
-
-	// https://russianblogs.com/article/26831691722/
-	// https://github.com/liaoyinan/pchip
-
-	/*
-		 //	function y = hermite( x0,y0,y1,x )
-		 // Интерполяционный полином Эрмита
-		 // x0 - абсцисса точки
-		 // y0 - значение функции
-		 // y1 - значение производной
-		 // m точек интерполяции вводятся с массивом x
-		n=length(x0);m=length(x);
-		for k=1:m
-		    yy=0.0;
-		    for i=1:n
-		     h=1.0;
-		     a=0.0;
-		      for j=1:n
-		         if j~=i
-		           h=h*((x(k)-x0(j))/(x0(i)-x0(j)))^2;
-		           a=1/(x0(i)-x0(j))+a;
-		         end
-		      end
-		      yy=yy+h*((x0(i)-x(k))*(2*a*y0(i)-y1(i))+y0(i));
-		end
-		y(k)=yy;
-	*/
-
-	return []float64{}
-}
-
-// модуль от всех значений вектора
-func absVector(vect mat.VecDense) mat.VecDense {
-	for i := 0; i < vect.Len(); i++ {
-		vect.SetVec(i, math.Abs(vect.AtVec(i)))
-	}
-	return vect
-}
-
-// Оценка АКФ сингулярных троек для сегментов pw
-func ACF_estimation_of_singular_triples(lagS, win, S int, sET12 mat.Dense) mat.Dense {
-	//var Acf_sET12 mat.Dense
-	Acf_sET12 := mat.NewDense(lagS, S, nil)
-	for j := 0; j < S; j++ {
-		Acf_sET12.SetCol(j, AcfMed(lagS, win, *mat.VecDenseCopyOf(sET12.ColView(j))))
-	}
-	return *Acf_sET12
-}
-func AcfMed(lagS, win int, sET12_vec mat.VecDense) []float64 {
-	// lagS - параметр погружения временного ряда (ВР) TS в траекторное пространство
-	// win  - количество отсчетов ВР TS
-	// TS   - ВР, содержащий win отсчетов
-
-	acf := make([]float64, lagS)
-
-	Y := BuildTrajectoryMatrix222(sET12_vec, lagS, win)
-
-	cor := aTa(Y) // lagS*lagS матрица корреляц-х произведений
-	lon := lagS
-
-	CorPro := diag_of_Dense(cor, 0) // ВР корреляц-го произведения для лага 0
-	acf[0] = median(CorPro)         // медиана главной диагонали CorPro
-	for m := 1; m < lagS; m++ {
-		lon--
-		diag_cor_minus_1 := diag_of_Dense(cor, m)
-		if m < lagS {
-			acf[m] = median(diag_cor_minus_1) / acf[0]
-		}
-	}
-	acf[0] = 1.0
-	return acf
-}
-
-// Диагональ матрицы в зависимости от корреляции k
-func diag_of_Dense(matr mat.Dense, k int) mat.VecDense {
-	r, c := matr.Dims()
-	var matr2 mat.Matrix
-	switch {
-	case k > 0:
-		matr2 = matr.Slice(0, r, k, c)
-		break
-	case k < 0:
-		matr2 = matr.Slice(-k, r, 0, c)
-		break
-	default:
-		matr2 = matr.Slice(0, r, 0, c)
-		break
-	}
-
-	vect := mat.NewVecDense(mat.DenseCopyOf(matr2).DiagView().Diag(), nil)
-
-	for i := 0; i < vect.Len(); i++ {
-		vect.SetVec(i, matr2.At(i, i))
-	}
-	return *vect
-}
-
-// Получить медианное значение массива
-func median(dataVect mat.VecDense) float64 {
-	dataVect = sortVecDense(dataVect)
-	var median float64
-	l := dataVect.Len()
-	if l == 0 {
-		return 0
-	} else if l%2 == 0 {
-		median = (dataVect.AtVec(l/2-1) + dataVect.AtVec(l/2)) / 2
-	} else {
-		median = dataVect.AtVec(l / 2)
-	}
-	return median
-}
-
-// Сортировка вектора массива по возрастанию.
-func sortVecDense(dataVect mat.VecDense) mat.VecDense {
-	dataVectLength := dataVect.Len()
-	for i := 1; i < dataVectLength; i++ {
-		j := i - 1
-		for j >= 0 && dataVect.AtVec(j) > dataVect.AtVec(j+1) {
-			vspom := dataVect.AtVec(j)
-			dataVect.SetVec(j, dataVect.AtVec(j+1))
-			dataVect.SetVec(j, vspom)
-			j--
-		}
-	}
-	return dataVect
-}
-
-func vec_in_ArrFloat(a mat.Vector) []float64 {
-	b := make([]float64, a.Len())
-	for i := 0; i < a.Len(); i++ {
-		b[i] = a.AtVec(i)
-	}
-	return b
-}
-
-// Сортировка с возвратом номеров изначальных элементов
-func InsertionSort(array []float64) ([]float64, []int) {
-	indexArray := make([]int, len(array))
-	for ind := range indexArray {
-		indexArray[ind] = (ind) + 1
-	}
-	for i := 1; i < len(array); i++ {
-		j := i
-		for j > 0 {
-			if array[j-1] < array[j] {
-				array[j-1], array[j] = array[j], array[j-1]
-				indexArray[j-1], indexArray[j] = indexArray[j], indexArray[j-1]
-			}
-			j = j - 1
-		}
-	}
-	return array, indexArray
 }

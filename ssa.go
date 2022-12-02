@@ -115,3 +115,22 @@ func eig(matr mat.Dense) (mat.Dense, mat.Dense) {
 	eigsym.VectorsTo(&ev)
 	return ev, make_diag_danse(eigsym.Values(nil))
 }
+
+// Сортировка с возвратом номеров изначальных элементов
+func InsertionSort(array []float64) ([]float64, []int) {
+	indexArray := make([]int, len(array))
+	for ind := range indexArray {
+		indexArray[ind] = (ind) + 1
+	}
+	for i := 1; i < len(array); i++ {
+		j := i
+		for j > 0 {
+			if array[j-1] < array[j] {
+				array[j-1], array[j] = array[j], array[j-1]
+				indexArray[j-1], indexArray[j] = indexArray[j], indexArray[j-1]
+			}
+			j = j - 1
+		}
+	}
+	return array, indexArray
+}
