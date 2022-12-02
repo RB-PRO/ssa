@@ -1,10 +1,11 @@
 # SSA - Метод "Гусеница"
 
-![gofer](https://i.ibb.co/72yJnQ5/gofer2.png)
+![gofer2](https://user-images.githubusercontent.com/33092641/205325591-510c406e-e06a-4959-a0db-e6e6ea52486e.png)
 
 ---
 
 ## *Установка окружения*
+
 
 Для *корректной* работы данной программы необходимо установить:
 
