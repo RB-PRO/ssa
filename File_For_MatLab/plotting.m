@@ -55,8 +55,31 @@ clear; close all; clc;
     zlabel("Acf",'interp','none'); grid on;
     
     %%
-    
-    
+    ns=loadData(6,"ns");
+    Time=loadData(6,"Time")';
+    EnvAcf_sET12=loadData(6,"EnvAcf_sET12");
+    figure();
+    set(gcf,'name','Огибающие АКФ сингулярных троек sET12 сегментов pw');
+    clf;
+    % mesh(ns,lgl,EnvAcf_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
+    % xlabel("ns",'interp','none'); ylabel("lag",'interp','none');
+    mesh(ns,Time,EnvAcf_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
+    xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
+    zlabel("Env_Acf",'interp','none'); grid on;
+
+    %%
+    ns=loadData(7,"ns");
+    Time=loadData(7,"Time")';
+    AcfNrm_sET12=loadData(7,"AcfNrm_sET12");
+    figure();
+    set(gcf,'name','Нормированные АКФ сингулярных троек sET12 сегментов pw');
+    clf;
+    % mesh(ns,lgl,AcfNrm_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
+    % xlabel("ns",'interp','none'); ylabel("lag",'interp','none');
+    mesh(ns,Time,AcfNrm_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
+    xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
+    zlabel("Acf_Nrm",'interp','none'); grid on;
+
     
     
     

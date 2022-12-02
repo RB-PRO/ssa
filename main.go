@@ -1,17 +1,13 @@
 package main
 
-import (
-	"fmt"
-)
-
 const OpSystemFilder string = "\\"
 
 const rcond = 1e-15
 
 func main() {
-	fmp, fmpN := make_singnal_xn("fmp")
-	pw, pwN := make_singnal_xn("pw")
-	fmt.Println("fmp:", fmpN, "//", "pw", pwN)
+	fmp, _ := make_singnal_xn("fmp")
+	pw, _ := make_singnal_xn("pw")
+	//fmt.Println("fmp:", fmpN, "//", "pw", pwN)
 	safeToXlsx(fmp, "fmp") // Сохранить данные в xlsx
 	safeToXlsx(pw, "pw")   // Сохранить данные в xlsx
 

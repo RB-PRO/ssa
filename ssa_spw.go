@@ -30,7 +30,7 @@ func ssa_spw(pw, fmp []float64) {
 	//NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
 
 	spw := mat.NewDense(win, S, nil)
-	fmt.Println("Размеры spw:", win, S)
+	//fmt.Println("Размеры spw:", win, S)
 	for j := 0; j < S; j++ {
 		for i := 0; i < win; i++ {
 			k := (j) * res
@@ -67,11 +67,6 @@ func ssa_spw(pw, fmp []float64) {
 	sET34_sum2 := mat.NewDense(win, 2, nil) // НЕ ФАКТ, ЧТО К-во строк win
 	sET12 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
 	sET34 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
-
-	fmt.Println(win)
-	fmt.Println(M)
-	fmt.Println(nET)
-	fmt.Println("***************")
 
 	for j := 0; j < S; j++ {
 		C, LBD, RC := SSA(win, M, spw.ColView(j), nET)
@@ -159,7 +154,7 @@ func ssa_spw(pw, fmp []float64) {
 	// Огибающая по критерию локальных максимумов abs(acf_sET12)
 	//power := 0.75 // параметр спрямляющего преобразования
 	EnvAcf_sET12 := *mat.NewDense(lag, S, nil)
-	//AcfNrm_sET12 := *mat.NewDense(lag, S, nil)
+	AcfNrm_sET12 := *mat.NewDense(lag, S, nil)
 	for j := 0; j < S; j++ { // цикл по сегментам АКФ
 		Acf_sET12_col := *mat.VecDenseCopyOf(Acf_sET12.ColView(j))
 		absTS := absVector(Acf_sET12_col)
@@ -190,15 +185,41 @@ func ssa_spw(pw, fmp []float64) {
 		NumMax := maxN.SliceVec(0, Nmax+1)
 
 		// Интерполяция огибающей АКФ
-		asd := pchip(vec_in_ArrFloat(NumMax),
+		acfEnvelope := pchip(vec_in_ArrFloat(NumMax),
 			vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
 			(lgl),
 			NumMax.Len(), len(lgl))
-		EnvAcf_sET12.SetCol(j, asd)
-		//EnvAcf_sET12.SetCol(j, interpl(NumMax, maxTS.SliceVec(0, Nmax+1), lgl))
+		EnvAcf_sET12.SetCol(j, acfEnvelope)
+
+		// нормированные АКФ
+		AcfNrm_sET12.SetCol(j, vecDense_in_float64(vector_DivElemVec((Acf_sET12.Slice(0, lag, j, j+1)), EnvAcf_sET12.ColView(j))))
 	}
 	// *****************
 	safeToXlsxM(EnvAcf_sET12, "EnvAcf_sET12")
+	safeToXlsxM(AcfNrm_sET12, "AcfNrm_sET12")
+
+	// 6 - Огибающие АКФ сингулярных троек sET12 сегментов pw
+	matlab_arr_float(ns, 6, "ns")
+	matlab_arr_float(time, 6, "time")
+	matlab_mat_Dense(EnvAcf_sET12, 6, "EnvAcf_sET12")
+
+	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
+	matlab_arr_float(ns, 7, "ns")
+	matlab_arr_float(time, 7, "time")
+	matlab_mat_Dense(AcfNrm_sET12, 7, "AcfNrm_sET12")
+
+}
+
+// Поэлементно разделить вектор на вектор
+func vector_DivElemVec(a mat.Matrix, b mat.Vector) mat.VecDense {
+	var div_vectors mat.VecDense
+	var div_Dense mat.Dense
+	div_Dense.CloneFrom(a)
+	//fmt.Println(div_Dense.Dims())
+	asd := div_Dense.ColView(0)
+	//fmt.Println(">", asd.Len(), b.Len())
+	div_vectors.DivElemVec(asd, b)
+	return div_vectors
 }
 
 // func interpl(NumMax, maxTS mat.Vector, lgl []float64) []float64 {
