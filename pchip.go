@@ -1,6 +1,8 @@
 package main
 
-import "math"
+import (
+	"math"
+)
 
 func exteriorSlope(d1, d2, h1, h2 float64) float64 {
 	var s float64
@@ -127,6 +129,19 @@ func pchip(x, y, new_x []float64, x_len, new_x_len int) []float64 {
 		}
 
 		new_y[ix] = hs3
+		/*
+			// my
+			if new_y[ix] < 0.15 {
+				new_y[ix] = new_y[ix-1]
+				fmt.Println("YESS")
+			}
+		*/
 	}
 	return new_y
+}
+
+// Функция, реализующая сглаживание с помощью фильтра Савицкого-Голея
+func interpl123(x, y, new_x []float64, x_len, new_x_len int) []float64 {
+
+	return []float64{}
 }

@@ -151,7 +151,8 @@ func ssa_spw(pw, fmp []float64) {
 	//power := 0.75 // параметр спрямляющего преобразования
 	EnvAcf_sET12 := *mat.NewDense(lag, S, nil)
 	AcfNrm_sET12 := *mat.NewDense(lag, S, nil)
-	for j := 0; j < S; j++ { // цикл по сегментам АКФ
+	for j := 16; j <= 16; j++ { // цикл по сегментам АКФ
+		//for j := 0; j < S; j++ { // цикл по сегментам АКФ
 		Acf_sET12_col := *mat.VecDenseCopyOf(Acf_sET12.ColView(j))
 		absTS := absVector(Acf_sET12_col)
 		at1 := absTS.AtVec(0)
@@ -181,14 +182,28 @@ func ssa_spw(pw, fmp []float64) {
 		NumMax := maxN.SliceVec(0, Nmax+1)
 
 		// Интерполяция огибающей АКФ
+		/*
+			acfEnvelope := pchip(vec_in_ArrFloat(NumMax),
+				vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
+				(lgl),
+				NumMax.Len(), len(lgl))
+		*/
+
 		acfEnvelope := pchip(vec_in_ArrFloat(NumMax),
 			vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
-			(lgl),
+			lgl,
 			NumMax.Len(), len(lgl))
+
 		EnvAcf_sET12.SetCol(j, acfEnvelope)
 
 		// нормированные АКФ
 		AcfNrm_sET12.SetCol(j, vecDense_in_float64(vector_DivElemVec((Acf_sET12.Slice(0, lag, j, j+1)), EnvAcf_sET12.ColView(j))))
+
+		fmt.Println("test")
+		fmt.Println(AcfNrm_sET12.At(lag-1, j))
+
+		//safeToXlsxMatrix(mat.DenseCopyOf(Acf_sET12.Slice(0, lag, j, j+1)), "Acf_sET12.Slice")
+		//break
 	}
 	// *****************
 	safeToXlsxM(EnvAcf_sET12, "EnvAcf_sET12")

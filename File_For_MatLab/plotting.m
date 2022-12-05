@@ -40,7 +40,7 @@ clear; close all; clc;
     plot(tim(1:win),spw(:,seg),'b-',tim(1:win),sET34(:,seg),'r-');
     legend('Original','sET34'); xlabel("t,s",'interp','none'); ylabel("sET",'interp','none');
     
-    %% Визуализация АКФ сингулярных троек для сегментов pw
+    %% Визуализация АКФ сингулярных троек для сегментов pw - Picture 6
     lag  = floor(win/10); % наибольший лаг АКФ <= win/10
     lagS = 2*lag;
     ns=loadData(5,"ns");
@@ -54,7 +54,7 @@ clear; close all; clc;
     xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
     zlabel("Acf",'interp','none'); grid on;
     
-    %%
+    %% - Picture 3
     ns=loadData(6,"ns");
     Time=loadData(6,"Time")';
     EnvAcf_sET12=loadData(6,"EnvAcf_sET12");
@@ -67,7 +67,7 @@ clear; close all; clc;
     xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
     zlabel("Env_Acf",'interp','none'); grid on;
 
-    %%
+    %% - Picture 7
     ns=loadData(7,"ns");
     Time=loadData(7,"Time")';
     AcfNrm_sET12=loadData(7,"AcfNrm_sET12");
@@ -79,11 +79,9 @@ clear; close all; clc;
     mesh(ns,Time,AcfNrm_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
     xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
     zlabel("Acf_Nrm",'interp','none'); grid on;
-
     
     
-    
-    
+%%
     
     
     
