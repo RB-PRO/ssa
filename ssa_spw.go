@@ -199,7 +199,7 @@ func ssa_spw(pw, fmp []float64) {
 		// нормированные АКФ
 		AcfNrm_sET12.SetCol(j, vecDense_in_float64(vector_DivElemVec((Acf_sET12.Slice(0, lag, j, j+1)), EnvAcf_sET12.ColView(j))))
 
-		fmt.Println("test")
+		fmt.Println(">>> !!! <<<")
 		fmt.Println(AcfNrm_sET12.At(lag-1, j))
 
 		//safeToXlsxMatrix(mat.DenseCopyOf(Acf_sET12.Slice(0, lag, j, j+1)), "Acf_sET12.Slice")
