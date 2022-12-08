@@ -244,3 +244,13 @@ func vector_DivElemVec(a mat.Matrix, b mat.Vector) mat.VecDense {
 	div_vectors.DivElemVec(asd, b)
 	return div_vectors
 }
+
+// Предпоследнюю сроку скопировать в последнюю
+func editLastRow(matr mat.Dense) mat.Dense {
+	r, c := matr.Dims()
+
+	for i := 0; i < c; i++ {
+		matr.Set(r-1, i, matr.At(r-2, i))
+	}
+	return matr
+}

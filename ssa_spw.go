@@ -151,8 +151,8 @@ func ssa_spw(pw, fmp []float64) {
 	//power := 0.75 // параметр спрямляющего преобразования
 	EnvAcf_sET12 := *mat.NewDense(lag, S, nil)
 	AcfNrm_sET12 := *mat.NewDense(lag, S, nil)
-	for j := 16; j <= 16; j++ { // цикл по сегментам АКФ
-		//for j := 0; j < S; j++ { // цикл по сегментам АКФ
+	//for j := 16; j <= 16; j++ { // цикл по сегментам АКФ
+	for j := 0; j < S; j++ { // цикл по сегментам АКФ
 		Acf_sET12_col := *mat.VecDenseCopyOf(Acf_sET12.ColView(j))
 		absTS := absVector(Acf_sET12_col)
 		at1 := absTS.AtVec(0)
@@ -189,7 +189,7 @@ func ssa_spw(pw, fmp []float64) {
 				NumMax.Len(), len(lgl))
 		*/
 
-		acfEnvelope := pchip(vec_in_ArrFloat(NumMax),
+		acfEnvelope, _ := pchip(vec_in_ArrFloat(NumMax),
 			vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
 			lgl,
 			NumMax.Len(), len(lgl))
@@ -199,12 +199,13 @@ func ssa_spw(pw, fmp []float64) {
 		// нормированные АКФ
 		AcfNrm_sET12.SetCol(j, vecDense_in_float64(vector_DivElemVec((Acf_sET12.Slice(0, lag, j, j+1)), EnvAcf_sET12.ColView(j))))
 
-		fmt.Println(">>> !!! <<<")
-		fmt.Println(AcfNrm_sET12.At(lag-1, j))
-
-		//safeToXlsxMatrix(mat.DenseCopyOf(Acf_sET12.Slice(0, lag, j, j+1)), "Acf_sET12.Slice")
-		//break
+		//fmt.Println(AcfNrm_sET12.At(lag-1, j)) // Тут возникает 850+ для 16-ти
 	}
+
+	// Обход ошибки вывода с 856, заменив последнюю строку
+	EnvAcf_sET12 = editLastRow(EnvAcf_sET12)
+	AcfNrm_sET12 = editLastRow(AcfNrm_sET12)
+
 	// *****************
 	safeToXlsxM(EnvAcf_sET12, "EnvAcf_sET12")
 	safeToXlsxM(AcfNrm_sET12, "AcfNrm_sET12")
@@ -221,4 +222,33 @@ func ssa_spw(pw, fmp []float64) {
 	matlab_mat_Dense(AcfNrm_sET12, 7, "AcfNrm_sET12")
 	log.Println("Нормированные АКФ сингулярных троек sET12 сегментов pw")
 
+	// ********************************************************************
+	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
+	for j := 0; j < S; j++ {
+		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
+
+		pAcf, pCoef := pchip(vecDense_in_float64(PhaAcfNrm),
+			lgl,
+			lgl,
+			PhaAcfNrm.Len(), len(lgl))
+
+		fmt.Println(pAcf[0], len(pCoef))
+
+		FrcAcfNrm := make([]float64, lag)
+		for m := 1; m < lag; m++ {
+			FrcAcfNrm[m] = math.Abs(pCoef[3*m+m]) / (2.0 * math.Pi * dt)
+		}
+		FrcAcfNrm[0] = FrcAcfNrm[1]
+
+	}
+
+}
+func makePhaAcfNrm(vect mat.Vector) mat.VecDense {
+	output := mat.VecDenseCopyOf(vect)
+
+	for i := 0; i < output.Len(); i++ {
+		output.SetVec(i, math.Abs(math.Acos(output.AtVec(i))))
+	}
+
+	return *output
 }
