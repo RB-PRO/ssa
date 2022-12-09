@@ -237,13 +237,20 @@ func ssa_spw(pw, fmp []float64) {
 
 		FrcAcfNrm := make([]float64, lag)
 		for m := 1; m < lag; m++ {
-			FrcAcfNrm[m] = math.Abs(pCoef[3*m+m]) / (2.0 * math.Pi * dt)
+			//fmt.Println("pCoef[3*lag+m]", 2*lag+m, pCoef[2*lag+m])
+			FrcAcfNrm[m] = math.Abs(pCoef[2*lag+m]) / (2.0 * math.Pi * dt)
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
 		//insFrc_AcfNrm(j) = median(FrcAcfNrm);
-		insFrc_AcfNrm[j] = median(*mat.NewVecDense(j, FrcAcfNrm[0:j]))
+		insFrc_AcfNrm[j] = median_floatArr(FrcAcfNrm)
 	}
-
+	err_insFrc_AcfNrm := makeGraphYX_float64(
+		insFrc_AcfNrm,
+		ns,
+		"insFrc_AcfNrm")
+	if err_insFrc_AcfNrm != nil {
+		fmt.Println(err_insFrc_AcfNrm)
+	}
 }
 
 // Расчёты вектора PhaAcfNrm, модуль от Акосинуса.

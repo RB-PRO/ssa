@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 
 	"gonum.org/v1/gonum/mat"
@@ -182,6 +183,20 @@ func median(dataVect mat.VecDense) float64 {
 		median = (dataVect.AtVec(l/2-1) + dataVect.AtVec(l/2)) / 2
 	} else {
 		median = dataVect.AtVec(l / 2)
+	}
+	return median
+}
+func median_floatArr(dataVect []float64) float64 {
+	//dataVect = sortVecDense(dataVect)
+	sort.Float64s(dataVect)
+	var median float64
+	l := len(dataVect)
+	if l == 0 {
+		return 0
+	} else if l%2 == 0 {
+		median = (dataVect[l/2-1] + dataVect[l/2]) / 2
+	} else {
+		median = dataVect[l/2]
 	}
 	return median
 }
