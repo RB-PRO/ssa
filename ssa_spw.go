@@ -224,6 +224,7 @@ func ssa_spw(pw, fmp []float64) {
 
 	// ********************************************************************
 	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
+	insFrc_AcfNrm := make([]float64, S)
 	for j := 0; j < S; j++ {
 		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
@@ -239,10 +240,13 @@ func ssa_spw(pw, fmp []float64) {
 			FrcAcfNrm[m] = math.Abs(pCoef[3*m+m]) / (2.0 * math.Pi * dt)
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
-
+		//insFrc_AcfNrm(j) = median(FrcAcfNrm);
+		insFrc_AcfNrm[j] = median(*mat.NewVecDense(j, FrcAcfNrm[0:j]))
 	}
 
 }
+
+// Расчёты вектора PhaAcfNrm, модуль от Акосинуса.
 func makePhaAcfNrm(vect mat.Vector) mat.VecDense {
 	output := mat.VecDenseCopyOf(vect)
 
