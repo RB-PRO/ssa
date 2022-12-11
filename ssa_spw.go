@@ -224,6 +224,7 @@ func ssa_spw(pw, fmp []float64) {
 
 	// ********************************************************************
 	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
+	insFrc_AcfNrm := make([]float64, S)
 	for j := 0; j < S; j++ {
 		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
@@ -240,6 +241,7 @@ func ssa_spw(pw, fmp []float64) {
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
 
+		insFrc_AcfNrm[j] = median() // средняя(медианная) мгновенная частотта j-го сегмента pw
 	}
 
 }
