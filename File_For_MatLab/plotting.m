@@ -80,6 +80,17 @@ clear; close all; clc;
     xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
     zlabel("Acf_Nrm",'interp','none'); grid on;
     
+    %% - Picture 8
+    ns=loadData(8,"ns");
+    insFrc_AcfNrm=loadData(8,"insFrc_AcfNrm");
+    smo_insFrc_AcfNrm=loadData(8,"smo_insFrc_AcfNrm")';
+    figure();
+    set(gcf,'name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw');
+    clf;
+    p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
+    plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
+    xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
+    legend(p1,'sET12');
     
 %%
     

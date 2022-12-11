@@ -143,12 +143,12 @@ for j=1:S % ���� �� ��������� ���
 %    FrcAcfNrm = abs(diff(PhaAcfNrm))/pi2/dt; % ���������� ������� ��������-�� ���, ��
    insFrc_AcfNrm(j) = median(FrcAcfNrm); % ������� ���������� �������� j-�� �������� pw 
 end
-smo_insFrc_AcfNrm = smooth(insFrc_AcfNrm,0.25*S,'rloess');
+% smo_insFrc_AcfNrm = smooth(insFrc_AcfNrm,0.25*S,'rloess');
 figure();
 set(gcf,'name','������� ������-�� ��� ��������-� ����� ��������� pw');
 clf;
 p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
-plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
+plot(ns,insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
 xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
 legend(p1,'sET12');
 %% ������ ��� ����������� ����� ��� �������� pw

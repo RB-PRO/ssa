@@ -228,23 +228,43 @@ func ssa_spw(pw, fmp []float64) {
 	for j := 0; j < S; j++ {
 		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
-		pAcf, pCoef := pchip(vecDense_in_float64(PhaAcfNrm),
+		_, pCoef := pchip(vecDense_in_float64(PhaAcfNrm),
 			lgl,
 			lgl,
 			PhaAcfNrm.Len(), len(lgl))
 
-		fmt.Println(pAcf[0], len(pCoef))
+		//fmt.Println(pAcf[0], len(pCoef))
 
 		FrcAcfNrm := make([]float64, lag)
 		for m := 1; m < lag; m++ {
-			FrcAcfNrm[m] = math.Abs(pCoef[3*m+m]) / (2.0 * math.Pi * dt)
+			//fmt.Println("pCoef[3*lag+m]", 2*lag+m, pCoef[2*lag+m])
+			FrcAcfNrm[m] = math.Abs(pCoef[2*lag+m]) / (2.0 * math.Pi * dt)
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
+		insFrc_AcfNrm[j] = median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw
+	}
 
-		insFrc_AcfNrm[j] = median() // средняя(медианная) мгновенная частотта j-го сегмента pw
+	smo_insFrc_AcfNrm := SavGolFilter(insFrc_AcfNrm, S, S/2, 0, 1.0)
+
+	matlab_arr_float(ns, 8, "ns")
+	matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm")
+	matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm")
+	err_insFrc_AcfNrm := makeGraphYX_float64(
+		insFrc_AcfNrm,
+		ns,
+		"insFrc_AcfNrm")
+	if err_insFrc_AcfNrm != nil {
+		fmt.Println(err_insFrc_AcfNrm)
 	}
 
 }
+
+func savitzky_goley(y []float64, f, k int) []float64 {
+
+	return []float64{}
+}
+
+// Расчёты вектора PhaAcfNrm, модуль от Акосинуса.
 func makePhaAcfNrm(vect mat.Vector) mat.VecDense {
 	output := mat.VecDenseCopyOf(vect)
 
