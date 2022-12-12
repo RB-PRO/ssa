@@ -54,7 +54,6 @@ func makeGraphOfArray(vals []float64, filename string) error {
 
 // Построить график по координатам X и Y. Источник - float64[]
 func makeGraphYX_float64(x, y []float64, filename string) error {
-	fmt.Println("makeGraphYX_float64_1")
 	if len(x) != len(y) {
 		return errors.New("Length different for " + filename)
 	}
@@ -69,25 +68,25 @@ func makeGraphYX_float64(x, y []float64, filename string) error {
 }
 
 // Построить график по координатам X и Y. Источник - mat.VecDense
-func makeGraphYX_VecDense(x, y1, y2 mat.VecDense, filename string) error {
+func makeGraphYX_VecDense(x, y1, y2 mat.VecDense, f1, f2 string) error {
 	x_arr := vecDense_in_float64(x)
 	y1_arr := vecDense_in_float64(y1)
 	y2_arr := vecDense_in_float64(y2)
 	if len(x_arr) != len(y1_arr) {
-		return errors.New("Length y1 of different for " + filename)
+		return errors.New("Length y1 of different for " + f1)
 	}
 	if len(x_arr) != len(y2_arr) {
-		return errors.New("Length y2 of different for " + filename)
+		return errors.New("Length y2 of different for " + f2)
 	}
 
 	dimensions := 2
 	persist := false
 	debug := false
 	plot, _ := glot.NewPlot(dimensions, persist, debug)
-	plot.AddPointGroup("origin", "lines", [][]float64{x_arr, y1_arr})
-	plot.AddPointGroup(filename, "lines", [][]float64{x_arr, y2_arr})
+	plot.AddPointGroup(f1, "lines", [][]float64{x_arr, y1_arr})
+	plot.AddPointGroup(f2, "lines", [][]float64{x_arr, y2_arr})
 
-	plot.SavePlot("png" + OpSystemFilder + filename + ".png")
+	plot.SavePlot("png" + OpSystemFilder + f2 + ".png")
 	return nil
 }
 

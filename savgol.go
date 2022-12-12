@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/mjibson/go-dsp/fft"
@@ -54,6 +55,7 @@ func savGolCoeffs(window_length int, polyorder int, deriv int, delta float64, us
 	if polyorder >= window_length {
 		panic("polyorder must be less than window_length.")
 	}
+	fmt.Println("window_length", window_length)
 	if window_length%2 == 0 {
 		panic("window_length must be odd.")
 	}

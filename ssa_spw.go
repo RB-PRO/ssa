@@ -97,7 +97,7 @@ func ssa_spw(pw, fmp []float64) {
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
 				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))),
-				"sET12")
+				"origin", "sET12")
 			matlab_arr_float(tim, 3, "tim")
 			matlab_mat_Dense(*spw, 3, "spw")
 			matlab_mat_Dense(*sET12, 3, "sET12")
@@ -107,7 +107,7 @@ func ssa_spw(pw, fmp []float64) {
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
 				*(mat.NewVecDense(len(vec_in_ArrFloat(sET34.ColView(j))), vec_in_ArrFloat(sET34.ColView(j)))),
-				"sET34")
+				"origin", "sET34")
 			matlab_arr_float(tim, 4, "tim")
 			matlab_mat_Dense(*spw, 4, "spw")
 			matlab_mat_Dense(*sET34, 4, "sET34")
@@ -244,7 +244,9 @@ func ssa_spw(pw, fmp []float64) {
 		insFrc_AcfNrm[j] = median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw
 	}
 
-	smo_insFrc_AcfNrm := SavGolFilter(insFrc_AcfNrm, S, S/2, 0, 1.0)
+	smo_insFrc_AcfNrm := SavGolFilter(insFrc_AcfNrm, S/2-1, S/4, 0, 1.0)
+
+	//smo_insFrc_AcfNrm := savitzky_goley(insFrc_AcfNrm, 33, 2)
 
 	matlab_arr_float(ns, 8, "ns")
 	matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm")
@@ -253,6 +255,16 @@ func ssa_spw(pw, fmp []float64) {
 		insFrc_AcfNrm,
 		ns,
 		"insFrc_AcfNrm")
+	err_insFrc_AcfNrm = makeGraphYX_float64(
+		smo_insFrc_AcfNrm,
+		ns,
+		"smo_insFrc_AcfNrm")
+	err_insFrc_AcfNrm = makeGraphYX_VecDense(
+		*mat.NewVecDense(len(ns), ns),
+		*mat.NewVecDense(len(insFrc_AcfNrm), insFrc_AcfNrm),
+		*mat.NewVecDense(len(smo_insFrc_AcfNrm), smo_insFrc_AcfNrm),
+		"origin", "insFrc_AcfNrm")
+
 	if err_insFrc_AcfNrm != nil {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
@@ -261,6 +273,13 @@ func ssa_spw(pw, fmp []float64) {
 
 func savitzky_goley(y []float64, f, k int) []float64 {
 
+	x := make([]float64, len(y))
+	for ind := range x {
+		x[ind] = float64(ind)
+	}
+	//n = len(x)
+
+	//f = math.Floor(f)
 	return []float64{}
 }
 
