@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
@@ -47,6 +48,25 @@ func matlab_mat_Vector(vect mat.Vector, number int, fileName string) error {
 	}
 	file_graph.Close()
 	return nil
+}
+
+// Сохранить данные переменной int
+func matlab_variable(data int, number int, fileName string) error {
+	err := matlab_mkDir(number)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// create file
+	f, err := os.Create("File_For_MatLab" + OpSystemFilder + strconv.Itoa(number) + OpSystemFilder + fileName + ".txt")
+	if err != nil {
+		log.Println(err)
+	}
+	// remember to close the file
+	defer f.Close()
+
+	_, err = f.WriteString(fmt.Sprintf("%v", data))
+
+	return err
 }
 
 // Сохранить данные матрицы mat.Dense

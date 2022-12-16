@@ -233,6 +233,7 @@ func ssa_spw(pw, fmp []float64) {
 			lgl,
 			PhaAcfNrm.Len(), len(lgl))
 
+		safeToXlsx(pCoef, "pCoef")
 		//fmt.Println(pAcf[0], len(pCoef))
 
 		FrcAcfNrm := make([]float64, lag)
@@ -269,6 +270,57 @@ func ssa_spw(pw, fmp []float64) {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
 
+	// Оценки СПМ сингулярных троек для сегменов pw
+	var iGmin, iGmax int
+	smopto := 3 // параметр сглаживания периодограммы Томсона
+	// Визуализация СПМ сингулярных троек сегменов pw
+	fmi := 40.0 / 60.0                  // частота среза для 40 уд/мин (0.6667 Гц)
+	fma := 240.0 / 60.0                 // частота среза для 240 уд/мин (4.0 Гц)
+	Nf := 1 + win/2                     // кол-во отсчетов частоты
+	df := float64(cad) / float64(win-1) // интервал дискретизации частоты, Гц
+	Fmin := fmi - float64(10*df)
+	Fmax := fma + float64(10*df) // частота в Гц
+	pto_sET12 := pto_sET12_init(*sET12, smopto, win, Nf, S)
+
+	f := make([]float64, Nf)
+	for i := 2; i < Nf; i++ {
+		f[i] = f[i-1] + df
+		if math.Abs(f[i]-Fmin) <= df {
+			iGmin = i
+		}
+		if math.Abs(f[i]-Fmax) <= df {
+			iGmax = i
+		}
+	}
+	fG := make([]float64, iGmax)
+	for i := 0; i < iGmax; i++ {
+		fG[i] = f[i]
+	}
+	matlab_arr_float(ns, 9, "ns")
+	matlab_arr_float(fG, 9, "fG")
+	matlab_mat_Dense(pto_sET12, 9, "pto_sET12")
+	matlab_variable(iGmin, 9, "iGmin")
+	matlab_variable(iGmax, 9, "iGmax")
+
+	// Оценки средних частот основного тона сингулярных троек сегментов pw
+
+	// ***
+
+	// Агрегирование сегментов очищенной пульсовой волны cpw
+
+}
+
+func pto_sET12_init(sET12 mat.Dense, smopto, win, Nf, S int) mat.Dense {
+	pto_sET12 := mat.NewDense(Nf, S, nil)
+	for j := 0; j < S; j++ {
+		pto_sET12.SetCol(j, pmtm(pto_sET12.ColView(j), smopto, win))
+	}
+	return *pto_sET12
+}
+func pmtm(sET12 mat.Vector, smopto, win int) []float64 {
+	outArr := make([]float64, 513)
+
+	return outArr
 }
 
 func savitzky_goley(y []float64, f, k int) []float64 {

@@ -189,13 +189,13 @@ for j=1:S
    pto_fMAX12(j) = f(I(1)); % I(1) - ������ �������(��) ��������� pto_sET12(:,j)
 end
 pto_fMAX12 = pto_fMAX12';
-smo_pto_fMAX12 = smooth(pto_fMAX12,0.3*S,'rloess');
+% smo_pto_fMAX12 = smooth(pto_fMAX12,0.3*S,'rloess');
 %
 figure();
 set(gcf,'name','������� ��������� ���� sET ��������� pw');
 clf;
 plot(ns,pto_fMAX12,'b'); hold on;
-plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
+% plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
 xlabel("ns",'interp','none'); ylabel("fMAX,Hz",'interp','none');
 %% ������������� ��������� ��������� ��������� ����� cpw
 [NumS,cpw_avr,cpw_med,cpw_iqr] = wav(NSF,S,win,res,sET12);

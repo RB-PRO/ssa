@@ -88,13 +88,25 @@ clear; close all; clc;
     set(gcf,'name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw');
     clf;
     p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
-    plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
+    % plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
     xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
     legend(p1,'sET12');
     
-%%
+    %% - Picture 9
+    figure();
+    iGmin=loadVar(9,"iGmin");
+    iGmax=loadVar(9,"iGmax");
+    ns=loadData(9,"ns");
+    pto_sET12=loadData(9,"pto_sET12");
+    fG=loadData(9,"fG");
+    set(gcf,'name','Периодограмма Томсона sET12 сегментов pw');
+    clf;
+    mesh(ns,fG(iGmin:iGmax),pto_sET12(iGmin:iGmax,:),'FaceAlpha',0.5,'FaceColor','flat');
+    colorbar; grid on;
+    xlabel("ns",'interp','none'); ylabel("f,Hz",'interp','none');
+    zlabel("P(f)",'interp','none');
     
-    
+    %% - Picture 10
     
     
     
