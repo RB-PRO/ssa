@@ -27,8 +27,8 @@ func ssa_spw(pw, fmp []float64) {
 		Imax = Imax + res
 		S++
 	}
-	S-- // кол-во перекрывающихся сегментов pw в пределах N
-	//NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
+	S--                    // кол-во перекрывающихся сегментов pw в пределах N
+	NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
 
 	spw := mat.NewDense(win, S, nil)
 	//fmt.Println("Размеры spw:", win, S)
@@ -307,7 +307,49 @@ func ssa_spw(pw, fmp []float64) {
 	// ***
 
 	// Агрегирование сегментов очищенной пульсовой волны cpw
+	NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, S, win, res, *sET12)
+	safeToXlsx(NumS, "NumS")
 
+	matlab_variable(NSF, 10, "NSF")
+	matlab_arr_float(tim, 10, "tim")
+	matlab_arr_float(cpw_avr, 10, "cpw_avr")
+	matlab_arr_float(cpw_med, 10, "cpw_med")
+	matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
+
+}
+
+func wav(N, S, W, res int, sET mat.Dense) ([]float64, []float64, []float64, []float64) {
+	NS := make([]float64, N)
+	w_avr := make([]float64, N)
+	w_med := make([]float64, N)
+	w_iqr := make([]float64, N)
+
+	ET := mat.NewDense(N, S, nil)
+	for j := 0; j < S; j++ { // цикл по сегментам
+		for i := 0; i < W; i++ {
+			k := (j - 1) * res
+			ET.Set(i+k, j, sET.At(i, j)) // сдвинутый сегмент ET(:,j)
+		}
+	}
+
+	//TS := mat.NewDense(S, S, nil)
+
+	Smp := make([]float64, N*S)
+	for i := 0; i < N; i++ {
+		var nSi int
+		for j := 0; j < S; j++ {
+			if ET.At(i, j) != 0.0 {
+				nSi++
+				Smp[nSi] = ET.At(i, j)
+			}
+		}
+		NS[i] = float64(nSi)                  // кол-во сегментов для текущего i
+		w_avr[i] = mean(Smp[:nSi])            // выборочная средняя
+		w_med[i] = median_floatArr(Smp[:nSi]) // медиана
+		w_iqr[i] = (prctile(Smp[:nSi], 75) - prctile(Smp[:nSi], 25)) / 2.0
+	}
+
+	return NS, w_avr, w_med, w_iqr
 }
 
 func pto_sET12_init(sET12 mat.Dense, smopto, win, Nf, S int) mat.Dense {

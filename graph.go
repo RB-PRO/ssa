@@ -57,7 +57,6 @@ func makeGraphYX_float64(x, y []float64, filename string) error {
 	if len(x) != len(y) {
 		return errors.New("Length different for " + filename)
 	}
-	fmt.Println("makeGraphYX_float64_2")
 	dimensions := 2
 	persist := false
 	debug := false
