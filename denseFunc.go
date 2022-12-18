@@ -48,6 +48,14 @@ func aTa(matr mat.Dense) mat.Dense { // Multipy matrix AT*A
 	return *output
 }
 
+func MulVecToVec(a, b mat.Vector) float64 {
+	a_matrix := mat.Matrix(a).T()
+	var varVecDense mat.VecDense
+	varVecDense.MulVec(a_matrix, b)
+	//fmt.Println(varVecDense)
+	return varVecDense.AtVec(0)
+}
+
 // модуль от всех значений вектора
 func absVector(vect mat.VecDense) mat.VecDense {
 	for i := 0; i < vect.Len(); i++ {
@@ -169,6 +177,10 @@ func realyPrint(matr *mat.Dense, name string) {
 
 func realyPrint2(matr mat.Dense, name string) {
 	fmatr := mat.Formatted(&matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
+	fmt.Printf(name+" =%.3v\n", fmatr)
+}
+func realyPrintMatrix(matr mat.Matrix, name string) {
+	fmatr := mat.Formatted(matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
 	fmt.Printf(name+" =%.3v\n", fmatr)
 }
 

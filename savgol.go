@@ -198,3 +198,236 @@ func factorial(n int) int {
 	}
 	return result
 }
+
+// *** my realyze
+
+func savitzky_goley(y []float64, f, k int) []float64 {
+	// Функция, реализующая сглаживание с помощью фильтра Савицкого-Голея.
+	// f - окно сглаживания, желательно, чтобы оно было нечётным числом.
+	// k - степень полинома, оно должно быть меньше чем f
+
+	x := make([]int, len(y))
+	for ind := range x {
+		x[ind] = ind
+	}
+	n := len(x)
+	f = int(math.Floor(float64(f)))
+	f = min2(f, n)
+	hf := (f - 1) / 2
+
+	//v := dinamicMatrix_float64(f, k+1)
+	var v mat.Dense = *(mat.NewDense(f, k+1, nil))
+
+	t := make([]int, hf*2+1)
+	for ind := range t {
+		t[ind] = -hf + ind
+	}
+
+	for i := 0; i < f; i++ {
+		for j := 0; j <= k; j++ {
+			v.Set(i, j, math.Pow(float64(t[i]), float64(j)))
+		}
+	}
+
+	q, _ := QRDec(v)
+
+	ymid := filt(q, hf, y)
+
+	ybegin := yBegin(q, hf, f, y)
+	yend := yEnd(q, hf, f, y)
+	for i := 0; i < len(ybegin); i++ {
+		ymid[i] = ybegin[i]
+	}
+
+	// fmt.Println(len(ymid)-len(yend)-1, len(ymid), "len(yend)", len(yend))
+
+	for i := len(ymid) - len(yend); i < len(ymid); i++ {
+		//fmt.Println(i - (len(ymid) - len(yend)))
+		//fmt.Println(ybegin[i-(len(ymid)-len(yend))])
+		ymid[i] = ybegin[i-(len(ymid)-len(yend))]
+	}
+
+	return ymid
+}
+
+func yBegin(q mat.Dense, hf, f int, y []float64) []float64 {
+	//ybegin = q(1:hf,:)*q'*y(1:f);
+	_, col := q.Dims()
+
+	sliseQ := q.Slice(0, hf, 0, col)
+	var matr mat.Dense
+	matr.Mul(sliseQ, q.T())
+
+	var matVecDense mat.VecDense
+	matVecDense.MulVec(mat.Matrix(&matr), mat.Vector(mat.NewVecDense(f, y[:f])))
+
+	return vecDense_in_float64(matVecDense)
+}
+func yEnd(q mat.Dense, hf, f int, y []float64) []float64 {
+	//yend   = q((hf+2):end,:)*q'*y(n-f+1:n);
+	row, col := q.Dims()
+
+	sliseQ := q.Slice(hf+1, row, 0, col)
+	var matr mat.Dense
+	matr.Mul(sliseQ, q.T())
+
+	var matVecDense mat.VecDense
+	matVecDense.MulVec(mat.Matrix(&matr), mat.Vector(mat.NewVecDense(f, y[len(y)-f:len(y)])))
+	return vecDense_in_float64(matVecDense)
+}
+
+func filt(q mat.Dense, hf int, x []float64) []float64 {
+	// b=q*q(hf+1,:)'
+	var b mat.VecDense
+	elem := q.RowView(hf + 1)            // q(hf+1,:)'
+	var matr mat.Matrix = mat.Matrix(&q) // q
+	b.MulVec(matr, elem)                 // q*q(hf+1,:)'
+
+	y := make([]float64, len(x))
+	y[0] = b.AtVec(0) * x[0]
+
+	var y_tmp, y_b1, y_j float64
+
+	for i := 1; i < len(x); i++ {
+		y_tmp = 0
+		y_b1 = b.AtVec(1) * x[i]
+
+		for j := 1; j < b.Len(); j++ {
+			if i-j == 0 {
+				y_j = b.AtVec(j) * x[i-j+1]
+				y_tmp = y_tmp + y_j
+				y[i] = y_b1 + y_tmp
+				break
+			} else {
+				y_j = b.AtVec(j) * x[i-j+1]
+				y_tmp = y_tmp + y_j
+				if i-j >= 1 {
+					y[i] = y_b1 + y_tmp
+				}
+			}
+		}
+
+	}
+
+	return y
+}
+
+// QR Decomposition - Некорректный вывод
+func QRDec(a mat.Dense) (mat.Dense, mat.Dense) {
+	_, col := a.Dims()
+	q := a
+	var r mat.Dense = *mat.NewDense(col, col, nil)
+	var matVecDense mat.VecDense
+	for i := 0; i < col; i++ {
+		for j := 0; j < i; j++ {
+			r.Set(i, j, MulVecToVec(q.ColView(j), q.ColView(i)))
+			matVecDense.ScaleVec(r.At(j, i), q.ColView(j))
+			matVecDense.SubVec(q.ColView(i), &matVecDense)
+			q.SetCol(i, vecDense_in_float64(matVecDense))
+		}
+		matVecDense = *mat.VecDenseCopyOf(q.ColView(i))
+		r.Set(i, i, matVecDense.Norm(2.0))
+		//r.Set(i, i, p_norm(q.ColView(i), 2.0))
+
+		if r.At(i, i) == 0.0 {
+			break
+		}
+		matVecDense.ScaleVec(1/r.At(i, i), q.ColView(i))
+		q.SetCol(i, vecDense_in_float64(matVecDense))
+	}
+	return q, r
+}
+
+func p_norm(arr mat.Vector, p float64) float64 {
+	//func p_norm(arr []float64, p float64) float64 {
+	// The general definition for the p-norm of a vector v that has N elements is
+	// If p = 1, then the resulting 1-norm is the sum of the absolute values of the vector elements.
+	// If p = 2, then the resulting 2-norm gives the vector magnitude or Euclidean length of the vector.
+	// If p = Inf, then v = max(arr)
+	// If p = -Inf, then v = min(arr)
+	var sum float64
+	if p == 1 {
+		for ind := 0; ind < arr.Len(); ind++ {
+			//for _, value := range arr {
+			sum += arr.AtVec(ind)
+		}
+	} else if p == 2 {
+		for ind := 0; ind < arr.Len(); ind++ {
+			//for _, value := range arr {
+			sum += math.Pow(arr.AtVec(ind), 2.0)
+		}
+		sum = math.Sqrt(sum)
+	} else {
+		for ind := 0; ind < arr.Len(); ind++ {
+			//for _, value := range arr {
+			sum += math.Pow(arr.AtVec(ind), p)
+		}
+		sum = math.Pow(sum, 1/p)
+	}
+	return sum
+}
+
+func multipleArray(a, b []float64) (float64, error) {
+	if len(a) != len(b) {
+		return 0.0, errors.New("Length vector is different")
+	}
+	var sum float64
+	for i := 0; i < len(a); i++ {
+		sum += a[i] * b[i]
+	}
+	return sum, nil
+}
+
+// Вычитание вектора из вектора
+func subVectors(a, b []float64) ([]float64, error) {
+	if len(a) != len(b) {
+		return nil, errors.New("Length vector is different")
+	}
+	for i := 0; i < len(a); i++ {
+		a[i] -= b[i]
+	}
+	return a, nil
+}
+
+// Умножение вектора на константу
+func multipleConstArray(a []float64, multipleConstant float64) []float64 {
+	for i := 0; i < len(a); i++ {
+		a[i] *= multipleConstant
+	}
+	return a
+}
+
+// Умножение вектора на константу
+func divisionConstArray(a []float64, multipleConstant float64) []float64 {
+	for i := 0; i < len(a); i++ {
+		a[i] /= multipleConstant
+	}
+	return a
+}
+
+// Создать матрицу с размерами row, col. int
+func dinamicMatrix(row, col int) [][]int {
+	matrix := make([][]int, row)
+	for ind := range matrix {
+		matrix[ind] = make([]int, col)
+	}
+	return matrix
+}
+
+// Создать матрицу с размерами row, col. float64
+func dinamicMatrix_float64(row, col int) [][]float64 {
+	matrix := make([][]float64, row)
+	for ind := range matrix {
+		matrix[ind] = make([]float64, col)
+	}
+	return matrix
+}
+
+// Минимальное число из двух
+func min2(a, b int) int {
+	if a > b {
+		return b
+	} else {
+		return a
+	}
+}

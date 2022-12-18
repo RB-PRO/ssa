@@ -194,6 +194,8 @@ func ssa_spw(pw, fmp []float64) {
 			lgl,
 			NumMax.Len(), len(lgl))
 
+		fmt.Println(Nmax, len(lgl))
+
 		EnvAcf_sET12.SetCol(j, acfEnvelope)
 
 		// нормированные АКФ
@@ -256,16 +258,21 @@ func ssa_spw(pw, fmp []float64) {
 		insFrc_AcfNrm,
 		ns,
 		"insFrc_AcfNrm")
+	if err_insFrc_AcfNrm != nil {
+		fmt.Println(err_insFrc_AcfNrm)
+	}
 	err_insFrc_AcfNrm = makeGraphYX_float64(
 		smo_insFrc_AcfNrm,
 		ns,
 		"smo_insFrc_AcfNrm")
+	if err_insFrc_AcfNrm != nil {
+		fmt.Println(err_insFrc_AcfNrm)
+	}
 	err_insFrc_AcfNrm = makeGraphYX_VecDense(
 		*mat.NewVecDense(len(ns), ns),
 		*mat.NewVecDense(len(insFrc_AcfNrm), insFrc_AcfNrm),
 		*mat.NewVecDense(len(smo_insFrc_AcfNrm), smo_insFrc_AcfNrm),
 		"origin", "insFrc_AcfNrm")
-
 	if err_insFrc_AcfNrm != nil {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
@@ -325,14 +332,15 @@ func wav(N, S, W, res int, sET mat.Dense) ([]float64, []float64, []float64, []fl
 	w_iqr := make([]float64, N)
 
 	ET := mat.NewDense(N, S, nil)
+
 	for j := 0; j < S; j++ { // цикл по сегментам
 		for i := 0; i < W; i++ {
-			k := (j - 1) * res
+			k := (j) * res
+			//fmt.Print(i, k, j, "=")
+			//fmt.Println(sET.At(i, j))
 			ET.Set(i+k, j, sET.At(i, j)) // сдвинутый сегмент ET(:,j)
 		}
 	}
-
-	//TS := mat.NewDense(S, S, nil)
 
 	Smp := make([]float64, N*S)
 	for i := 0; i < N; i++ {
