@@ -365,18 +365,6 @@ func pmtm(sET12 mat.Vector, smopto, win int) []float64 {
 	return outArr
 }
 
-func savitzky_goley(y []float64, f, k int) []float64 {
-
-	x := make([]float64, len(y))
-	for ind := range x {
-		x[ind] = float64(ind)
-	}
-	//n = len(x)
-
-	//f = math.Floor(f)
-	return []float64{}
-}
-
 // Расчёты вектора PhaAcfNrm, модуль от Акосинуса.
 func makePhaAcfNrm(vect mat.Vector) mat.VecDense {
 	output := mat.VecDenseCopyOf(vect)
