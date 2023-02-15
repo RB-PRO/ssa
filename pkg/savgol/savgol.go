@@ -1,8 +1,10 @@
-package main
+package savgol
 
 import (
 	"fmt"
 	"math"
+
+	"main/pkg/oss"
 
 	"github.com/mjibson/go-dsp/fft"
 	"github.com/pkg/errors"
@@ -17,7 +19,7 @@ import (
 func SavGolFilter(x []float64, window_length int, polyorder int, deriv int /*=0*/, delta float64 /*=1.0*/) []float64 {
 	// computing filter coefficients
 	// the outputs of this step seem to be numerically same as the Python code ones
-	coeffs := savGolCoeffs(window_length, polyorder, deriv, delta, true)
+	coeffs := SavGolCoeffs(window_length, polyorder, deriv, delta, true)
 	// convolving the original signal with the filter coefficients
 	// note: the outputs of this step are not completely numerically same as the Python code ones (because the latter uses different convolution function)
 
@@ -51,7 +53,7 @@ func Convolve1d(x []float64, coeffs []float64) []complex128 {
 }
 
 // Computes Savitzky-Golay filter coefficients.
-func savGolCoeffs(window_length int, polyorder int, deriv int, delta float64, useInConv bool) []float64 {
+func SavGolCoeffs(window_length int, polyorder int, deriv int, delta float64, useInConv bool) []float64 {
 	if polyorder >= window_length {
 		panic("polyorder must be less than window_length.")
 	}
@@ -72,14 +74,14 @@ func savGolCoeffs(window_length int, polyorder int, deriv int, delta float64, us
 		// Reverse so that result can be used in a convolution.
 		floats.Reverse(aRowTemplate)
 	}
-	a := makeMatrix(polyorder+1, len(aRowTemplate), func(i, j int) float64 {
+	a := oss.MakeMatrix(polyorder+1, len(aRowTemplate), func(i, j int) float64 {
 		return math.Pow(aRowTemplate[j], float64(i))
 	})
 
 	// `b` determines which order derivative is returned.
 	// The coefficient assigned to b[deriv] scales the result to take into
 	// account the order of the derivative and the sample spacing.
-	b := makeMatrix(polyorder+1, 1, func(i, j int) float64 {
+	b := oss.MakeMatrix(polyorder+1, 1, func(i, j int) float64 {
 		if i != deriv {
 			return 0
 		}
@@ -92,17 +94,6 @@ func savGolCoeffs(window_length int, polyorder int, deriv int, delta float64, us
 		panic(errors.Errorf("SHOULD NOT HAPPEN: LstSq result contains %d columns instead of 1", cols))
 	}
 	return coeff.RawMatrix().Data
-}
-
-// Makes a dense matrix of size r*c and fills it with a user-defined function.
-func makeMatrix(r int, c int, value func(i, j int) float64) *mat.Dense {
-	data := make([]float64, r*c)
-	for i := 0; i < r; i++ {
-		for j := 0; j < c; j++ {
-			data[c*i+j] = value(i, j)
-		}
-	}
-	return mat.NewDense(r, c, data)
 }
 
 // LstSq computes least-squares solution to equation A*x = b, i.e. computes a vector x such that the 2-norm “|b - A x|“ is minimized.
@@ -121,7 +112,7 @@ func LstSq(a, b *mat.Dense) *mat.Dense {
 
 	// LAPACK uses `b` as an output parameter as well - and therefore wants it to be resized from (m, nhrs) to (max(m,n), nhrs)
 	// here we copy `b` anyway (even if it doesn't need to be resized) - to avoid overwriting the user-supplied `b`
-	b = makeMatrix(max2(m, n), nhrs, func(i, j int) float64 {
+	b = oss.MakeMatrix(max2(m, n), nhrs, func(i, j int) float64 {
 		if i < m {
 			return b.At(i, j)
 		}
@@ -261,7 +252,7 @@ func yBegin(q mat.Dense, hf, f int, y []float64) []float64 {
 	var matVecDense mat.VecDense
 	matVecDense.MulVec(mat.Matrix(&matr), mat.Vector(mat.NewVecDense(f, y[:f])))
 
-	return vecDense_in_float64(matVecDense)
+	return oss.VecDense_in_float64(matVecDense)
 }
 func yEnd(q mat.Dense, hf, f int, y []float64) []float64 {
 	//yend   = q((hf+2):end,:)*q'*y(n-f+1:n);
@@ -272,8 +263,8 @@ func yEnd(q mat.Dense, hf, f int, y []float64) []float64 {
 	matr.Mul(sliseQ, q.T())
 
 	var matVecDense mat.VecDense
-	matVecDense.MulVec(mat.Matrix(&matr), mat.Vector(mat.NewVecDense(f, y[len(y)-f:len(y)])))
-	return vecDense_in_float64(matVecDense)
+	matVecDense.MulVec(mat.Matrix(&matr), mat.Vector(mat.NewVecDense(f, y[len(y)-f:])))
+	return oss.VecDense_in_float64(matVecDense)
 }
 
 func filt(q mat.Dense, hf int, x []float64) []float64 {
@@ -320,10 +311,10 @@ func QRDec(a mat.Dense) (mat.Dense, mat.Dense) {
 	var matVecDense mat.VecDense
 	for i := 0; i < col; i++ {
 		for j := 0; j < i; j++ {
-			r.Set(i, j, MulVecToVec(q.ColView(j), q.ColView(i)))
+			r.Set(i, j, oss.MulVecToVec(q.ColView(j), q.ColView(i)))
 			matVecDense.ScaleVec(r.At(j, i), q.ColView(j))
 			matVecDense.SubVec(q.ColView(i), &matVecDense)
-			q.SetCol(i, vecDense_in_float64(matVecDense))
+			q.SetCol(i, oss.VecDense_in_float64(matVecDense))
 		}
 		matVecDense = *mat.VecDenseCopyOf(q.ColView(i))
 		r.Set(i, i, matVecDense.Norm(2.0))
@@ -333,7 +324,7 @@ func QRDec(a mat.Dense) (mat.Dense, mat.Dense) {
 			break
 		}
 		matVecDense.ScaleVec(1/r.At(i, i), q.ColView(i))
-		q.SetCol(i, vecDense_in_float64(matVecDense))
+		q.SetCol(i, oss.VecDense_in_float64(matVecDense))
 	}
 	return q, r
 }

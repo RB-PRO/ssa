@@ -1,4 +1,4 @@
-package main
+package oss
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 // ***
-func safeToXlsx(sig []float64, name string) {
+func SafeToXlsx(sig []float64, name string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -20,7 +20,7 @@ func safeToXlsx(sig []float64, name string) {
 		fmt.Println(err)
 	}
 }
-func safeToXlsxMatrix(X *mat.Dense, xlsxName string) {
+func SafeToXlsxMatrix(X *mat.Dense, xlsxName string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -35,7 +35,7 @@ func safeToXlsxMatrix(X *mat.Dense, xlsxName string) {
 	}
 	file_graph.Close()
 }
-func safeToXlsxDualArray(X [][]float64, xlsxName string) {
+func SafeToXlsxDualArray(X [][]float64, xlsxName string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -49,7 +49,7 @@ func safeToXlsxDualArray(X [][]float64, xlsxName string) {
 	}
 	file_graph.Close()
 }
-func safeToXlsxM(X mat.Dense, xlsxName string) {
+func SafeToXlsxM(X mat.Dense, xlsxName string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")

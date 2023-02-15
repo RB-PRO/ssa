@@ -224,8 +224,8 @@ end
 figure();
 set(gcf,'name','Аппроксимация АКФ сингулярных троек sET12 сегментов pw');
 clf;
-% mesh(ns,lgl,AprAcf_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
-% xlabel("ns",'interp','none'); ylabel("lag",'interp','none');
+mesh(ns,lgl,AprAcf_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
+xlabel("ns",'interp','none'); ylabel("lag",'interp','none');
 mesh(ns,Time,AprAcf_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
 xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
 zlabel("Apr_Acf",'interp','none'); grid on;

@@ -1,14 +1,19 @@
-package main
+package ssaApp
 
 import (
 	"fmt"
 	"log"
+	"main/pkg/graph"
+	"main/pkg/oss"
+	"main/pkg/pchip"
+	"main/pkg/savgol"
+	"main/pkg/ssa"
 	"math"
 
 	"gonum.org/v1/gonum/mat"
 )
 
-func ssa_spw(pw, fmp []float64) {
+func SSA_spw(pw, fmp []float64) {
 	// Сегменты отсчётов pw
 	N := len(pw) // Количество отсчетов pw
 	win := 1024
@@ -27,8 +32,8 @@ func ssa_spw(pw, fmp []float64) {
 		Imax = Imax + res
 		S++
 	}
-	S--                    // кол-во перекрывающихся сегментов pw в пределах N
-	NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
+	S-- // кол-во перекрывающихся сегментов pw в пределах N
+	//NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
 
 	spw := mat.NewDense(win, S, nil)
 	//fmt.Println("Размеры spw:", win, S)
@@ -58,7 +63,7 @@ func ssa_spw(pw, fmp []float64) {
 	}
 
 	K := 5
-	M := int(float64(K) * max(L)) // параметр вложения в траекторное пространство
+	M := int(float64(K) * oss.Max(L)) // параметр вложения в траекторное пространство
 	// SSA - анализ сегментов pw
 	seg := 100 // номер сегмента pw для визуализации
 	nET := 4   // кол-во сингулярных троек для сегментов pw
@@ -70,47 +75,47 @@ func ssa_spw(pw, fmp []float64) {
 	sET34 := mat.NewDense(win, S, nil)      // НЕ ФАКТ, ЧТО К-во строк win
 
 	for j := 0; j < S; j++ {
-		C, LBD, RC := SSA(win, M, spw.ColView(j), nET)
+		C, LBD, RC := ssa.SSA(win, M, spw.ColView(j), nET)
 		//fmt.Println(j, S)
 		RC_T := mat.DenseCopyOf(RC.T())
 
 		sET12_sum2.SetCol(0, RC_T.RawRowView(0))
 		sET12_sum2.SetCol(1, RC_T.RawRowView(1))
-		sET12.SetCol(j, sum2(*sET12_sum2))
+		sET12.SetCol(j, oss.Sum2(*sET12_sum2))
 		sET12_sum2.Zero()
 
 		sET34_sum2.SetCol(0, RC_T.RawRowView(2))
 		sET34_sum2.SetCol(1, RC_T.RawRowView(3))
-		sET34.SetCol(j, sum2(*sET34_sum2))
+		sET34.SetCol(j, oss.Sum2(*sET34_sum2))
 		sET34_sum2.Zero()
 
 		if j == seg {
-			imagesc(C, "C")
-			matlab_mat_Dense(C, 1, "C")
+			graph.Imagesc(C, "C")
+			oss.Matlab_mat_Dense(C, 1, "C")
 			log.Println("Covariance matrix")
-			makeGraphOfArray(LBD, "LBD")
+			graph.MakeGraphOfArray(LBD, "LBD")
 
-			matlab_arr_float(LBD, 2, "LBD")
+			oss.Matlab_arr_float(LBD, 2, "LBD")
 			log.Println("Eigenvalues")
 
-			err_makeGraphYX_sET12 := makeGraphYX_VecDense(
+			err_makeGraphYX_sET12 := graph.MakeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
-				*(mat.NewVecDense(len(vec_in_ArrFloat(sET12.ColView(j))), vec_in_ArrFloat(sET12.ColView(j)))),
+				*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(sET12.ColView(j))), oss.Vec_in_ArrFloat(sET12.ColView(j)))),
 				"origin", "sET12")
-			matlab_arr_float(tim, 3, "tim")
-			matlab_mat_Dense(*spw, 3, "spw")
-			matlab_mat_Dense(*sET12, 3, "sET12")
+			oss.Matlab_arr_float(tim, 3, "tim")
+			oss.Matlab_mat_Dense(*spw, 3, "spw")
+			oss.Matlab_mat_Dense(*sET12, 3, "sET12")
 			log.Println("Original time series and reconstruction sET12")
 
-			err_makeGraphYX_sET34 := makeGraphYX_VecDense(
+			err_makeGraphYX_sET34 := graph.MakeGraphYX_VecDense(
 				*mat.NewVecDense(win, tim[0:win]),
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
-				*(mat.NewVecDense(len(vec_in_ArrFloat(sET34.ColView(j))), vec_in_ArrFloat(sET34.ColView(j)))),
+				*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(sET34.ColView(j))), oss.Vec_in_ArrFloat(sET34.ColView(j)))),
 				"origin", "sET34")
-			matlab_arr_float(tim, 4, "tim")
-			matlab_mat_Dense(*spw, 4, "spw")
-			matlab_mat_Dense(*sET34, 4, "sET34")
+			oss.Matlab_arr_float(tim, 4, "tim")
+			oss.Matlab_mat_Dense(*spw, 4, "spw")
+			oss.Matlab_mat_Dense(*sET34, 4, "sET34")
 			log.Println("Original time series and reconstruction sET34")
 
 			if err_makeGraphYX_sET12 != nil {
@@ -122,15 +127,15 @@ func ssa_spw(pw, fmp []float64) {
 		}
 	}
 
-	safeToXlsxMatrix(sET12, "sET12")
-	safeToXlsxMatrix(sET34, "sET34")
+	oss.SafeToXlsxMatrix(sET12, "sET12")
+	oss.SafeToXlsxMatrix(sET34, "sET34")
 
 	// *****************
 	// Оценка АКФ сингулярных троек для сегментов pw
 	lag := int(math.Floor(float64(win) / 10.0)) // % наибольший лаг АКФ <= win/10
 	lagS := 2 * lag
-	Acf_sET12 := ACF_estimation_of_singular_triples(lagS, win, S, *sET12)
-	safeToXlsxM(Acf_sET12, "Acf_sET12")
+	Acf_sET12 := ssa.ACF_estimation_of_singular_triples(lagS, win, S, *sET12)
+	oss.SafeToXlsxM(Acf_sET12, "Acf_sET12")
 	// *****************
 	// Визуализация АКФ сингулярных троек для сегментов pw
 	lgl := make([]float64, lag)
@@ -141,9 +146,9 @@ func ssa_spw(pw, fmp []float64) {
 	for m := 1; m < len(time); m++ {
 		time[m] = time[m-1] + dt
 	}
-	matlab_arr_float(ns, 5, "ns")
-	matlab_arr_float(time, 5, "time")
-	matlab_mat_Dense(Acf_sET12, 5, "Acf_sET12")
+	oss.Matlab_arr_float(ns, 5, "ns")
+	oss.Matlab_arr_float(time, 5, "time")
+	oss.Matlab_mat_Dense(Acf_sET12, 5, "Acf_sET12")
 	log.Println("Визуализация АКФ сингулярных троек для сегментов pw")
 
 	// *****************
@@ -154,7 +159,7 @@ func ssa_spw(pw, fmp []float64) {
 	//for j := 16; j <= 16; j++ { // цикл по сегментам АКФ
 	for j := 0; j < S; j++ { // цикл по сегментам АКФ
 		Acf_sET12_col := *mat.VecDenseCopyOf(Acf_sET12.ColView(j))
-		absTS := absVector(Acf_sET12_col)
+		absTS := oss.AbsVector(Acf_sET12_col)
 		at1 := absTS.AtVec(0)
 		at2 := absTS.AtVec(1)
 
@@ -189,8 +194,8 @@ func ssa_spw(pw, fmp []float64) {
 				NumMax.Len(), len(lgl))
 		*/
 
-		acfEnvelope, _ := pchip(vec_in_ArrFloat(NumMax),
-			vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
+		acfEnvelope, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax),
+			oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
 			lgl,
 			NumMax.Len(), len(lgl))
 
@@ -199,29 +204,29 @@ func ssa_spw(pw, fmp []float64) {
 		EnvAcf_sET12.SetCol(j, acfEnvelope)
 
 		// нормированные АКФ
-		AcfNrm_sET12.SetCol(j, vecDense_in_float64(vector_DivElemVec((Acf_sET12.Slice(0, lag, j, j+1)), EnvAcf_sET12.ColView(j))))
+		AcfNrm_sET12.SetCol(j, oss.VecDense_in_float64(oss.Vector_DivElemVec((Acf_sET12.Slice(0, lag, j, j+1)), EnvAcf_sET12.ColView(j))))
 
 		//fmt.Println(AcfNrm_sET12.At(lag-1, j)) // Тут возникает 850+ для 16-ти
 	}
 
 	// Обход ошибки вывода с 856, заменив последнюю строку
-	EnvAcf_sET12 = editLastRow(EnvAcf_sET12)
-	AcfNrm_sET12 = editLastRow(AcfNrm_sET12)
+	EnvAcf_sET12 = oss.EditLastRow(EnvAcf_sET12)
+	AcfNrm_sET12 = oss.EditLastRow(AcfNrm_sET12)
 
 	// *****************
-	safeToXlsxM(EnvAcf_sET12, "EnvAcf_sET12")
-	safeToXlsxM(AcfNrm_sET12, "AcfNrm_sET12")
+	oss.SafeToXlsxM(EnvAcf_sET12, "EnvAcf_sET12")
+	oss.SafeToXlsxM(AcfNrm_sET12, "AcfNrm_sET12")
 
 	// 6 - Огибающие АКФ сингулярных троек sET12 сегментов pw
-	matlab_arr_float(ns, 6, "ns")
-	matlab_arr_float(time, 6, "time")
-	matlab_mat_Dense(EnvAcf_sET12, 6, "EnvAcf_sET12")
+	oss.Matlab_arr_float(ns, 6, "ns")
+	oss.Matlab_arr_float(time, 6, "time")
+	oss.Matlab_mat_Dense(EnvAcf_sET12, 6, "EnvAcf_sET12")
 	log.Println("Огибающие АКФ сингулярных троек sET12 сегментов pw")
 
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
-	matlab_arr_float(ns, 7, "ns")
-	matlab_arr_float(time, 7, "time")
-	matlab_mat_Dense(AcfNrm_sET12, 7, "AcfNrm_sET12")
+	oss.Matlab_arr_float(ns, 7, "ns")
+	oss.Matlab_arr_float(time, 7, "time")
+	oss.Matlab_mat_Dense(AcfNrm_sET12, 7, "AcfNrm_sET12")
 	log.Println("Нормированные АКФ сингулярных троек sET12 сегментов pw")
 
 	// ********************************************************************
@@ -230,12 +235,12 @@ func ssa_spw(pw, fmp []float64) {
 	for j := 0; j < S; j++ {
 		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
-		_, pCoef := pchip(vecDense_in_float64(PhaAcfNrm),
+		_, pCoef := pchip.Pchip(oss.VecDense_in_float64(PhaAcfNrm),
 			lgl,
 			lgl,
 			PhaAcfNrm.Len(), len(lgl))
 
-		safeToXlsx(pCoef, "pCoef")
+		oss.SafeToXlsx(pCoef, "pCoef")
 		//fmt.Println(pAcf[0], len(pCoef))
 
 		FrcAcfNrm := make([]float64, lag)
@@ -244,31 +249,31 @@ func ssa_spw(pw, fmp []float64) {
 			FrcAcfNrm[m] = math.Abs(pCoef[2*lag+m]) / (2.0 * math.Pi * dt)
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
-		insFrc_AcfNrm[j] = median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw
+		insFrc_AcfNrm[j] = oss.Median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw
 	}
 
-	smo_insFrc_AcfNrm := SavGolFilter(insFrc_AcfNrm, S/2-1, S/4, 0, 1.0)
+	smo_insFrc_AcfNrm := savgol.SavGolFilter(insFrc_AcfNrm, S/2-1, S/4, 0, 1.0)
 
 	//smo_insFrc_AcfNrm := savitzky_goley(insFrc_AcfNrm, 33, 2)
 
-	matlab_arr_float(ns, 8, "ns")
-	matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm")
-	matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm")
-	err_insFrc_AcfNrm := makeGraphYX_float64(
+	oss.Matlab_arr_float(ns, 8, "ns")
+	oss.Matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm")
+	oss.Matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm")
+	err_insFrc_AcfNrm := graph.MakeGraphYX_float64(
 		insFrc_AcfNrm,
 		ns,
 		"insFrc_AcfNrm")
 	if err_insFrc_AcfNrm != nil {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
-	err_insFrc_AcfNrm = makeGraphYX_float64(
+	err_insFrc_AcfNrm = graph.MakeGraphYX_float64(
 		smo_insFrc_AcfNrm,
 		ns,
 		"smo_insFrc_AcfNrm")
 	if err_insFrc_AcfNrm != nil {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
-	err_insFrc_AcfNrm = makeGraphYX_VecDense(
+	err_insFrc_AcfNrm = graph.MakeGraphYX_VecDense(
 		*mat.NewVecDense(len(ns), ns),
 		*mat.NewVecDense(len(insFrc_AcfNrm), insFrc_AcfNrm),
 		*mat.NewVecDense(len(smo_insFrc_AcfNrm), smo_insFrc_AcfNrm),
@@ -277,52 +282,55 @@ func ssa_spw(pw, fmp []float64) {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
 
-	// Оценки СПМ сингулярных троек для сегменов pw
-	var iGmin, iGmax int
-	smopto := 3 // параметр сглаживания периодограммы Томсона
-	// Визуализация СПМ сингулярных троек сегменов pw
-	fmi := 40.0 / 60.0                  // частота среза для 40 уд/мин (0.6667 Гц)
-	fma := 240.0 / 60.0                 // частота среза для 240 уд/мин (4.0 Гц)
-	Nf := 1 + win/2                     // кол-во отсчетов частоты
-	df := float64(cad) / float64(win-1) // интервал дискретизации частоты, Гц
-	Fmin := fmi - float64(10*df)
-	Fmax := fma + float64(10*df) // частота в Гц
-	pto_sET12 := pto_sET12_init(*sET12, smopto, win, Nf, S)
+	/*
+		// Оценки СПМ сингулярных троек для сегменов pw
+		var iGmin, iGmax int
+		smopto := 3 // параметр сглаживания периодограммы Томсона
+		// Визуализация СПМ сингулярных троек сегменов pw
+		fmi := 40.0 / 60.0                  // частота среза для 40 уд/мин (0.6667 Гц)
+		fma := 240.0 / 60.0                 // частота среза для 240 уд/мин (4.0 Гц)
+		Nf := 1 + win/2                     // кол-во отсчетов частоты
+		df := float64(cad) / float64(win-1) // интервал дискретизации частоты, Гц
+		Fmin := fmi - float64(10*df)
+		Fmax := fma + float64(10*df) // частота в Гц
+		pto_sET12 := pto_sET12_init(*sET12, smopto, win, Nf, S)
 
-	f := make([]float64, Nf)
-	for i := 2; i < Nf; i++ {
-		f[i] = f[i-1] + df
-		if math.Abs(f[i]-Fmin) <= df {
-			iGmin = i
+		f := make([]float64, Nf)
+		for i := 2; i < Nf; i++ {
+			f[i] = f[i-1] + df
+			if math.Abs(f[i]-Fmin) <= df {
+				iGmin = i
+			}
+			if math.Abs(f[i]-Fmax) <= df {
+				iGmax = i
+			}
 		}
-		if math.Abs(f[i]-Fmax) <= df {
-			iGmax = i
+		fG := make([]float64, iGmax)
+		for i := 0; i < iGmax; i++ {
+			fG[i] = f[i]
 		}
-	}
-	fG := make([]float64, iGmax)
-	for i := 0; i < iGmax; i++ {
-		fG[i] = f[i]
-	}
-	matlab_arr_float(ns, 9, "ns")
-	matlab_arr_float(fG, 9, "fG")
-	matlab_mat_Dense(pto_sET12, 9, "pto_sET12")
-	matlab_variable(iGmin, 9, "iGmin")
-	matlab_variable(iGmax, 9, "iGmax")
-
+		matlab_arr_float(ns, 9, "ns")
+		matlab_arr_float(fG, 9, "fG")
+		matlab_mat_Dense(pto_sET12, 9, "pto_sET12")
+		matlab_variable(iGmin, 9, "iGmin")
+		matlab_variable(iGmax, 9, "iGmax")
+	*/
 	// Оценки средних частот основного тона сингулярных троек сегментов pw
 
 	// ***
 
 	// Агрегирование сегментов очищенной пульсовой волны cpw
-	NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, S, win, res, *sET12)
-	safeToXlsx(NumS, "NumS")
+	/*
+			NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, S, win, res, *sET12)
+			safeToXlsx(NumS, "NumS")
 
-	matlab_variable(NSF, 10, "NSF")
-	matlab_arr_float(tim, 10, "tim")
-	matlab_arr_float(cpw_avr, 10, "cpw_avr")
-	matlab_arr_float(cpw_med, 10, "cpw_med")
-	matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
 
+		matlab_variable(NSF, 10, "NSF")
+		matlab_arr_float(tim, 10, "tim")
+		matlab_arr_float(cpw_avr, 10, "cpw_avr")
+		matlab_arr_float(cpw_med, 10, "cpw_med")
+		matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
+	*/
 }
 
 func wav(N, S, W, res int, sET mat.Dense) ([]float64, []float64, []float64, []float64) {
@@ -351,10 +359,10 @@ func wav(N, S, W, res int, sET mat.Dense) ([]float64, []float64, []float64, []fl
 				Smp[nSi] = ET.At(i, j)
 			}
 		}
-		NS[i] = float64(nSi)                  // кол-во сегментов для текущего i
-		w_avr[i] = mean(Smp[:nSi])            // выборочная средняя
-		w_med[i] = median_floatArr(Smp[:nSi]) // медиана
-		w_iqr[i] = (prctile(Smp[:nSi], 75) - prctile(Smp[:nSi], 25)) / 2.0
+		NS[i] = float64(nSi)                      // кол-во сегментов для текущего i
+		w_avr[i] = oss.Mean(Smp[:nSi])            // выборочная средняя
+		w_med[i] = oss.Median_floatArr(Smp[:nSi]) // медиана
+		w_iqr[i] = (oss.Prctile(Smp[:nSi], 75) - oss.Prctile(Smp[:nSi], 25)) / 2.0
 	}
 
 	return NS, w_avr, w_med, w_iqr

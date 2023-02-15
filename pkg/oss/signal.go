@@ -1,4 +1,4 @@
-package main
+package oss
 
 import (
 	"math"
@@ -26,16 +26,16 @@ func make_singnal(n int) []float64 { //waveform := make_singnal(1000, 0.01)
 		return waveform
 	}
 */
-func make_singnal(n int) []float64 {
+func Make_singnal(n int) []float64 {
 	waveform := make([]float64, n)
 	for index := range waveform {
-		waveform[index] = f(float64(index), n)
+		waveform[index] = F(float64(index), n)
 		//waveform[index] += math.Cos(2 * math.Pi * 0.03 * float64(index))
 		//waveform[index] += 0.8 * math.Cos(2*math.Pi*(0.06*float64(index)+0.09/(2.0*float64(n))*float64(index)*float64(index)))
 	}
 	return waveform
 }
-func make_singnal_xn(filename string) ([]float64, int) {
+func Make_singnal_xn(filename string) ([]float64, int) {
 	f, _ := excelize.OpenFile(filename + ".xlsx")
 	cells, _ := f.GetRows("main")
 	a := make([]float64, len(cells))
@@ -47,7 +47,7 @@ func make_singnal_xn(filename string) ([]float64, int) {
 
 	return a, len(cells)
 }
-func f(x float64, n int) float64 {
+func F(x float64, n int) float64 {
 	var waveX float64
 	waveX = math.Cos(2 * math.Pi * 0.03 * x)
 	waveX += 0.8 * math.Cos(2*math.Pi*(0.06*x+0.09/(2.0*float64(n))*x*x))

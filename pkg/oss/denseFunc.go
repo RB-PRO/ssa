@@ -1,4 +1,4 @@
-package main
+package oss
 
 /*
 Пакет для работы с матрицами.
@@ -16,7 +16,7 @@ import (
 )
 
 // Горизонтальная сумма массива
-func sum2(a mat.Dense) []float64 {
+func Sum2(a mat.Dense) []float64 {
 	var output []float64
 	r, _ := a.Dims()
 	for i := 0; i < r; i++ {
@@ -26,7 +26,7 @@ func sum2(a mat.Dense) []float64 {
 }
 
 // МАксимальный элемент массива
-func max(arr []float64) float64 {
+func Max(arr []float64) float64 {
 	max_num := arr[0]
 	for i := 0; i < len(arr); i++ {
 		if arr[i] > max_num {
@@ -36,7 +36,7 @@ func max(arr []float64) float64 {
 	return max_num
 }
 
-func aTa(matr mat.Dense) mat.Dense { // Multipy matrix AT*A
+func ATa(matr mat.Dense) mat.Dense { // Multipy matrix AT*A
 	a := mat.Matrix(&matr)
 	aT := a.T()
 	ad := mat.DenseCopyOf(a)
@@ -57,7 +57,7 @@ func MulVecToVec(a, b mat.Vector) float64 {
 }
 
 // модуль от всех значений вектора
-func absVector(vect mat.VecDense) mat.VecDense {
+func AbsVector(vect mat.VecDense) mat.VecDense {
 	for i := 0; i < vect.Len(); i++ {
 		vect.SetVec(i, math.Abs(vect.AtVec(i)))
 	}
@@ -79,7 +79,7 @@ func mean(m mat.Dense) []float64 {
 */
 
 // Среднее массива float64
-func averge(array []float64) float64 {
+func Averge(array []float64) float64 {
 	var sum float64
 	for _, val := range array {
 		sum += val
@@ -88,7 +88,7 @@ func averge(array []float64) float64 {
 }
 
 // Вернуть subdiagonal
-func subdiagonal(m mat.Dense, k int) ([]float64, error) {
+func Subdiagonal(m mat.Dense, k int) ([]float64, error) {
 	var outputArray []float64
 	r_m, c_m := m.Dims()
 	if k == 0 {
@@ -114,7 +114,7 @@ func subdiagonal(m mat.Dense, k int) ([]float64, error) {
 }
 
 // Вернуть колонку из матрицы
-func colDense(m mat.Dense, ind int) []float64 {
+func ColDense(m mat.Dense, ind int) []float64 {
 	row, _ := m.Dims()
 	outputArray := make([]float64, row)
 	for i := 0; i < row; i++ {
@@ -124,7 +124,7 @@ func colDense(m mat.Dense, ind int) []float64 {
 }
 
 // Вернуть строку из матрицы
-func rowDense(m mat.Dense, ind int) []float64 {
+func RowDense(m mat.Dense, ind int) []float64 {
 	_, col := m.Dims()
 	outputArray := make([]float64, col)
 	for j := 0; j < col; j++ {
@@ -133,7 +133,7 @@ func rowDense(m mat.Dense, ind int) []float64 {
 	return outputArray
 }
 
-func diag(mat mat.Dense, R int) []float64 {
+func Diag(mat mat.Dense, R int) []float64 {
 	ret := make([]float64, R)
 	for ind := range ret {
 		ret[ind] = mat.At(ind, ind)
@@ -141,13 +141,22 @@ func diag(mat mat.Dense, R int) []float64 {
 	return ret
 }
 
-func make_diag_danse(arr []float64) mat.Dense {
+func Make_diag_danse(arr []float64) mat.Dense {
 	lensOfArray := len(arr)
 	dens := mat.NewDense(lensOfArray, lensOfArray, nil)
 	for i := 0; i < len(arr); i++ {
 		dens.Set(i, i, arr[i])
 	}
 	return *dens
+}
+
+func VecDense_in_float64(vec mat.VecDense) []float64 {
+	leng, _ := vec.Dims()
+	output := make([]float64, leng)
+	for ind := range output {
+		output[ind] = vec.AtVec(ind)
+	}
+	return output
 }
 
 // AsSymDense attempts return a SymDense from the provided Dense.
@@ -170,23 +179,23 @@ func AsSymDense(m *mat.Dense) (*mat.SymDense, error) {
 	}
 	return mat.NewSymDense(r, vals), nil
 }
-func realyPrint(matr *mat.Dense, name string) {
+func RealyPrint(matr *mat.Dense, name string) {
 	fmatr := mat.Formatted(matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
 	fmt.Printf(name+" =%.3v\n", fmatr)
 }
 
-func realyPrint2(matr mat.Dense, name string) {
+func RealyPrint2(matr mat.Dense, name string) {
 	fmatr := mat.Formatted(&matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
 	fmt.Printf(name+" =%.3v\n", fmatr)
 }
-func realyPrintMatrix(matr mat.Matrix, name string) {
+func RealyPrintMatrix(matr mat.Matrix, name string) {
 	fmatr := mat.Formatted(matr, mat.Prefix(string(strings.Repeat(" ", 2+len(name)))), mat.Squeeze())
 	fmt.Printf(name+" =%.3v\n", fmatr)
 }
 
 // Получить медианное значение массива
-func median(dataVect mat.VecDense) float64 {
-	dataVect = sortVecDense(dataVect)
+func Median(dataVect mat.VecDense) float64 {
+	dataVect = SortVecDense(dataVect)
 	var median float64
 	l := dataVect.Len()
 	if l == 0 {
@@ -198,7 +207,7 @@ func median(dataVect mat.VecDense) float64 {
 	}
 	return median
 }
-func median_floatArr(dataVect []float64) float64 {
+func Median_floatArr(dataVect []float64) float64 {
 	//dataVect = sortVecDense(dataVect)
 	sort.Float64s(dataVect)
 	var median float64
@@ -214,7 +223,7 @@ func median_floatArr(dataVect []float64) float64 {
 }
 
 // Сортировка вектора массива по возрастанию.
-func sortVecDense(dataVect mat.VecDense) mat.VecDense {
+func SortVecDense(dataVect mat.VecDense) mat.VecDense {
 	dataVectLength := dataVect.Len()
 	for i := 1; i < dataVectLength; i++ {
 		j := i - 1
@@ -228,7 +237,7 @@ func sortVecDense(dataVect mat.VecDense) mat.VecDense {
 	return dataVect
 }
 
-func vec_in_ArrFloat(a mat.Vector) []float64 {
+func Vec_in_ArrFloat(a mat.Vector) []float64 {
 	b := make([]float64, a.Len())
 	for i := 0; i < a.Len(); i++ {
 		b[i] = a.AtVec(i)
@@ -237,19 +246,15 @@ func vec_in_ArrFloat(a mat.Vector) []float64 {
 }
 
 // Диагональ матрицы в зависимости от корреляции k // reference MatLab diag(A,n)
-func diag_of_Dense(matr mat.Dense, k int) mat.VecDense {
+func Diag_of_Dense(matr mat.Dense, k int) mat.VecDense {
 	r, c := matr.Dims()
 	var matr2 mat.Matrix
-	switch {
-	case k > 0:
+	if k > 0 {
 		matr2 = matr.Slice(0, r, k, c)
-		break
-	case k < 0:
+	} else if k < 0 {
 		matr2 = matr.Slice(-k, r, 0, c)
-		break
-	default:
+	} else {
 		matr2 = matr.Slice(0, r, 0, c)
-		break
 	}
 
 	vect := mat.NewVecDense(mat.DenseCopyOf(matr2).DiagView().Diag(), nil)
@@ -261,7 +266,7 @@ func diag_of_Dense(matr mat.Dense, k int) mat.VecDense {
 }
 
 // Поэлементно разделить нулевое значение столбца Matrix на Vector на вектор
-func vector_DivElemVec(a mat.Matrix, b mat.Vector) mat.VecDense {
+func Vector_DivElemVec(a mat.Matrix, b mat.Vector) mat.VecDense {
 	var div_vectors mat.VecDense
 	var div_Dense mat.Dense
 	div_Dense.CloneFrom(a)
@@ -273,7 +278,7 @@ func vector_DivElemVec(a mat.Matrix, b mat.Vector) mat.VecDense {
 }
 
 // Предпоследнюю сроку скопировать в последнюю
-func editLastRow(matr mat.Dense) mat.Dense {
+func EditLastRow(matr mat.Dense) mat.Dense {
 	r, c := matr.Dims()
 
 	for i := 0; i < c; i++ {

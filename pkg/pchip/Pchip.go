@@ -1,4 +1,4 @@
-package main
+package pchip
 
 import (
 	"math"
@@ -48,7 +48,7 @@ func exteriorSlope(d1, d2, h1, h2 float64) float64 {
 	}
 	return s
 }
-func pchip(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64) {
+func Pchip(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64) {
 	new_y := make([]float64, new_x_len)
 	var low_ip1 int
 	var hs float64

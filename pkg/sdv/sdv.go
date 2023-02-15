@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"main/pkg/oss"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -13,7 +14,7 @@ type SDVs struct {
 	S *mat.Dense
 }
 
-func aaT(matr *mat.Dense) *mat.Dense { // Multipy matrix AT*A
+func AaT(matr *mat.Dense) *mat.Dense { // Multipy matrix AT*A
 	a := mat.Matrix(matr)
 	aT := a.T()
 	ad := mat.DenseCopyOf(a)
@@ -25,8 +26,8 @@ func aaT(matr *mat.Dense) *mat.Dense { // Multipy matrix AT*A
 	fmt.Println(ad.Dims())
 	fmt.Print("XT: ")
 	fmt.Println(aTd.Dims())
-	safeToXlsxMatrix(ad, "ad")
-	safeToXlsxMatrix(aTd, "aTd")
+	oss.SafeToXlsxMatrix(ad, "ad")
+	oss.SafeToXlsxMatrix(aTd, "aTd")
 	output.Mul(ad, aTd)
 	return output
 }
@@ -47,7 +48,7 @@ func SDV(X *mat.Dense, rank int) []SDVs {
 	return SDVsout
 }
 func SDV_single(matT *mat.Dense) SDVs {
-	safeToXlsxMatrix(matT, "matT")
+	oss.SafeToXlsxMatrix(matT, "matT")
 
 	var SDVout SDVs
 	var svdMat mat.SVD
@@ -87,7 +88,7 @@ func makeRank(matr *mat.Dense) int {
 	if !ok {
 		log.Fatal("failed to factorize A")
 	}
-	rank := svd.Rank(rcond)
+	rank := svd.Rank(oss.Rcond)
 	if rank == 0 {
 		log.Fatal("zero rank system")
 	}

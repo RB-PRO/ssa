@@ -1,7 +1,9 @@
-package main
+package ssa
 
 import (
 	"log"
+
+	"main/pkg/oss"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -19,14 +21,14 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 
 	// Choose covariance estimation
 	RHO, LBD := eig(C)
-	LBD_diag := diag(LBD, LBD.DiagView().Diag())
+	LBD_diag := oss.Diag(LBD, LBD.DiagView().Diag())
 	LBD_sort, _ := InsertionSort(LBD_diag)
 
 	// Перевернуть матрицу по вертикали
 	_, col_RHO := RHO.Dims()
 	for j := 0; j < col_RHO/2; j++ {
-		a := colDense(RHO, j)
-		b := colDense(RHO, col_RHO-1-j)
+		a := oss.ColDense(RHO, j)
+		b := oss.ColDense(RHO, col_RHO-1-j)
 		RHO.SetCol(j, b)
 		RHO.SetCol(col_RHO-1-j, a)
 	}
@@ -48,26 +50,26 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 	for m := 0; m < nET; m++ {
 		// invert projection
 		var buf mat.Dense
-		b1 := mat.NewDense(r_PC, 1, colDense(PC, m))
-		b2 := mat.NewDense(r_RHO, 1, colDense(RHO, m))
+		b1 := mat.NewDense(r_PC, 1, oss.ColDense(PC, m))
+		b2 := mat.NewDense(r_RHO, 1, oss.ColDense(RHO, m))
 		buf.Mul(b1, b2.T())
 
 		// Перевернуть матрицу по горизонтали
 		row_buf, _ := buf.Dims()
 		for j := 0; j < row_buf/2; j++ {
-			a := rowDense(buf, j)
-			b := rowDense(buf, row_buf-1-j)
+			a := oss.RowDense(buf, j)
+			b := oss.RowDense(buf, row_buf-1-j)
 			buf.SetRow(j, b)
 			buf.SetRow(row_buf-1-j, a)
 		}
 
 		// Anti-diagonal averaging
 		for n := 0; n < N; n++ {
-			diag_buf, error_subdiagonal := subdiagonal(buf, -(N-M+1)+n+1)
+			diag_buf, error_subdiagonal := oss.Subdiagonal(buf, -(N-M+1)+n+1)
 			if error_subdiagonal != nil {
 				panic(error_subdiagonal)
 			}
-			RC.Set(n, m, averge(diag_buf))
+			RC.Set(n, m, oss.Averge(diag_buf))
 		}
 
 	}
@@ -95,14 +97,14 @@ func BuildTrajectoryMatrix222(s mat.VecDense, lagS, win int) mat.Dense {
 	//fmt.Println("Len matr", r, c)
 	for m := 0; m < c; m++ {
 		//fmt.Println(m, win-lagS+m+1)
-		matr.SetCol(m, vec_in_ArrFloat(s.SliceVec(m, win-lagS+m+1)))
+		matr.SetCol(m, oss.Vec_in_ArrFloat(s.SliceVec(m, win-lagS+m+1)))
 	}
 	return *matr
 }
 
 // Returns diagonal matrix D of eigenvalues and matrix V whose columns are the corresponding right eigenvectors, so that A*V = V*D
 func eig(matr mat.Dense) (mat.Dense, mat.Dense) {
-	a, err := AsSymDense(&matr)
+	a, err := oss.AsSymDense(&matr)
 	if err != nil {
 		panic(err)
 	}
@@ -113,7 +115,7 @@ func eig(matr mat.Dense) (mat.Dense, mat.Dense) {
 	}
 	var ev mat.Dense
 	eigsym.VectorsTo(&ev)
-	return ev, make_diag_danse(eigsym.Values(nil))
+	return ev, oss.Make_diag_danse(eigsym.Values(nil))
 }
 
 // Сортировка с возвратом номеров изначальных элементов

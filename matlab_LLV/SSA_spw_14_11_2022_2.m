@@ -131,10 +131,10 @@ clf;
 mesh(ns,Time,AcfNrm_sET12(1:lag,:),'FaceAlpha',0.5,'FaceColor','flat'); colorbar;
 xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
 zlabel("Acf_Nrm",'interp','none'); grid on;
-%% ���������� ������� ������������� ��� ����������� ����� sET12 ��� ��������� pw
+%% Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
 pi2 = 2.0*pi;
-for j=1:S % ���� �� ��������� ���
-   PhaAcfNrm = abs(acos(AcfNrm_sET12(:,j))); % ���������� ����
+for j=1:S % цикл по сегментам АКФ
+   PhaAcfNrm = abs(acos(AcfNrm_sET12(:,j))); % мгновенная фаза
    pAcf = pchip(lgl,PhaAcfNrm); % ������������ ������������ pchip
    for m=2:lag
       FrcAcfNrm(m) = abs(pAcf.coefs(m-1,3))/pi2/dt; % ���������� ������� ��������-�� ���, ��        
@@ -145,7 +145,7 @@ for j=1:S % ���� �� ��������� ���
 end
 % smo_insFrc_AcfNrm = smooth(insFrc_AcfNrm,0.25*S,'rloess');
 figure();
-set(gcf,'name','������� ������-�� ��� ��������-� ����� ��������� pw');
+set(gcf,'name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw');
 clf;
 p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
 plot(ns,insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm

@@ -1,6 +1,10 @@
-package main
+package ssa
 
-import "gonum.org/v1/gonum/mat"
+import (
+	"main/pkg/oss"
+
+	"gonum.org/v1/gonum/mat"
+)
 
 // Оценка АКФ сингулярных троек для сегментов pw
 func ACF_estimation_of_singular_triples(lagS, win, S int, sET12 mat.Dense) mat.Dense {
@@ -20,16 +24,16 @@ func AcfMed(lagS, win int, sET12_vec mat.VecDense) []float64 {
 
 	Y := BuildTrajectoryMatrix222(sET12_vec, lagS, win)
 
-	cor := aTa(Y) // lagS*lagS матрица корреляц-х произведений
+	cor := oss.ATa(Y) // lagS*lagS матрица корреляц-х произведений
 	lon := lagS
 
-	CorPro := diag_of_Dense(cor, 0) // ВР корреляц-го произведения для лага 0
-	acf[0] = median(CorPro)         // медиана главной диагонали CorPro
+	CorPro := oss.Diag_of_Dense(cor, 0) // ВР корреляц-го произведения для лага 0
+	acf[0] = oss.Median(CorPro)         // медиана главной диагонали CorPro
 	for m := 1; m < lagS; m++ {
 		lon--
-		diag_cor_minus_1 := diag_of_Dense(cor, m)
+		diag_cor_minus_1 := oss.Diag_of_Dense(cor, m)
 		if m < lagS {
-			acf[m] = median(diag_cor_minus_1) / acf[0]
+			acf[m] = oss.Median(diag_cor_minus_1) / acf[0]
 		}
 	}
 	acf[0] = 1.0

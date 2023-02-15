@@ -1,4 +1,4 @@
-package main
+package oss
 
 // Этот модуль необходим для сохранения данных в папку File_For_MatLab. А файл plotting.m рисует графики на основании полученных данных.
 
@@ -15,8 +15,8 @@ import (
 )
 
 // Сохранить данные массива float64
-func matlab_arr_float(arr []float64, number int, fileName string) error {
-	err := matlab_mkDir(number)
+func Matlab_arr_float(arr []float64, number int, fileName string) error {
+	err := Matlab_mkDir(number)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -34,8 +34,8 @@ func matlab_arr_float(arr []float64, number int, fileName string) error {
 }
 
 // Сохранить данные массива float64
-func matlab_mat_Vector(vect mat.Vector, number int, fileName string) error {
-	err := matlab_mkDir(number)
+func Matlab_mat_Vector(vect mat.Vector, number int, fileName string) error {
+	err := Matlab_mkDir(number)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -53,8 +53,8 @@ func matlab_mat_Vector(vect mat.Vector, number int, fileName string) error {
 }
 
 // Сохранить данные переменной int
-func matlab_variable(data int, number int, fileName string) error {
-	err := matlab_mkDir(number)
+func Matlab_variable(data int, number int, fileName string) error {
+	err := Matlab_mkDir(number)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -71,7 +71,7 @@ func matlab_variable(data int, number int, fileName string) error {
 	return err
 }
 
-func mean(arr []float64) float64 {
+func Mean(arr []float64) float64 {
 	var meanVar float64
 	for _, val := range arr {
 		meanVar += val
@@ -81,7 +81,7 @@ func mean(arr []float64) float64 {
 
 // *****************************************************************************
 
-func prctile(input []float64, percent float64) float64 {
+func Prctile(input []float64, percent float64) float64 {
 	var percentile float64
 	length := len(input)
 	if length == 0 {
@@ -118,7 +118,7 @@ func prctile(input []float64, percent float64) float64 {
 		i := int(index)
 
 		// Find the average of the index and following values
-		percentile = mean([]float64{input[i-1], input[i]}) // Mean(Float64Data{input[i-1], input[i]})
+		percentile = Mean([]float64{input[i-1], input[i]}) // Mean(Float64Data{input[i-1], input[i]})
 
 	} else {
 		return math.NaN()
@@ -131,8 +131,8 @@ func prctile(input []float64, percent float64) float64 {
 // *****************************************************************************
 
 // Сохранить данные матрицы mat.Dense
-func matlab_mat_Dense(X mat.Dense, number int, fileName string) error {
-	err := matlab_mkDir(number)
+func Matlab_mat_Dense(X mat.Dense, number int, fileName string) error {
+	err := Matlab_mkDir(number)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -154,7 +154,7 @@ func matlab_mat_Dense(X mat.Dense, number int, fileName string) error {
 }
 
 // В случае несуществования создать папку umber в matlab папке
-func matlab_mkDir(number int) error {
+func Matlab_mkDir(number int) error {
 	if !exists("File_For_MatLab" + OpSystemFilder + strconv.Itoa(number)) { // Если файл не создан
 		err := os.Mkdir("File_For_MatLab"+OpSystemFilder+strconv.Itoa(number), 0777)
 		if err != nil {
