@@ -143,7 +143,7 @@ func Matlab_mat_Dense(X mat.Dense, number int, fileName string) error {
 	n, m := X.Dims()
 	for i := 0; i < n; i++ {
 		for j := 0; j < m; j++ {
-			file_graph.SetCellValue("main", getColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
+			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
 	if err := file_graph.SaveAs("File_For_MatLab" + OpSystemFilder + strconv.Itoa(number) + OpSystemFilder + fileName + ".xlsx"); err != nil {

@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"main/pkg/oss"
+
 	"github.com/Arafatk/glot"
 	"github.com/xuri/excelize/v2"
 	"gonum.org/v1/gonum/mat"
@@ -62,7 +64,7 @@ func MakeGraphYX_float64(x, y []float64, filename string) error {
 	debug := false
 	plot, _ := glot.NewPlot(dimensions, persist, debug)
 	plot.AddPointGroup(filename, "lines", [][]float64{y, x})
-	plot.SavePlot("png" + OpSystemFilder + filename + ".png")
+	plot.SavePlot("png" + oss.OpSystemFilder + filename + ".png")
 	return nil
 }
 

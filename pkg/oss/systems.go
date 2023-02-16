@@ -27,7 +27,7 @@ func SafeToXlsxMatrix(X *mat.Dense, xlsxName string) {
 	n, m := X.Dims()
 	for i := 0; i < n; i++ {
 		for j := 0; j < m; j++ {
-			file_graph.SetCellValue("main", getColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
+			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
 	if err := file_graph.SaveAs("files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
@@ -41,7 +41,7 @@ func SafeToXlsxDualArray(X [][]float64, xlsxName string) {
 	file_graph.DeleteSheet("Sheet1")
 	for ind1, val1 := range X {
 		for ind2, val2 := range val1 {
-			file_graph.SetCellValue("main", getColumnName(ind2+1)+strconv.Itoa(ind1), val2)
+			file_graph.SetCellValue("main", GetColumnName(ind2+1)+strconv.Itoa(ind1), val2)
 		}
 	}
 	if err := file_graph.SaveAs("files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
@@ -56,7 +56,7 @@ func SafeToXlsxM(X mat.Dense, xlsxName string) {
 	n, m := X.Dims()
 	for i := 0; i < n; i++ {
 		for j := 0; j < m; j++ {
-			file_graph.SetCellValue("main", getColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
+			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
 	if err := file_graph.SaveAs("files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
@@ -64,7 +64,7 @@ func SafeToXlsxM(X mat.Dense, xlsxName string) {
 	}
 	file_graph.Close()
 }
-func getColumnName(col int) string { /*
+func GetColumnName(col int) string { /*
 		name := make([]byte, 0, 3) // max 16,384 columns (2022)
 		const aLen = 'Z' - 'A' + 1 // alphabet length
 		for ; col > 0; col /= aLen + 1 {
