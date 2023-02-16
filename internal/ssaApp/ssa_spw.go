@@ -240,13 +240,14 @@ func SSA_spw(pw, fmp []float64) {
 			lgl,
 			PhaAcfNrm.Len(), len(lgl))
 
-		oss.SafeToXlsx(pCoef, "pCoef")
+		//oss.SafeToXlsx(pCoef, "pCoef")
+		oss.SafeToXlsxDualArray(pCoef, "pCoef")
 		//fmt.Println(pAcf[0], len(pCoef))
 
 		FrcAcfNrm := make([]float64, lag)
 		for m := 1; m < lag; m++ {
 			//fmt.Println("pCoef[3*lag+m]", 2*lag+m, pCoef[2*lag+m])
-			FrcAcfNrm[m] = math.Abs(pCoef[2*lag+m]) / (2.0 * math.Pi * dt)
+			FrcAcfNrm[m] = math.Abs(pCoef[0][2*lag+m]) / (2.0 * math.Pi * dt)
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
 		insFrc_AcfNrm[j] = oss.Median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw

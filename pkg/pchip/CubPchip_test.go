@@ -16,12 +16,11 @@ func TestPchip(t *testing.T) {
 
 	PhaAcfNrm, _ := oss.Make_singnal_xn("PhaAcfNrm") // Загрузить сигнал из файла PhaAcfNrm.xlsx
 
-	_, pCoef := Pchip(oss.VecDense_in_float64(PhaAcfNrm),
+	_, pCoef := Pchip(PhaAcfNrm,
 		lgl,
 		lgl,
 		len(PhaAcfNrm), len(lgl))
 
-	//fmt.Println(pCoef)
 	oss.SafeToXlsxDualArray(pCoef, "pCoef")
 	/*
 		if result != "Foo" {
