@@ -106,9 +106,9 @@ func Pchip(x, y, new_x []float64, x_len, new_x_len int) ([]float64, [][]float64)
 		hs = (del[low_ip1] - slopes[low_ip1]) / h[low_ip1]
 		hs3 = (slopes[low_ip1+1] - del[low_ip1]) / h[low_ip1]
 		pp_coefs[0][low_ip1] = (hs3 - hs) / h[low_ip1]
-		pp_coefs[0][low_ip1+x_len-1] = 2.0*hs - hs3
-		pp_coefs[0][low_ip1+(2*(x_len-1))] = slopes[low_ip1]
-		pp_coefs[0][low_ip1+(3*(x_len-1))] = y[low_ip1]
+		pp_coefs[1][low_ip1+x_len-1] = 2.0*hs - hs3
+		pp_coefs[2][low_ip1+(2*(x_len-1))] = slopes[low_ip1]
+		pp_coefs[3][low_ip1+(3*(x_len-1))] = y[low_ip1]
 	}
 
 	for ix := 0; ix < new_x_len; ix++ {
