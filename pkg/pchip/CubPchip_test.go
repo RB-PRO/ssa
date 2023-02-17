@@ -1,8 +1,12 @@
 package pchip
 
 import (
+	"fmt"
 	"math"
+	"strconv"
 	"testing"
+
+	"github.com/xuri/excelize/v2"
 )
 
 func TestPchip(t *testing.T) {
@@ -119,19 +123,38 @@ func TestPchip(t *testing.T) {
 		PhaAcfNrm = append(PhaAcfNrm, 0.400997148971444)
 		PhaAcfNrm = append(PhaAcfNrm, 0)
 	}
-	_, pCoef := Pchip(PhaAcfNrm,
+	_, pCoef, coefs := Pchip(PhaAcfNrm,
 		lgl,
 		lgl,
 		len(PhaAcfNrm), len(lgl))
 
-	t.Log(pCoef[0][0], pCoef[0][1], pCoef[0][1], pCoef[0][3], pCoef[0][4])
-	t.Log(pCoef[1][0], pCoef[1][1], pCoef[1][1], pCoef[1][3], pCoef[1][4])
-	t.Log(pCoef[2][0], pCoef[2][1], pCoef[2][1], pCoef[2][3], pCoef[2][4])
-	t.Log(pCoef[3][0], pCoef[3][1], pCoef[3][1], pCoef[3][3], pCoef[3][4])
+	t.Log(len(pCoef), pCoef[0], pCoef[1], pCoef[1], pCoef[3], pCoef[4])
+
+	t.Log(coefs.a[0], coefs.a[1], coefs.a[2], coefs.a[3])
+	t.Log(coefs.b[0], coefs.b[1], coefs.b[2], coefs.b[3])
+	t.Log(coefs.c[0], coefs.c[1], coefs.c[2], coefs.c[3])
+	t.Log(coefs.d[0], coefs.d[1], coefs.d[2], coefs.d[3])
+
+	safeToXlsx(coefs.a, "coefs.a")
+	safeToXlsx(coefs.b, "coefs.b")
+	safeToXlsx(coefs.c, "coefs.c")
+	safeToXlsx(coefs.d, "coefs.d")
+
 	//oss.SafeToXlsxDualArray(pCoef, "pCoef")
 	/*
 		if result != "Foo" {
 			t.Errorf("Result was incorrect, got: %s, want: %s.", result, "Foo")
 		}
 	*/
+}
+func safeToXlsx(sig []float64, name string) {
+	file_graph := excelize.NewFile()
+	file_graph.NewSheet("main")
+	file_graph.DeleteSheet("Sheet1")
+	for ind, val := range sig {
+		file_graph.SetCellValue("main", "A"+strconv.Itoa(ind+1), val)
+	}
+	if err := file_graph.SaveAs(name + ".xlsx"); err != nil {
+		fmt.Println(err)
+	}
 }

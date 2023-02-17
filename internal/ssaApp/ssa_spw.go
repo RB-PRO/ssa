@@ -194,7 +194,7 @@ func SSA_spw(pw, fmp []float64) {
 				NumMax.Len(), len(lgl))
 		*/
 
-		acfEnvelope, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax),
+		acfEnvelope, _, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax),
 			oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
 			lgl,
 			NumMax.Len(), len(lgl))
@@ -235,19 +235,19 @@ func SSA_spw(pw, fmp []float64) {
 	for j := 0; j < S; j++ {
 		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
-		_, pCoef := pchip.Pchip(oss.VecDense_in_float64(PhaAcfNrm),
+		_, pCoef, _ := pchip.Pchip(oss.VecDense_in_float64(PhaAcfNrm),
 			lgl,
 			lgl,
 			PhaAcfNrm.Len(), len(lgl))
 
-		//oss.SafeToXlsx(pCoef, "pCoef")
-		oss.SafeToXlsxDualArray(pCoef, "pCoef")
+		oss.SafeToXlsx(pCoef, "pCoef")
+		//oss.SafeToXlsxDualArray(pCoef, "pCoef")
 		//fmt.Println(pAcf[0], len(pCoef))
 
 		FrcAcfNrm := make([]float64, lag)
 		for m := 1; m < lag; m++ {
 			//fmt.Println("pCoef[3*lag+m]", 2*lag+m, pCoef[2*lag+m])
-			FrcAcfNrm[m] = math.Abs(pCoef[0][2*lag+m]) / (2.0 * math.Pi * dt)
+			FrcAcfNrm[m] = math.Abs(pCoef[2*lag+m]) / (2.0 * math.Pi * dt)
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
 		insFrc_AcfNrm[j] = oss.Median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw
