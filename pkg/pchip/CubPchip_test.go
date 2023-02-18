@@ -123,22 +123,22 @@ func TestPchip(t *testing.T) {
 		PhaAcfNrm = append(PhaAcfNrm, 0.400997148971444)
 		PhaAcfNrm = append(PhaAcfNrm, 0)
 	}
-	_, pCoef, coefs := Pchip(PhaAcfNrm,
+	_, _, coefs := Pchip(PhaAcfNrm,
 		lgl,
 		lgl,
 		len(PhaAcfNrm), len(lgl))
 
-	t.Log(len(pCoef), pCoef[0], pCoef[1], pCoef[1], pCoef[3], pCoef[4])
+	//t.Log(len(pCoef), pCoef[0], pCoef[1], pCoef[1], pCoef[3], pCoef[4])
 
-	t.Log(coefs.a[0], coefs.a[1], coefs.a[2], coefs.a[3])
-	t.Log(coefs.b[0], coefs.b[1], coefs.b[2], coefs.b[3])
-	t.Log(coefs.c[0], coefs.c[1], coefs.c[2], coefs.c[3])
-	t.Log(coefs.d[0], coefs.d[1], coefs.d[2], coefs.d[3])
+	t.Log(coefs.A[0], coefs.A[1], coefs.A[2], coefs.A[3])
+	t.Log(coefs.B[0], coefs.B[1], coefs.B[2], coefs.B[3])
+	t.Log(coefs.C[0], coefs.C[1], coefs.C[2], coefs.C[3])
+	t.Log(coefs.D[0], coefs.D[1], coefs.D[2], coefs.D[3])
 
-	safeToXlsx(coefs.a, "coefs.a")
-	safeToXlsx(coefs.b, "coefs.b")
-	safeToXlsx(coefs.c, "coefs.c")
-	safeToXlsx(coefs.d, "coefs.d")
+	safeToXlsx(coefs.A, "coefs.A")
+	safeToXlsx(coefs.B, "coefs.B")
+	safeToXlsx(coefs.C, "coefs.C")
+	safeToXlsx(coefs.D, "coefs.D")
 
 	//oss.SafeToXlsxDualArray(pCoef, "pCoef")
 	/*

@@ -6,7 +6,6 @@ import (
 	"main/pkg/graph"
 	"main/pkg/oss"
 	"main/pkg/pchip"
-	"main/pkg/savgol"
 	"main/pkg/ssa"
 	"math"
 
@@ -235,7 +234,7 @@ func SSA_spw(pw, fmp []float64) {
 	for j := 0; j < S; j++ {
 		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
-		_, pCoef, _ := pchip.Pchip(oss.VecDense_in_float64(PhaAcfNrm),
+		_, pCoef, coef := pchip.Pchip(oss.VecDense_in_float64(PhaAcfNrm),
 			lgl,
 			lgl,
 			PhaAcfNrm.Len(), len(lgl))
@@ -247,13 +246,14 @@ func SSA_spw(pw, fmp []float64) {
 		FrcAcfNrm := make([]float64, lag)
 		for m := 1; m < lag; m++ {
 			//fmt.Println("pCoef[3*lag+m]", 2*lag+m, pCoef[2*lag+m])
-			FrcAcfNrm[m] = math.Abs(pCoef[2*lag+m]) / (2.0 * math.Pi * dt)
+			FrcAcfNrm[m] = math.Abs(coef.B[m-1]) / (2.0 * math.Pi * dt)
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
 		insFrc_AcfNrm[j] = oss.Median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw
 	}
 
-	smo_insFrc_AcfNrm := savgol.SavGolFilter(insFrc_AcfNrm, S/2-1, S/4, 0, 1.0)
+	//smo_insFrc_AcfNrm := savgol.SavGolFilter(insFrc_AcfNrm, S/2-1, S/4, 0, 1.0)
+	smo_insFrc_AcfNrm := insFrc_AcfNrm
 
 	//smo_insFrc_AcfNrm := savitzky_goley(insFrc_AcfNrm, 33, 2)
 

@@ -50,7 +50,7 @@ func exteriorSlope(d1, d2, h1, h2 float64) float64 {
 }
 
 type PchipCoefs struct {
-	a, b, c, d []float64
+	A, B, C, D []float64
 }
 
 func Pchip(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64, PchipCoefs) {
@@ -146,15 +146,15 @@ func Pchip(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64, P
 
 	var coefs PchipCoefs
 	lenCoefs := len(pp_coefs) / 4
-	coefs.a = make([]float64, lenCoefs)
-	coefs.b = make([]float64, lenCoefs)
-	coefs.c = make([]float64, lenCoefs)
-	coefs.d = make([]float64, lenCoefs)
+	coefs.A = make([]float64, lenCoefs)
+	coefs.B = make([]float64, lenCoefs)
+	coefs.C = make([]float64, lenCoefs)
+	coefs.D = make([]float64, lenCoefs)
 	for i := 0; i < lenCoefs; i++ {
-		coefs.a[i] = pp_coefs[i]
-		coefs.b[i] = pp_coefs[1*(len(pp_coefs)/4)+i]
-		coefs.c[i] = pp_coefs[2*(len(pp_coefs)/4)+i]
-		coefs.d[i] = pp_coefs[3*(len(pp_coefs)/4)+i]
+		coefs.A[i] = pp_coefs[i]
+		coefs.B[i] = pp_coefs[1*(len(pp_coefs)/4)+i]
+		coefs.C[i] = pp_coefs[2*(len(pp_coefs)/4)+i]
+		coefs.D[i] = pp_coefs[3*(len(pp_coefs)/4)+i]
 	}
 
 	return new_y, pp_coefs, coefs
