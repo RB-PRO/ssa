@@ -1,7 +1,6 @@
 package pchip
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 	"testing"
@@ -135,10 +134,7 @@ func TestPchip(t *testing.T) {
 	t.Log(coefs.C[0], coefs.C[1], coefs.C[2], coefs.C[3])
 	t.Log(coefs.D[0], coefs.D[1], coefs.D[2], coefs.D[3])
 
-	safeToXlsx(coefs.A, "coefs.A")
-	safeToXlsx(coefs.B, "coefs.B")
-	safeToXlsx(coefs.C, "coefs.C")
-	safeToXlsx(coefs.D, "coefs.D")
+	safeToXlsx(coefs)
 
 	//oss.SafeToXlsxDualArray(pCoef, "pCoef")
 	/*
@@ -147,14 +143,20 @@ func TestPchip(t *testing.T) {
 		}
 	*/
 }
-func safeToXlsx(sig []float64, name string) {
-	file_graph := excelize.NewFile()
-	file_graph.NewSheet("main")
-	file_graph.DeleteSheet("Sheet1")
-	for ind, val := range sig {
-		file_graph.SetCellValue("main", "A"+strconv.Itoa(ind+1), val)
+
+// Сохранить в xlsx для дебага
+func safeToXlsx(coefs PchipCoefs) {
+	file_graph, _ := excelize.OpenFile("pchip.xlsx", excelize.Options{})
+	//file_graph.NewSheet("golang")
+	lenFor := len(coefs.A)
+	for ind := 0; ind < lenFor; ind++ {
+		file_graph.SetCellValue("golang", "B"+strconv.Itoa(ind+1), coefs.A[ind])
+		file_graph.SetCellValue("golang", "C"+strconv.Itoa(ind+1), coefs.B[ind])
+		file_graph.SetCellValue("golang", "D"+strconv.Itoa(ind+1), coefs.C[ind])
+		file_graph.SetCellValue("golang", "E"+strconv.Itoa(ind+1), coefs.D[ind])
 	}
-	if err := file_graph.SaveAs(name + ".xlsx"); err != nil {
-		fmt.Println(err)
-	}
+	file_graph.Save()
+	//if err := file_graph.SaveAs("pchip.xlsx"); err != nil {
+	//	fmt.Println(err)
+	//}
 }

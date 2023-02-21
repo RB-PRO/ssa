@@ -151,10 +151,10 @@ p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
 plot(ns,insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
 xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
 legend(p1,'sET12');
-%% ������ ��� ����������� ����� ��� �������� pw
-smopto = 3; % �������� ����������� ������������� �������
+%% Оценки СПМ сингулярных троек для сегменов pw
+smopto = 3; % параметр сглаживания периодограммы Томсона
 for j=1:S
-   pto_sET12(:,j) = pmtm(sET12(:,j),smopto,win); % ������������� �������
+   pto_sET12(:,j) = pmtm(sET12(:,j),smopto,win); % периодограмма Томсона
 end
 %% ������������ ��� ����������� ����� �������� pw
 fmi  = 40.0/60.0;   % ������� ����� ��� 40 ��/��� (0.6667 ��)
