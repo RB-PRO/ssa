@@ -7,9 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"main/pkg/oss"
-
 	"github.com/Arafatk/glot"
+	"github.com/RB-PRO/ssa/pkg/oss"
 	"github.com/xuri/excelize/v2"
 	"gonum.org/v1/gonum/mat"
 )

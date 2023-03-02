@@ -34,7 +34,8 @@ func Pmtm(x []float64, n int) []float64 {
 
 	// fft
 	fft_signal := fft.FFTReal(x)
-	P2 := make([]float64, L)
+	//fmt.Println(len(fft_signal))
+	P2 := make([]float64, len(fft_signal))
 	for i := 0; i < len(P2); i++ {
 		P2[i] = cmplx.Abs(fft_signal[i] / 1024.0)
 	}

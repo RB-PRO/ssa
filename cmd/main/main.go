@@ -1,6 +1,6 @@
 package main
 
-import "main/internal/ssaApp"
+import "github.com/RB-PRO/ssa/internal/ssaApp"
 
 func main() {
 	ssaApp.SsaAnalysis()

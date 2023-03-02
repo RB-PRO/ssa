@@ -1,8 +1,6 @@
 package pchip
 
-import (
-	"github.com/ready-steady/linear/system"
-)
+import "github.com/ready-steady/linear/system"
 
 // Cubic is a cubic-spline interpolant.
 type Cubic struct {

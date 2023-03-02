@@ -158,6 +158,14 @@ func VecDense_in_float64(vec mat.VecDense) []float64 {
 	}
 	return output
 }
+func Vec_in_float64(vec mat.Vector) []float64 {
+	leng, _ := vec.Dims()
+	output := make([]float64, leng)
+	for ind := range output {
+		output[ind] = vec.AtVec(ind)
+	}
+	return output
+}
 
 // AsSymDense attempts return a SymDense from the provided Dense.
 func AsSymDense(m *mat.Dense) (*mat.SymDense, error) {
