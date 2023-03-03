@@ -231,29 +231,9 @@ func SSA_spw(pw, fmp []float64) {
 
 	// ********************************************************************
 	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
-	insFrc_AcfNrm := make([]float64, S)
-	for j := 0; j < S; j++ {
-		PhaAcfNrm := MakePhaAcfNrm(AcfNrm_sET12.ColView(j))
-
-		_, pCoef, coef := pchip.Pchip(oss.VecDense_in_float64(*PhaAcfNrm),
-			lgl,
-			lgl,
-			PhaAcfNrm.Len(), len(lgl))
-
-		//spline := pchip.NewCubic(lgl, oss.VecDense_in_float64(PhaAcfNrm))
-
-		oss.SafeToXlsx(pCoef, "pCoef")
-		//oss.SafeToXlsxDualArray(pCoef, "pCoef")
-		//fmt.Println(pAcf[0], len(pCoef))
-
-		FrcAcfNrm := make([]float64, lag)
-		for m := 1; m < lag; m++ {
-
-			FrcAcfNrm[m] = math.Abs(coef.B[m-1]) / (2.0 * math.Pi) / dt // pchip
-			//FrcAcfNrm[m] = math.Abs(spline.Weights[m-1]) / (2.0 * math.Pi * dt) // spline
-		}
-		FrcAcfNrm[0] = FrcAcfNrm[1]
-		insFrc_AcfNrm[j] = oss.Median_floatArr(FrcAcfNrm) // средняя(медианная) мгновенная частотта j-го сегмента pw
+	insFrc_AcfNrm, insFrc_AcfNrmErr := Instantaneous_frequency_of_normalized_ACF_sET12(AcfNrm_sET12, S, lag, dt, lgl)
+	if insFrc_AcfNrmErr != nil {
+		log.Println(insFrc_AcfNrmErr)
 	}
 
 	//smo_insFrc_AcfNrm := savgol.SavGolFilter(insFrc_AcfNrm, S/2-1, S/4, 0, 1.0)
