@@ -10,6 +10,8 @@ require (
 
 require github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 
+require github.com/pconstantinou/savitzkygolay v0.0.1
+
 require (
 	github.com/ready-steady/assert v0.0.0-20171126095531-4075406641e2 // indirect
 	github.com/ready-steady/linear v0.0.0-20171126082633-a70307f054cc

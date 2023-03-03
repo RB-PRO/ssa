@@ -147,8 +147,9 @@ end
 figure();
 set(gcf,'name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw');
 clf;
-p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
-plot(ns,insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
+p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on; 
+% plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
+
 xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
 legend(p1,'sET12');
 %% Оценки СПМ сингулярных троек для сегменов pw

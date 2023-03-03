@@ -10,6 +10,7 @@ import (
 	"github.com/RB-PRO/ssa/pkg/pchip"
 	"github.com/RB-PRO/ssa/pkg/pmtm"
 	"github.com/RB-PRO/ssa/pkg/ssa"
+	"github.com/pconstantinou/savitzkygolay"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -236,8 +237,13 @@ func SSA_spw(pw, fmp []float64) {
 		log.Println(insFrc_AcfNrmErr)
 	}
 
-	//smo_insFrc_AcfNrm := savgol.SavGolFilter(insFrc_AcfNrm, S/2-1, S/4, 0, 1.0)
-	smo_insFrc_AcfNrm := insFrc_AcfNrm
+	// filter savitzky-goley
+	filter, savitzky_goley_Error := savitzkygolay.NewFilterWindow(53)
+	if savitzky_goley_Error != nil {
+		log.Fatalln(savitzky_goley_Error)
+	}
+	smo_insFrc_AcfNrm, _ := filter.Process(insFrc_AcfNrm, lgl)
+	//smo_insFrc_AcfNrm := insFrc_AcfNrm
 
 	//smo_insFrc_AcfNrm := savitzky_goley(insFrc_AcfNrm, 33, 2)
 

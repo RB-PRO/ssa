@@ -1,7 +1,8 @@
+%% Compare reconstruction and original time series
 clear; close all; clc;
 
-%% Compare reconstruction and original time series
     %% Covariance matrix - Picture 1
+    % Ковариационная матрица
     C=loadData(1,"C");
     figure();
     set(gcf,'name','Covariance matrix');
@@ -12,6 +13,7 @@ clear; close all; clc;
     colorbar;
 
     %% Eigenvalues - Picture 2
+    % Собственный вектор
     LBD=loadData(2,"LBD");
     figure();
     set(gcf,'name','Eigenvalues')
@@ -19,6 +21,7 @@ clear; close all; clc;
     plot(LBD,'o-');
 
     %% Original time series and reconstruction - Picture 3
+    % Первоначальный временной ряд и его реконструкция для sET12
     seg = 100; % номер сегмента pw для визуализации
     win = 1024;
     spw=loadData(3,"spw");
@@ -30,6 +33,7 @@ clear; close all; clc;
     legend('Original','sET12'); xlabel("t,s",'interp','none'); ylabel("sET",'interp','none');
     
     %% Original time series and reconstruction - Picture 4
+    % Первоначальный временной ряд и его реконструкция для sET34
     seg = 100; % номер сегмента pw для визуализации
     win = 1024;
     spw=loadData(4,"spw");
@@ -40,7 +44,7 @@ clear; close all; clc;
     plot(tim(1:win),spw(:,seg),'b-',tim(1:win),sET34(:,seg),'r-');
     legend('Original','sET34'); xlabel("t,s",'interp','none'); ylabel("sET",'interp','none');
     
-    %% Визуализация АКФ сингулярных троек для сегментов pw - Picture 6
+    %% Визуализация АКФ сингулярных троек для сегментов pw - Picture 5
     lag  = floor(win/10); % наибольший лаг АКФ <= win/10
     lagS = 2*lag;
     ns=loadData(5,"ns");
@@ -54,7 +58,7 @@ clear; close all; clc;
     xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
     zlabel("Acf",'interp','none'); grid on;
     
-    %% - Picture 3
+    %% Огибающие АКФ сингулярных троек sET12 сегментов pw - Picture 6
     ns=loadData(6,"ns");
     Time=loadData(6,"Time")';
     EnvAcf_sET12=loadData(6,"EnvAcf_sET12");
@@ -67,7 +71,7 @@ clear; close all; clc;
     xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
     zlabel("Env_Acf",'interp','none'); grid on;
 
-    %% - Picture 7
+    %% Нормированные АКФ сингулярных троек sET12 сегментов pw - Picture 7
     ns=loadData(7,"ns");
     Time=loadData(7,"Time")';
     AcfNrm_sET12=loadData(7,"AcfNrm_sET12");
@@ -80,7 +84,7 @@ clear; close all; clc;
     xlabel("ns",'interp','none'); ylabel("lag,s",'interp','none');
     zlabel("Acf_Nrm",'interp','none'); grid on;
     
-    %% - Picture 8
+    %% Частоты нормир-ой АКФ сингуляр-х троек сегментов pw - Picture 8
     ns=loadData(8,"ns");
     insFrc_AcfNrm=loadData(8,"insFrc_AcfNrm");
     smo_insFrc_AcfNrm=loadData(8,"smo_insFrc_AcfNrm")';
@@ -88,11 +92,12 @@ clear; close all; clc;
     set(gcf,'name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw');
     clf;
     p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
+    plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.4)
     % plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
     xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
-    legend(p1,'sET12');
+    legend(p1,'sET12'); 
     
-    %% - Picture 9
+    %% Периодограмма Томсона sET12 сегментов pw - Picture 9
     figure();
     iGmin=loadVar(9,"iGmin");
     iGmax=loadVar(9,"iGmax");
@@ -105,25 +110,3 @@ clear; close all; clc;
     colorbar; grid on;
     xlabel("ns",'interp','none'); ylabel("f,Hz",'interp','none');
     zlabel("P(f)",'interp','none');
-    
-    %% - Picture 10
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
