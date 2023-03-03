@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"main/pkg/oss"
 
+	"github.com/RB-PRO/ssa/pkg/oss"
 	"gonum.org/v1/gonum/mat"
 )
 

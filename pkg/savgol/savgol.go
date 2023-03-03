@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"main/pkg/oss"
-
+	"github.com/RB-PRO/ssa/pkg/oss"
 	"github.com/mjibson/go-dsp/fft"
 	"github.com/pkg/errors"
 	"gonum.org/v1/gonum/blas"

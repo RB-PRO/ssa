@@ -199,7 +199,7 @@ func SSA_spw(pw, fmp []float64) {
 			lgl,
 			NumMax.Len(), len(lgl))
 
-		fmt.Println(Nmax, len(lgl))
+		//fmt.Println(Nmax, len(lgl))
 
 		EnvAcf_sET12.SetCol(j, acfEnvelope)
 
@@ -233,9 +233,9 @@ func SSA_spw(pw, fmp []float64) {
 	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
 	insFrc_AcfNrm := make([]float64, S)
 	for j := 0; j < S; j++ {
-		PhaAcfNrm := makePhaAcfNrm(AcfNrm_sET12.ColView(j))
+		PhaAcfNrm := MakePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
-		_, pCoef, coef := pchip.Pchip(oss.VecDense_in_float64(PhaAcfNrm),
+		_, pCoef, coef := pchip.Pchip(oss.VecDense_in_float64(*PhaAcfNrm),
 			lgl,
 			lgl,
 			PhaAcfNrm.Len(), len(lgl))
@@ -249,7 +249,7 @@ func SSA_spw(pw, fmp []float64) {
 		FrcAcfNrm := make([]float64, lag)
 		for m := 1; m < lag; m++ {
 
-			FrcAcfNrm[m] = math.Abs(coef.B[m-1]) / (2.0 * math.Pi * dt) // pchip
+			FrcAcfNrm[m] = math.Abs(coef.B[m-1]) / (2.0 * math.Pi) / dt // pchip
 			//FrcAcfNrm[m] = math.Abs(spline.Weights[m-1]) / (2.0 * math.Pi * dt) // spline
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]
@@ -291,17 +291,18 @@ func SSA_spw(pw, fmp []float64) {
 	var iGmin, iGmax int
 	smopto := 3 // параметр сглаживания периодограммы Томсона
 	// Визуализация СПМ сингулярных троек сегменов pw
-	fmi := 40.0 / 60.0                  // частота среза для 40 уд/мин (0.6667 Гц)
-	fma := 240.0 / 60.0                 // частота среза для 240 уд/мин (4.0 Гц)
-	Nf := 1 + win/2                     // кол-во отсчетов частоты
-	df := float64(cad) / float64(win-1) // интервал дискретизации частоты, Гц
-	Fmin := fmi - float64(10*df)
-	Fmax := fma + float64(10*df) // частота в Гц
-	pto_sET12 := pto_sET12_init(*sET12, smopto, win, Nf, S)
+	fmi := 40.0 / 60.0                                      // частота среза для 40 уд/мин (0.6667 Гц)
+	fma := 240.0 / 60.0                                     // частота среза для 240 уд/мин (4.0 Гц)
+	Nf := 1 + win/2                                         // кол-во отсчетов частоты
+	df := float64(cad) / float64(win-1)                     // интервал дискретизации частоты, Гц
+	Fmin := fmi - float64(10*df)                            // частота в Гц, min
+	Fmax := fma + float64(10*df)                            // частота в Гц, max
+	pto_sET12 := pto_sET12_init(*sET12, smopto, win, Nf, S) // Расчёт оценки СПМ сингулярных троек для сегменов pw
+	oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12")            // Сохранить в Xlsx матрицу оценки СПМ
 
 	f := make([]float64, Nf)
 	for i := 2; i < Nf; i++ {
-		f[i] = f[i-1] + df
+		f[i] = f[i-1] + df // частота в герцах
 		if math.Abs(f[i]-Fmin) <= df {
 			iGmin = i
 		}
@@ -311,11 +312,11 @@ func SSA_spw(pw, fmp []float64) {
 	}
 	fG := make([]float64, iGmax)
 	for i := 0; i < iGmax; i++ {
-		fG[i] = f[i]
+		fG[i] = f[i] // сетка частот 3D-графика
 	}
 	oss.Matlab_arr_float(ns, 9, "ns")
 	oss.Matlab_arr_float(fG, 9, "fG")
-	oss.Matlab_mat_Dense(pto_sET12, 9, "pto_sET12")
+	oss.Matlab_mat_Dense(*pto_sET12, 9, "pto_sET12")
 	oss.Matlab_variable(iGmin, 9, "iGmin")
 	oss.Matlab_variable(iGmax, 9, "iGmax")
 
@@ -372,26 +373,23 @@ func wav(N, S, W, res int, sET mat.Dense) ([]float64, []float64, []float64, []fl
 	return NS, w_avr, w_med, w_iqr
 }
 
-func pto_sET12_init(sET12 mat.Dense, smopto, win, Nf, S int) mat.Dense {
+// Формирование оценки СПМ сингулярных троек для сегменов pw
+func pto_sET12_init(sET12 mat.Dense, smopto, win, Nf, S int) *mat.Dense {
 	pto_sET12 := mat.NewDense(Nf, S, nil)
 	for j := 0; j < S; j++ {
-		pto_sET12.SetCol(j, pmtmMy(pto_sET12.ColView(j), smopto, win))
+		pto_sET12.SetCol(j, pmtmMy(sET12.ColView(j), smopto, win))
 	}
-	return *pto_sET12
+	return pto_sET12
 }
 func pmtmMy(sET12 mat.Vector, smopto, win int) []float64 {
-	outArr := make([]float64, 513)
-	outArr = pmtm.Pmtm(oss.Vec_in_float64(sET12), 1024)
-	return outArr
+	return pmtm.Pmtm(oss.Vec_in_float64(sET12), 1024)
 }
 
 // Расчёты вектора PhaAcfNrm, модуль от Акосинуса.
-func makePhaAcfNrm(vect mat.Vector) mat.VecDense {
+func MakePhaAcfNrm(vect mat.Vector) *mat.VecDense {
 	output := mat.VecDenseCopyOf(vect)
-
 	for i := 0; i < output.Len(); i++ {
 		output.SetVec(i, math.Abs(math.Acos(output.AtVec(i))))
 	}
-
-	return *output
+	return output
 }

@@ -2,11 +2,11 @@ package pmtm_test
 
 import (
 	"fmt"
-	"main/pkg/oss"
-	"main/pkg/pmtm"
 	"strconv"
 	"testing"
 
+	"github.com/RB-PRO/ssa/pkg/oss"
+	"github.com/RB-PRO/ssa/pkg/pmtm"
 	"github.com/xuri/excelize/v2"
 )
 
