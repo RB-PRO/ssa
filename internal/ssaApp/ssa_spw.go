@@ -307,6 +307,22 @@ func SSA_spw(pw, fmp []float64) {
 	oss.Matlab_variable(iGmax, 9, "iGmax")
 
 	// Оценки средних частот основного тона сингулярных троек сегментов pw
+	pto_fMAX12 := make([]float64, S)
+	for index := range pto_fMAX12 {
+		_, I := oss.MaxArrFloat64(oss.Vec_in_ArrFloat(pto_sET12.ColView(index))) // Поиск индекса максимального значения массива
+		pto_fMAX12[index] = f[I]
+	}
+	oss.Matlab_arr_float(ns, 10, "ns")
+	oss.Matlab_arr_float(pto_fMAX12, 10, "pto_fMAX12")
+	err_pto_fMAX12 := graph.MakeGraphYX_float64(
+		pto_fMAX12,
+		ns,
+		"pto_fMAX12")
+	if err_pto_fMAX12 != nil {
+		fmt.Println(err_pto_fMAX12)
+	}
+
+	oss.SafeToXlsx(f, "f")
 
 	// ***
 

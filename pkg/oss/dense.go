@@ -40,3 +40,15 @@ func MakeMatrix(r int, c int, value func(i, j int) float64) *mat.Dense {
 	}
 	return mat.NewDense(r, c, data)
 }
+
+// Поиск максимального значения массива и его индекс
+func MaxArrFloat64(array []float64) (valueMax float64, indexMax int) {
+	valueMax = array[0]
+	for ind, val := range array {
+		if val >= valueMax {
+			valueMax = val
+			indexMax = ind
+		}
+	}
+	return valueMax, indexMax
+}

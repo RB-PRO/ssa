@@ -144,11 +144,13 @@ for j=1:S % цикл по сегментам АКФ
    insFrc_AcfNrm(j) = median(FrcAcfNrm); % ������� ���������� �������� j-�� �������� pw 
 end
 % smo_insFrc_AcfNrm = smooth(insFrc_AcfNrm,0.25*S,'rloess');
+smo_insFrc_AcfNrm = smoothdata(insFrc_AcfNrm,'rloess',0.25*S);
+
 figure();
 set(gcf,'name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw');
 clf;
 p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on; 
-% plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
+plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on; % smo_insFrc_AcfNrm
 
 xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
 legend(p1,'sET12');
@@ -184,19 +186,20 @@ mesh(ns,fG(iGmin:iGmax),pto_sET12(iGmin:iGmax,:),'FaceAlpha',0.5,'FaceColor','fl
 colorbar; grid on;
 xlabel("ns",'interp','none'); ylabel("f,Hz",'interp','none');
 zlabel("P(f)",'interp','none');
-%% ������ ������� ������ ��������� ���� ����������� ����� ��������� pw
+%% Оценки средних частот основного тона сингулярных троек сегментов pw
 for j=1:S
    [B,I] = sort(pto_sET12(:,j),'descend');
-   pto_fMAX12(j) = f(I(1)); % I(1) - ������ �������(��) ��������� pto_sET12(:,j)
+   pto_fMAX12(j) = f(I(1)); % I(1) - индекс частоты(Гц) максимума pto_sET12(:,j)
 end
 pto_fMAX12 = pto_fMAX12';
 % smo_pto_fMAX12 = smooth(pto_fMAX12,0.3*S,'rloess');
+smo_pto_fMAX12 = smoothdata(pto_fMAX12,'rloess',0.3*S);
 %
 figure();
-set(gcf,'name','������� ��������� ���� sET ��������� pw');
+set(gcf,'name','Частоты основного тона sET сегментов pw');
 clf;
 plot(ns,pto_fMAX12,'b'); hold on;
-% plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
+plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
 xlabel("ns",'interp','none'); ylabel("fMAX,Hz",'interp','none');
 %% ������������� ��������� ��������� ��������� ����� cpw
 [NumS,cpw_avr,cpw_med,cpw_iqr] = wav(NSF,S,win,res,sET12);
@@ -245,9 +248,9 @@ for i=2:NSF
 end
 insF_cpw(1) = insF_cpw(2);
 insF_cpw = insF_cpw';
-smo_insF_cpw = smooth(insF_cpw,0.03*NSF,'rloess');
+smo_insF_cpw = smoothdata(insF_cpw,'rloess',0.3*NSF); % smo_insF_cpw = smooth(insF_cpw,0.03*NSF,'rloess');
 res_insF_cpw = insF_cpw-smo_insF_cpw; % ������� ������� 
-dev_insF_cpw = smooth(res_insF_cpw.^2,0.03*NSF,'rloess');
+dev_insF_cpw = smoothdata(res_insF_cpw.^2,'rloess',0.03*NSF); % dev_insF_cpw = smooth(res_insF_cpw.^2,0.03*NSF,'rloess');
 std_insF_cpw = abs(sqrt(dev_insF_cpw));
 figure();
 set(gcf,'name','Frequencie and energy pulse wave')

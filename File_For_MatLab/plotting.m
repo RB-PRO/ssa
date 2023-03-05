@@ -110,3 +110,14 @@ clear; close all; clc;
     colorbar; grid on;
     xlabel("ns",'interp','none'); ylabel("f,Hz",'interp','none');
     zlabel("P(f)",'interp','none');
+    
+    %% Агрегирование сегментов очищенной пульсовой волны cpw - Picture 10
+    figure();
+    ns=loadData(10,"ns");
+    pto_fMAX12=loadData(10,"pto_fMAX12");
+    set(gcf,'name','Частоты основного тона sET сегментов pw');
+    clf;
+    plot(ns,pto_fMAX12,'b'); hold on; grid on;
+    % plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
+    xlabel("ns",'interp','none'); ylabel("fMAX,Hz",'interp','none');
+
