@@ -1,6 +1,0 @@
-function coefs = RBpchip(PhaAcfNrm) %#codegen
-    S=102;
-    lgl=1:S;
-      pchip= pchip(lgl,PhaAcfNrm).coefs(:,3);
-      coefs=
-end

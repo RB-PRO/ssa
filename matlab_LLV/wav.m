@@ -1,4 +1,4 @@
-    function [NS,w_avr,w_med,w_iqr] = wav(N,S,W,res,sET)
+function [NS,w_avr,w_med,w_iqr] = wav(N,S,W,res,sET)
    ET = zeros(N,S);
    for j=1:S % цикл по сегментам
       for i=1:W

@@ -1,7 +1,7 @@
 <deployment-project plugin="plugin.coder" plugin-version="R2018b">
-  <configuration file="D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pmtmMy.prj" location="D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV" name="pmtmMy" target="target.unifiedcoder" target-name="MATLAB Coder">
+  <configuration build-checksum="1891591821" file="D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pchip\RBpchip.prj" location="D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pchip" name="RBpchip" target="target.unifiedcoder" target-name="MATLAB Coder">
     <profile key="profile.mex">
-      <param.BuiltInstrumentedMex />
+      <param.BuiltInstrumentedMex>false</param.BuiltInstrumentedMex>
       <param.RanInstrumentedMex>false</param.RanInstrumentedMex>
       <param.WorkingFolder>option.WorkingFolder.Project</param.WorkingFolder>
       <param.SpecifiedWorkingFolder />
@@ -34,7 +34,7 @@
       <param.DefaultTestFile />
       <param.MergeInstrumentationResults>false</param.MergeInstrumentationResults>
       <param.VerificationMode>option.VerificationMode.None</param.VerificationMode>
-      <param.VerificationStatus>option.VerificationStatus.Inactive</param.VerificationStatus>
+      <param.VerificationStatus>option.VerificationStatus.Passed</param.VerificationStatus>
       <param.EnableMexProfiling>false</param.EnableMexProfiling>
       <var.BuiltWithMexProfiling>false</var.BuiltWithMexProfiling>
       <param.CustomSourceCode />
@@ -64,7 +64,7 @@
       <param.ConstantInputs>option.ConstantInputs.CheckValues</param.ConstantInputs>
       <param.EnableCRICodeCoverage>true</param.EnableCRICodeCoverage>
       <param.EnableJIT>false</param.EnableJIT>
-      <param.EnableJITSilentBailOut />
+      <param.EnableJITSilentBailOut>false</param.EnableJITSilentBailOut>
       <param.CheckForIssuesJIT>true</param.CheckForIssuesJIT>
       <unset>
         <param.BuiltInstrumentedMex />
@@ -100,7 +100,6 @@
         <param.DefaultTestFile />
         <param.MergeInstrumentationResults />
         <param.VerificationMode />
-        <param.VerificationStatus />
         <param.EnableMexProfiling />
         <var.BuiltWithMexProfiling />
         <param.CustomSourceCode />
@@ -232,16 +231,16 @@
       <param.CustomToolchainOptions />
       <var.ToolchainSettingsVisible>true</var.ToolchainSettingsVisible>
       <param.target.Data>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;ctdata&gt;&lt;configuredHardware/&gt;&lt;/ctdata&gt;</param.target.Data>
-      <param.target.ActiveType>option.target.TargetType.MatlabHost</param.target.ActiveType>
+      <param.target.ActiveType>option.target.TargetType.Custom</param.target.ActiveType>
       <param.target.ActiveTarget />
       <param.HardwareVendor.Production>Generic</param.HardwareVendor.Production>
-      <param.HardwareType.Production>MATLAB Host Computer</param.HardwareType.Production>
-      <param.HWDeviceType.Production>Generic-&gt;MATLAB Host Computer</param.HWDeviceType.Production>
+      <param.HardwareType.Production>64-bit Embedded Processor (LP64)</param.HardwareType.Production>
+      <param.HWDeviceType.Production>Generic-&gt;64-bit Embedded Processor (LP64)</param.HWDeviceType.Production>
       <var.instance.enabled.Production>true</var.instance.enabled.Production>
       <param.HardwareSizeChar.Production>8</param.HardwareSizeChar.Production>
       <param.HardwareSizeShort.Production>16</param.HardwareSizeShort.Production>
       <param.HardwareSizeInt.Production>32</param.HardwareSizeInt.Production>
-      <param.HardwareSizeLong.Production>32</param.HardwareSizeLong.Production>
+      <param.HardwareSizeLong.Production>64</param.HardwareSizeLong.Production>
       <param.HardwareSizeLongLong.Production>64</param.HardwareSizeLongLong.Production>
       <param.HardwareSizeFloat.Production>32</param.HardwareSizeFloat.Production>
       <param.HardwareSizeDouble.Production>64</param.HardwareSizeDouble.Production>
@@ -249,20 +248,20 @@
       <param.HardwareSizePointer.Production>64</param.HardwareSizePointer.Production>
       <param.HardwareSizeSizeT.Production>64</param.HardwareSizeSizeT.Production>
       <param.HardwareSizePtrDiffT.Production>64</param.HardwareSizePtrDiffT.Production>
-      <param.HardwareEndianness.Production>option.HardwareEndianness.Little</param.HardwareEndianness.Production>
+      <param.HardwareEndianness.Production>option.HardwareEndianness.Unspecified</param.HardwareEndianness.Production>
       <param.HardwareArithmeticRightShift.Production>true</param.HardwareArithmeticRightShift.Production>
-      <param.HardwareLongLongMode.Production>true</param.HardwareLongLongMode.Production>
+      <param.HardwareLongLongMode.Production>false</param.HardwareLongLongMode.Production>
       <param.HardwareAtomicIntegerSize.Production>option.HardwareAtomicIntegerSize.Char</param.HardwareAtomicIntegerSize.Production>
       <param.HardwareAtomicFloatSize.Production>option.HardwareAtomicFloatSize.None</param.HardwareAtomicFloatSize.Production>
       <param.HardwareDivisionRounding.Production>option.HardwareDivisionRounding.Zero</param.HardwareDivisionRounding.Production>
       <param.HardwareVendor.Target>Generic</param.HardwareVendor.Target>
-      <param.HardwareType.Target>MATLAB Host Computer</param.HardwareType.Target>
-      <param.HWDeviceType.Target>Generic-&gt;MATLAB Host Computer</param.HWDeviceType.Target>
+      <param.HardwareType.Target>64-bit Embedded Processor (LP64)</param.HardwareType.Target>
+      <param.HWDeviceType.Target>Generic-&gt;64-bit Embedded Processor (LP64)</param.HWDeviceType.Target>
       <var.instance.enabled.Target>false</var.instance.enabled.Target>
       <param.HardwareSizeChar.Target>8</param.HardwareSizeChar.Target>
       <param.HardwareSizeShort.Target>16</param.HardwareSizeShort.Target>
       <param.HardwareSizeInt.Target>32</param.HardwareSizeInt.Target>
-      <param.HardwareSizeLong.Target>32</param.HardwareSizeLong.Target>
+      <param.HardwareSizeLong.Target>64</param.HardwareSizeLong.Target>
       <param.HardwareSizeLongLong.Target>64</param.HardwareSizeLongLong.Target>
       <param.HardwareSizeFloat.Target>32</param.HardwareSizeFloat.Target>
       <param.HardwareSizeDouble.Target>64</param.HardwareSizeDouble.Target>
@@ -270,9 +269,9 @@
       <param.HardwareSizePointer.Target>64</param.HardwareSizePointer.Target>
       <param.HardwareSizeSizeT.Target>64</param.HardwareSizeSizeT.Target>
       <param.HardwareSizePtrDiffT.Target>64</param.HardwareSizePtrDiffT.Target>
-      <param.HardwareEndianness.Target>option.HardwareEndianness.Little</param.HardwareEndianness.Target>
+      <param.HardwareEndianness.Target>option.HardwareEndianness.Unspecified</param.HardwareEndianness.Target>
       <param.HardwareArithmeticRightShift.Target>true</param.HardwareArithmeticRightShift.Target>
-      <param.HardwareLongLongMode.Target>true</param.HardwareLongLongMode.Target>
+      <param.HardwareLongLongMode.Target>false</param.HardwareLongLongMode.Target>
       <param.HardwareAtomicIntegerSize.Target>option.HardwareAtomicIntegerSize.Char</param.HardwareAtomicIntegerSize.Target>
       <param.HardwareAtomicFloatSize.Target>option.HardwareAtomicFloatSize.None</param.HardwareAtomicFloatSize.Target>
       <param.HardwareDivisionRounding.Target>option.HardwareDivisionRounding.Zero</param.HardwareDivisionRounding.Target>
@@ -415,34 +414,29 @@
         <param.BuildConfiguration />
         <param.CustomToolchainOptions />
         <var.ToolchainSettingsVisible />
-        <param.target.ActiveType />
         <param.target.ActiveTarget />
         <param.HardwareVendor.Production />
-        <param.HardwareType.Production />
         <param.HWDeviceType.Production />
         <var.instance.enabled.Production />
         <param.HardwareSizeChar.Production />
         <param.HardwareSizeShort.Production />
         <param.HardwareSizeInt.Production />
-        <param.HardwareSizeLong.Production />
         <param.HardwareSizeLongLong.Production />
         <param.HardwareSizeFloat.Production />
         <param.HardwareSizeDouble.Production />
-        <param.HardwareEndianness.Production />
+        <param.HardwareLongLongMode.Production />
         <param.HardwareAtomicIntegerSize.Production />
         <param.HardwareAtomicFloatSize.Production />
         <param.HardwareVendor.Target />
-        <param.HardwareType.Target />
         <param.HWDeviceType.Target />
         <var.instance.enabled.Target />
         <param.HardwareSizeChar.Target />
         <param.HardwareSizeShort.Target />
         <param.HardwareSizeInt.Target />
-        <param.HardwareSizeLong.Target />
         <param.HardwareSizeLongLong.Target />
         <param.HardwareSizeFloat.Target />
         <param.HardwareSizeDouble.Target />
-        <param.HardwareEndianness.Target />
+        <param.HardwareLongLongMode.Target />
         <param.HardwareAtomicIntegerSize.Target />
         <param.HardwareAtomicFloatSize.Target />
         <var.SuppressHardwareChange />
@@ -838,10 +832,12 @@
     </profile>
     <param.objective>option.objective.c</param.objective>
     <param.WorkflowStep>generateCode</param.WorkflowStep>
-    <param.TestSnippets />
+    <param.TestSnippets>
+      <item>RBpchip</item>
+    </param.TestSnippets>
     <param.ExternalFcnMajority>column</param.ExternalFcnMajority>
     <param.UseGlobals>option.UseGlobals.No</param.UseGlobals>
-    <param.outputfile>${PROJECT_ROOT}\codegen\lib\pmtmMy\pmtmMy.lib</param.outputfile>
+    <param.outputfile>${PROJECT_ROOT}\codegen\lib\RBpchip\RBpchip.lib</param.outputfile>
     <param.version>R2012a</param.version>
     <param.HasECoderFeatures>false</param.HasECoderFeatures>
     <param.HasGpuCoder>false</param.HasGpuCoder>
@@ -856,21 +852,22 @@
     <param.AutoInferUnboundedSizeThreshold>2048</param.AutoInferUnboundedSizeThreshold>
     <param.EnableFixedPointStep>false</param.EnableFixedPointStep>
     <param.EnableScreener>true</param.EnableScreener>
-    <param.AnnotationChecksum />
+    <param.AnnotationChecksum>0</param.AnnotationChecksum>
     <var.LegacyTarget />
     <var.MirrorOnOpen>false</var.MirrorOnOpen>
     <param.FixedPointEnabled>false</param.FixedPointEnabled>
     <var.redirectedInputTypeData />
-    <var.DismissScreener>true</var.DismissScreener>
+    <var.DismissScreener>false</var.DismissScreener>
     <param.unifiedParamStorage />
-    <var.gc.lastOutputRoot>codegen\lib\pmtmMy</var.gc.lastOutputRoot>
+    <var.gc.lastOutputRoot>codegen\lib\RBpchip</var.gc.lastOutputRoot>
     <var.gc.lastOutputType>C_CODE</var.gc.lastOutputType>
-    <var.gc.preBuildChecksum>2795078279</var.gc.preBuildChecksum>
-    <var.cfi.lastOutputRoot />
-    <var.cfi.preBuildChecksum />
+    <var.gc.preBuildChecksum>4036794352</var.gc.preBuildChecksum>
+    <var.cfi.lastOutputRoot>codegen\mex\RBpchip</var.cfi.lastOutputRoot>
+    <var.cfi.preBuildChecksum>1397852989</var.cfi.preBuildChecksum>
+    <var.lastCfiTestSnippet>RBpchip</var.lastCfiTestSnippet>
     <var.outdatedOnRestore>false</var.outdatedOnRestore>
-    <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pmtmMy.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;2232390531&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
-    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pmtmMy.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
+    <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pchip\RBpchip.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;612295369&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
+    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pchip\RBpchip.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
     <param.forceMexBuild>false</param.forceMexBuild>
     <param.NoDefaultJIT>false</param.NoDefaultJIT>
     <param.configImportActive>false</param.configImportActive>
@@ -879,10 +876,10 @@
     <var.boundToGui>true</var.boundToGui>
     <var.isConfigDialog>false</var.isConfigDialog>
     <var.ecoderEnabled>false</var.ecoderEnabled>
-    <param.mex.outputfile>pmtmMy_mex</param.mex.outputfile>
-    <param.grt.outputfile>pmtmMy</param.grt.outputfile>
+    <param.mex.outputfile>RBpchip_mex</param.mex.outputfile>
+    <param.grt.outputfile>RBpchip</param.grt.outputfile>
     <param.artifact>option.target.artifact.lib</param.artifact>
-    <param.outputfile>${PROJECT_ROOT}\codegen\lib\pmtmMy\pmtmMy.lib</param.outputfile>
+    <param.outputfile>${PROJECT_ROOT}\codegen\lib\RBpchip\RBpchip.lib</param.outputfile>
     <param.CppNamespace />
     <param.gpu.Enabled>false</param.gpu.Enabled>
     <param.gpu.KernelNamePrefix />
@@ -904,8 +901,8 @@
     <var.isDeepLearningForMatlabCoderEnabled>true</var.isDeepLearningForMatlabCoderEnabled>
     <param.deeplearning.TargetLib>option.deeplearning.targetlibrary.none</param.deeplearning.TargetLib>
     <var.cfiTargetLibSuppression>false</var.cfiTargetLibSuppression>
-    <var.hasMatlabDeepLearningSupportPackage>true</var.hasMatlabDeepLearningSupportPackage>
-    <var.hasGpuDeepLearningSupportPackage>true</var.hasGpuDeepLearningSupportPackage>
+    <var.hasMatlabDeepLearningSupportPackage>false</var.hasMatlabDeepLearningSupportPackage>
+    <var.hasGpuDeepLearningSupportPackage>false</var.hasGpuDeepLearningSupportPackage>
     <param.tensorrt.DataType>option.tensorrt.datatype.fp32</param.tensorrt.DataType>
     <param.tensorrt.DataPath />
     <param.tensorrt.NumCalibrationBatches>1</param.tensorrt.NumCalibrationBatches>
@@ -963,7 +960,6 @@
     <param.FixedPointUseDesignRanges>false</param.FixedPointUseDesignRanges>
     <unset>
       <param.objective />
-      <param.TestSnippets />
       <param.ExternalFcnMajority />
       <param.UseGlobals />
       <param.outputfile />
@@ -981,14 +977,12 @@
       <param.AutoInferUnboundedSizeThreshold />
       <param.EnableFixedPointStep />
       <param.EnableScreener />
-      <param.AnnotationChecksum />
       <var.LegacyTarget />
       <var.MirrorOnOpen />
       <param.FixedPointEnabled />
       <var.redirectedInputTypeData />
+      <var.DismissScreener />
       <param.unifiedParamStorage />
-      <var.cfi.lastOutputRoot />
-      <var.cfi.preBuildChecksum />
       <var.outdatedOnRestore />
       <param.forceMexBuild />
       <param.NoDefaultJIT />
@@ -1020,8 +1014,6 @@
       <var.isDeepLearningForMatlabCoderEnabled />
       <param.deeplearning.TargetLib />
       <var.cfiTargetLibSuppression />
-      <var.hasMatlabDeepLearningSupportPackage />
-      <var.hasGpuDeepLearningSupportPackage />
       <param.tensorrt.DataType />
       <param.tensorrt.DataPath />
       <param.tensorrt.NumCalibrationBatches />
@@ -1078,31 +1070,14 @@
       <param.FixedPointUseDesignRanges />
     </unset>
     <fileset.entrypoints>
-      <file custom-data-expanded="false" value="${PROJECT_ROOT}\pmtmMy.m">
-        <Marker>1677570820437</Marker>
-      </file>
+      <file custom-data-expanded="false" value="${PROJECT_ROOT}\RBpchip.m" />
     </fileset.entrypoints>
     <fileset.testbench />
     <fileset.inputtypes>
-      <file custom-data-expanded="false" value="${PROJECT_ROOT}\pmtmMy.m">
-        <Inputs fileName="pmtmMy.m" functionName="pmtmMy">
-          <Input Name="sET12Array" typeId="0" />
-          <idpTable>
-            <type typeId="0">
-              <Class>double</Class>
-              <Size>1 x 1024</Size>
-              <Value />
-              <InitialValue />
-              <UserDefined>true</UserDefined>
-              <Complex>false</Complex>
-              <Sparse>false</Sparse>
-            </type>
-          </idpTable>
-        </Inputs>
-      </file>
+      <file>${PROJECT_ROOT}\RBpchip.m</file>
     </fileset.inputtypes>
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\codegen\lib\pmtmMy" name="pmtmMy.lib" optional="false">D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\codegen\lib\pmtmMy\pmtmMy.lib</file>
+      <file location="${PROJECT_ROOT}\codegen\lib\RBpchip" name="RBpchip.lib" optional="false">D:\Desktop\Work\program\go\src\github.com\RB-PRO\ssa\matlab_LLV\pchip\codegen\lib\RBpchip\RBpchip.lib</file>
     </build-deliverables>
     <workflow />
     <matlab>
