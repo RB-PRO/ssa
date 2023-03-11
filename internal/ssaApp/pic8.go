@@ -14,10 +14,9 @@ func Instantaneous_frequency_of_normalized_ACF_sET12(AcfNrm_sET12 mat.Dense, S, 
 	for j := 0; j < S; j++ {
 		PhaAcfNrm := MakePhaAcfNrm(AcfNrm_sET12.ColView(j))
 
-		_, _, coef := pchip.Pchip(oss.VecDense_in_float64(*PhaAcfNrm),
-			lgl,
-			lgl,
-			PhaAcfNrm.Len(), len(lgl))
+		//_, _, coef := pchip.Pchip(oss.VecDense_in_float64(*PhaAcfNrm), lgl,			lgl,			PhaAcfNrm.Len(), len(lgl))
+
+		slopes := pchip.Pchip2(lgl, oss.VecDense_in_float64(*PhaAcfNrm))
 
 		//spline := pchip.NewCubic(lgl, oss.VecDense_in_float64(PhaAcfNrm))
 
@@ -28,7 +27,9 @@ func Instantaneous_frequency_of_normalized_ACF_sET12(AcfNrm_sET12 mat.Dense, S, 
 		FrcAcfNrm := make([]float64, lag)
 		for m := 1; m < lag; m++ {
 
-			FrcAcfNrm[m] = math.Abs(coef.B[m-1]) / (2.0 * math.Pi) / dt // pchip
+			//FrcAcfNrm[m] = math.Abs(coef.B[m-1]) / (2.0 * math.Pi) / dt // pchip
+			FrcAcfNrm[m] = math.Abs(slopes[m-1]) / (2.0 * math.Pi) / dt // pchip
+
 			//FrcAcfNrm[m] = math.Abs(spline.Weights[m-1]) / (2.0 * math.Pi * dt) // spline
 		}
 		FrcAcfNrm[0] = FrcAcfNrm[1]

@@ -195,10 +195,9 @@ func SSA_spw(pw, fmp []float64) {
 				NumMax.Len(), len(lgl))
 		*/
 
-		acfEnvelope, _, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax),
-			oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
-			lgl,
-			NumMax.Len(), len(lgl))
+		//acfEnvelope, _, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax), oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),			lgl,			NumMax.Len(), len(lgl))
+
+		acfEnvelope := pchip.Pchip2(lgl, oss.Vec_in_ArrFloat(NumMax))
 
 		//fmt.Println(Nmax, len(lgl))
 
@@ -385,6 +384,7 @@ func pto_sET12_init(sET12 mat.Dense, smopto, win, Nf, S int) *mat.Dense {
 }
 func pmtmMy(sET12 mat.Vector, smopto, win int) []float64 {
 	return pmtm.Pmtm(oss.Vec_in_float64(sET12), 1024)
+
 }
 
 // Расчёты вектора PhaAcfNrm, модуль от Акосинуса.

@@ -37,12 +37,14 @@ func Pmtm(x []float64, n int) []float64 {
 	//fmt.Println(len(fft_signal))
 	P2 := make([]float64, len(fft_signal))
 	for i := 0; i < len(P2); i++ {
-		P2[i] = cmplx.Abs(fft_signal[i] / 1024.0)
+		// P2[i] = cmplx.Abs((fft_signal[i])*(fft_signal[i])) / 1024.0
+		P2[i] = cmplx.Abs((fft_signal[i]) / 1024.0)
 	}
+	// Возвести в квадрат
 	P1 := make([]float64, L/2+1)
 	for i := 0; i < len(P1); i++ {
 		P1[i] = 2 * P2[i]
 	}
 
-	return P1
+	return P2
 }

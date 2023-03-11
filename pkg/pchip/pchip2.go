@@ -2,17 +2,17 @@ package pchip
 
 import "math"
 
-func Pchip2(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64, PchipCoefs) {
+func Pchip2(lgl, x []float64) []float64 {
 
-	del := make([]float64, 101)
+	del := make([]float64, len(lgl))
 
-	slopes := make([]float64, 102)
+	slopes := make([]float64, len(lgl))
 	var d float64
-	for k := 0; k < 101; k++ {
+	for k := 0; k < len(del); k++ {
 		del[k] = x[k+1] - x[k]
 	}
 
-	for k := 0; k < 100; k++ {
+	for k := 0; k < len(slopes)-1; k++ {
 		slopes[k+1] = 0.0
 		if del[k] < 0.0 {
 			d = del[k+1]
@@ -38,8 +38,8 @@ func Pchip2(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64, 
 	}
 
 	slopes[0] = exteriorSlope2(del[0], del[1], 1.0, 1.0)
-	slopes[101] = exteriorSlope2(del[100], del[99], 1.0, 1.0)
-	return nil, nil, PchipCoefs{C: slopes}
+	slopes[len(del)-1] = exteriorSlope2(del[len(del)-1], del[len(del)-2], 1.0, 1.0)
+	return slopes
 }
 
 /* Function Definitions */

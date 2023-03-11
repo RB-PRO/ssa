@@ -22,7 +22,7 @@ func TestPchip(t *testing.T) {
 	for m := 0; m < len(lgl); m++ {
 		lgl[m] = float64(m + 1)
 	}
-	PhaAcfNrm := loadXlsx()
+	PhaAcfNrm := loadXlsx("pchip_test.xlsx")
 
 	// Использование функции
 	_, _, coefs := pchip.Pchip(PhaAcfNrm,
@@ -48,10 +48,10 @@ func safeToXlsx(coefs pchip.PchipCoefs) {
 }
 
 // Получить входной сигнал из файла xlsx
-func loadXlsx() []float64 {
+func loadXlsx(filename string) []float64 {
 	output := make([]float64, 0)
 
-	file_graph, _ := excelize.OpenFile("pchip_test.xlsx", excelize.Options{})
+	file_graph, _ := excelize.OpenFile(filename, excelize.Options{})
 	defer file_graph.Close()
 
 	rows, err := file_graph.GetRows("input")
