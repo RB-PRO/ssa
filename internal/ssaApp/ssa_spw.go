@@ -14,7 +14,18 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
+func SSS_spw2(pw, fmp []float64) {
+	s := ssa.New()
+	s.Graph = true // Создавать графики
+	s.Xlsx = true  // Сохранять в Xlsx
+	s.Init(pw)
+	s.Spw_Form(pw)
+	s.SET_Form()
+
+}
+
 func SSA_spw(pw, fmp []float64) {
+
 	// Сегменты отсчётов pw
 	N := len(pw) // Количество отсчетов pw
 	win := 1024
