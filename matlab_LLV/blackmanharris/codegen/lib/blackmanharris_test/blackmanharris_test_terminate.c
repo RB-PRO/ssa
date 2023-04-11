@@ -12,11 +12,15 @@
 /* Include files */
 #include "blackmanharris_test_terminate.h"
 #include "blackmanharris_test.h"
+#include "blackmanharris_test_data.h"
+#include "rt_nonfinite.h"
+#include <string.h>
 
 /* Function Definitions */
 void blackmanharris_test_terminate(void)
 {
   /* (no terminate code required) */
+  isInitialized_blackmanharris_test = false;
 }
 
 /* End of code generation (blackmanharris_test_terminate.c) */

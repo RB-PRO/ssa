@@ -3,14 +3,14 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * blackmanharris_test.h
+ * psdfreqvec.h
  *
- * Code generation for function 'blackmanharris_test'
+ * Code generation for function 'psdfreqvec'
  *
  */
 
-#ifndef BLACKMANHARRIS_TEST_H
-#define BLACKMANHARRIS_TEST_H
+#ifndef PSDFREQVEC_H
+#define PSDFREQVEC_H
 
 /* Include files */
 #include <stddef.h>
@@ -19,9 +19,8 @@
 #include "blackmanharris_test_types.h"
 
 /* Function Declarations */
-extern void blackmanharris_test(const double spw_j_data[], const int spw_j_size
-  [2], double output_data[], int output_size[2]);
+extern void psdfreqvec(double varargin_4, double w_data[], int w_size[1]);
 
 #endif
 
-/* End of code generation (blackmanharris_test.h) */
+/* End of code generation (psdfreqvec.h) */

@@ -2,7 +2,7 @@
 ## Makefile generated for MATLAB file/project 'blackmanharris_test'. 
 ## 
 ## Makefile     : blackmanharris_test_rtw.mk
-## Generated on : Fri Mar 10 17:34:13 2023
+## Generated on : Fri Mar 31 17:12:05 2023
 ## MATLAB Coder version: 5.0 (R2020a)
 ## 
 ## Build Info:
@@ -159,7 +159,7 @@ DEFINES = $(DEFINES_CUSTOM) $(DEFINES_STANDARD)
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)/blackmanharris_test_initialize.c $(START_DIR)/blackmanharris_test_terminate.c $(START_DIR)/blackmanharris_test.c $(START_DIR)/FFTImplementationCallback.c
+SRCS = $(START_DIR)/rt_nonfinite.c $(START_DIR)/rtGetNaN.c $(START_DIR)/rtGetInf.c $(START_DIR)/blackmanharris_test_data.c $(START_DIR)/blackmanharris_test_initialize.c $(START_DIR)/blackmanharris_test_terminate.c $(START_DIR)/blackmanharris_test.c $(START_DIR)/strcmp.c $(START_DIR)/computeperiodogram.c $(START_DIR)/computeDFT.c $(START_DIR)/FFTImplementationCallback.c $(START_DIR)/psdfreqvec.c $(START_DIR)/computepsd.c
 
 ALL_SRCS = $(SRCS)
 
@@ -167,7 +167,7 @@ ALL_SRCS = $(SRCS)
 ## OBJECTS
 ###########################################################################
 
-OBJS = blackmanharris_test_initialize.obj blackmanharris_test_terminate.obj blackmanharris_test.obj FFTImplementationCallback.obj
+OBJS = rt_nonfinite.obj rtGetNaN.obj rtGetInf.obj blackmanharris_test_data.obj blackmanharris_test_initialize.obj blackmanharris_test_terminate.obj blackmanharris_test.obj strcmp.obj computeperiodogram.obj computeDFT.obj FFTImplementationCallback.obj psdfreqvec.obj computepsd.obj
 
 ALL_OBJS = $(OBJS)
 
@@ -266,6 +266,22 @@ $(PRODUCT) : $(OBJS) $(PREBUILT_OBJS)
 	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
 
 
+rt_nonfinite.obj : $(START_DIR)/rt_nonfinite.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+rtGetNaN.obj : $(START_DIR)/rtGetNaN.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+rtGetInf.obj : $(START_DIR)/rtGetInf.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+blackmanharris_test_data.obj : $(START_DIR)/blackmanharris_test_data.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
 blackmanharris_test_initialize.obj : $(START_DIR)/blackmanharris_test_initialize.c
 	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
 
@@ -278,7 +294,27 @@ blackmanharris_test.obj : $(START_DIR)/blackmanharris_test.c
 	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
 
 
+strcmp.obj : $(START_DIR)/strcmp.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+computeperiodogram.obj : $(START_DIR)/computeperiodogram.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+computeDFT.obj : $(START_DIR)/computeDFT.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
 FFTImplementationCallback.obj : $(START_DIR)/FFTImplementationCallback.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+psdfreqvec.obj : $(START_DIR)/psdfreqvec.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+computepsd.obj : $(START_DIR)/computepsd.c
 	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
 
 

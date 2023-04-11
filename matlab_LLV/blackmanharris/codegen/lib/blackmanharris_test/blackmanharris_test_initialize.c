@@ -12,10 +12,15 @@
 /* Include files */
 #include "blackmanharris_test_initialize.h"
 #include "blackmanharris_test.h"
+#include "blackmanharris_test_data.h"
+#include "rt_nonfinite.h"
+#include <string.h>
 
 /* Function Definitions */
 void blackmanharris_test_initialize(void)
 {
+  rt_InitInfAndNaN();
+  isInitialized_blackmanharris_test = true;
 }
 
 /* End of code generation (blackmanharris_test_initialize.c) */

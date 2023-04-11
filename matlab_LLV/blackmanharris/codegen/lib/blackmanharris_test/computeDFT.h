@@ -3,14 +3,14 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * blackmanharris_test.h
+ * computeDFT.h
  *
- * Code generation for function 'blackmanharris_test'
+ * Code generation for function 'computeDFT'
  *
  */
 
-#ifndef BLACKMANHARRIS_TEST_H
-#define BLACKMANHARRIS_TEST_H
+#ifndef COMPUTEDFT_H
+#define COMPUTEDFT_H
 
 /* Include files */
 #include <stddef.h>
@@ -19,9 +19,9 @@
 #include "blackmanharris_test_types.h"
 
 /* Function Declarations */
-extern void blackmanharris_test(const double spw_j_data[], const int spw_j_size
-  [2], double output_data[], int output_size[2]);
+extern void computeDFT(const double xin[1024], double varargin_1, creal_T
+  Xx_data[], int Xx_size[1], double f_data[], int f_size[1]);
 
 #endif
 
-/* End of code generation (blackmanharris_test.h) */
+/* End of code generation (computeDFT.h) */

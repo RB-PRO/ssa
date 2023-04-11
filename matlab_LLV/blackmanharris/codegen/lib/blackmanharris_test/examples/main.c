@@ -38,22 +38,29 @@
 #include "main.h"
 #include "blackmanharris_test.h"
 #include "blackmanharris_test_terminate.h"
+#include "rt_nonfinite.h"
+#include <string.h>
 
 /* Function Declarations */
-static void argInit_1x1024_real_T(double result[1024]);
+static void argInit_1xd1024_real_T(double result_data[], int result_size[2]);
 static double argInit_real_T(void);
 static void main_blackmanharris_test(void);
 
 /* Function Definitions */
-static void argInit_1x1024_real_T(double result[1024])
+static void argInit_1xd1024_real_T(double result_data[], int result_size[2])
 {
   int idx1;
 
+  /* Set the size of the array.
+     Change this size to the value that the application requires. */
+  result_size[0] = 1;
+  result_size[1] = 2;
+
   /* Loop over the array to initialize each element. */
-  for (idx1 = 0; idx1 < 1024; idx1++) {
+  for (idx1 = 0; idx1 < 2; idx1++) {
     /* Set the value of the array element.
        Change this value to the value that the application requires. */
-    result[idx1] = argInit_real_T();
+    result_data[idx1] = argInit_real_T();
   }
 }
 
@@ -64,14 +71,17 @@ static double argInit_real_T(void)
 
 static void main_blackmanharris_test(void)
 {
-  double dv[1024];
-  double output[513];
+  double spw_j_data[1024];
+  int spw_j_size[2];
+  double output_data[1024];
+  int output_size[2];
 
   /* Initialize function 'blackmanharris_test' input arguments. */
   /* Initialize function input argument 'spw_j'. */
+  argInit_1xd1024_real_T(spw_j_data, spw_j_size);
+
   /* Call the entry-point 'blackmanharris_test'. */
-  argInit_1x1024_real_T(dv);
-  blackmanharris_test(dv, output);
+  blackmanharris_test(spw_j_data, spw_j_size, output_data, output_size);
 }
 
 int main(int argc, const char * const argv[])

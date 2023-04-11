@@ -1,5 +1,5 @@
 function output = blackmanharris_test(spw_j) %#codegen 
-    win=1024;
+     win=1024;
     % bm=blackmanharris(win);
     % % wvtool(bm);
     

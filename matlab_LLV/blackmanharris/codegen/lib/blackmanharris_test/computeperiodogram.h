@@ -3,14 +3,14 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * blackmanharris_test.h
+ * computeperiodogram.h
  *
- * Code generation for function 'blackmanharris_test'
+ * Code generation for function 'computeperiodogram'
  *
  */
 
-#ifndef BLACKMANHARRIS_TEST_H
-#define BLACKMANHARRIS_TEST_H
+#ifndef COMPUTEPERIODOGRAM_H
+#define COMPUTEPERIODOGRAM_H
 
 /* Include files */
 #include <stddef.h>
@@ -19,9 +19,10 @@
 #include "blackmanharris_test_types.h"
 
 /* Function Declarations */
-extern void blackmanharris_test(const double spw_j_data[], const int spw_j_size
-  [2], double output_data[], int output_size[2]);
+extern void computeperiodogram(const double x_data[], const int x_size[2],
+  double Pxx_data[], int Pxx_size[1], double F_data[], int F_size[1], int
+  RPxx_size[1], int Fc_size[2]);
 
 #endif
 
-/* End of code generation (blackmanharris_test.h) */
+/* End of code generation (computeperiodogram.h) */

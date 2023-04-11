@@ -3,14 +3,14 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * blackmanharris_test.h
+ * strcmp.h
  *
- * Code generation for function 'blackmanharris_test'
+ * Code generation for function 'strcmp'
  *
  */
 
-#ifndef BLACKMANHARRIS_TEST_H
-#define BLACKMANHARRIS_TEST_H
+#ifndef STRCMP_H
+#define STRCMP_H
 
 /* Include files */
 #include <stddef.h>
@@ -19,9 +19,8 @@
 #include "blackmanharris_test_types.h"
 
 /* Function Declarations */
-extern void blackmanharris_test(const double spw_j_data[], const int spw_j_size
-  [2], double output_data[], int output_size[2]);
+extern boolean_T b_strcmp(const char a[8]);
 
 #endif
 
-/* End of code generation (blackmanharris_test.h) */
+/* End of code generation (strcmp.h) */
