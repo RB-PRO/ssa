@@ -1,48 +1,30 @@
+// # Окно Блэкмана-Хэрриса
+// На вход получает N, расчёты ведёт до N-1
+//
+// Окно Блэкмана-Харриса (Blackman-Harris), как и окно Хэнинга,
+// применяется для измерения очень слабых компонент на фоне большого входного сигнала, таких как нелинейные искажения
 package blackmanharris
 
-import "fmt"
+import "math"
 
-func Blackmanharris(dv []float64) ([]float64, error) {
+// Расчёт окна для Блэкмана-Харриса (Blackman-Harris) при заданном N и массиве коэффициентах
+//
+// Входные данные:
+//	-N - Длина окна
+//	-a - Коэффтиенты Блэкмен-Харриса
+//
+// Пример:
+// 	blackmanharris(32, blackmanharris.Koef4_92db)
+func Blackmanharris(N int, a [4]float64) []float64 {
+	Window := make([]float64, N-1) // Выходной массив окна
+	Nfloat64 := float64(N)         // N в float64, чтобы не не переводить трижды
+	for n := range Window {        // Цикл по всему окну
+		nfloat64 := float64(n) // n в float64, чтобы не не переводить трижды
 
-	var Xx = [...]complex128{1 + 8i, 2 + 8i, 3 + 8i, 4 + 8i}
-
-	var Xx_re float64
-	lenSignal := len(dv)
-	res := 513
-	fmt.Println("res", res)
-
-	xw := make([]float64, len(dv))
-	for i := 0; i < lenSignal; i++ {
-		xw[i] = dv[i] * dv[i]
+		// Уравнение для периодического окна Блэкмен-Харриса с четырьмя терминами длины N
+		Window[n] = a[0] - a[1]*math.Cos((2.0*math.Pi/Nfloat64)*1*nfloat64) +
+			a[2]*math.Cos((2.0*math.Pi/Nfloat64)*2*nfloat64) +
+			a[3]*math.Cos((2.0*math.Pi/Nfloat64)*3*nfloat64)
 	}
-	var y float64
-	for i := 0; i < lenSignal; i++ {
-		y += dv[i] * dv[i]
-	}
-
-	for i := 0; i < lenSignal; i++ {
-		Xx_re = real(Xx[i])*real(Xx[i]) - imag(Xx[i])*-imag(Xx[i])
-		if real(Xx[i])*-imag(Xx[i])+imag(Xx[i])*real(Xx[i]) == 0.0 {
-			Xx_re /= y
-		} else if Xx_re == 0.0 {
-			Xx_re = 0.0
-		} else {
-			Xx_re /= y
-		}
-
-		xw[i] = Xx_re
-	}
-
-	output := make([]float64, 513)
-	output[0] = xw[0] / 6.2831853071795862
-	for i := 0; i < len(output)-2; i++ {
-		output[i+1] = 2.0 * xw[i+1] / 6.2831853071795862
-	}
-
-	output[512] = xw[512] / 6.2831853071795862
-	return nil, nil
-}
-
-func BlackmanharrisComplex() []complex128 {
-	return []complex128{}
+	return Window
 }
