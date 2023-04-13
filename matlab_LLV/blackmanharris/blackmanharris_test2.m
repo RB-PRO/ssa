@@ -1,7 +1,7 @@
 % w[n] = 0.422323 – 0.49755 cos(2n/N) + 0.07922 cos(4n/N) 
 
 % Шаг
-N = 32;
+N = 1024;
 n = 0:N-1;
  
 % Значение ненулевых коэффициентов семества окон Блэкмана-Хэрриса
@@ -13,11 +13,7 @@ Koef4_74db = [0.40217 0.49703 0.09392 0.00183];
 a = Koef4_92db;
 
 w = a(1) - a(2) * cos((2*pi/N)*1*n) + a(3) * cos((2*pi/N)*2*n) + a(4) * cos((2*pi/N)*3*n);
-
-disp(w);
-
 plot(w); hold on;
-
 
 win=N;
 
@@ -27,4 +23,4 @@ x = cos(pi/4*n)+rand(1);
 plot(x);
 
 figure;
-periodogram(x,w,N)
+priod=periodogram(x,w,N);

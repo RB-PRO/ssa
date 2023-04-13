@@ -1,0 +1,4 @@
+FFTImplementationCallback.obj
+Periodogram.obj
+Periodogram_initialize.obj
+Periodogram_terminate.obj
