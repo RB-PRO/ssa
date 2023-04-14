@@ -5,9 +5,11 @@ import (
 	"log"
 	"math"
 
+	"github.com/RB-PRO/ssa/pkg/blackmanharris"
 	"github.com/RB-PRO/ssa/pkg/graph"
 	"github.com/RB-PRO/ssa/pkg/oss"
 	"github.com/RB-PRO/ssa/pkg/pchip"
+	"github.com/RB-PRO/ssa/pkg/periodogram"
 	"github.com/RB-PRO/ssa/pkg/pmtm"
 	"github.com/RB-PRO/ssa/pkg/ssa"
 	"github.com/pconstantinou/savitzkygolay"
@@ -20,8 +22,9 @@ func SSS_spw2(pw, fmp []float64) {
 	s.Xlsx = true  // Сохранять в Xlsx
 	s.Init(pw)
 	s.Spw_Form(pw)
-	s.SET_Form()
+	s.SET_Form() // SSA - анализ сегментов pw
 
+	s.AKF_Form() // Оценка АКФ сингулярных троек для сегментов pw
 }
 
 func SSA_spw(pw, fmp []float64) {
@@ -287,14 +290,14 @@ func SSA_spw(pw, fmp []float64) {
 	var iGmin, iGmax int
 	smopto := 3 // параметр сглаживания периодограммы Томсона
 	// Визуализация СПМ сингулярных троек сегменов pw
-	fmi := 40.0 / 60.0                                      // частота среза для 40 уд/мин (0.6667 Гц)
-	fma := 240.0 / 60.0                                     // частота среза для 240 уд/мин (4.0 Гц)
-	Nf := 1 + win/2                                         // кол-во отсчетов частоты
-	df := float64(cad) / float64(win-1)                     // интервал дискретизации частоты, Гц
-	Fmin := fmi - float64(10*df)                            // частота в Гц, min
-	Fmax := fma + float64(10*df)                            // частота в Гц, max
-	pto_sET12 := pto_sET12_init(*sET12, smopto, win, Nf, S) // Расчёт оценки СПМ сингулярных троек для сегменов pw
-	oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12")            // Сохранить в Xlsx матрицу оценки СПМ
+	fmi := 40.0 / 60.0                                            // частота среза для 40 уд/мин (0.6667 Гц)
+	fma := 240.0 / 60.0                                           // частота среза для 240 уд/мин (4.0 Гц)
+	Nf := 1 + win/2                                               // кол-во отсчетов частоты
+	df := float64(cad) / float64(win-1)                           // интервал дискретизации частоты, Гц
+	Fmin := fmi - float64(10*df)                                  // частота в Гц, min
+	Fmax := fma + float64(10*df)                                  // частота в Гц, max
+	pto_sET12 := pto_sET12_init(*sET12, *spw, smopto, win, Nf, S) // Расчёт оценки СПМ сингулярных троек для сегменов pw
+	oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12")                  // Сохранить в Xlsx матрицу оценки СПМ
 
 	f := make([]float64, Nf)
 	for i := 2; i < Nf; i++ {
@@ -386,16 +389,25 @@ func wav(N, S, W, res int, sET mat.Dense) ([]float64, []float64, []float64, []fl
 }
 
 // Формирование оценки СПМ сингулярных троек для сегменов pw
-func pto_sET12_init(sET12 mat.Dense, smopto, win, Nf, S int) *mat.Dense {
+func pto_sET12_init(sET12 mat.Dense, spw mat.Dense, smopto, win, Nf, S int) *mat.Dense {
 	pto_sET12 := mat.NewDense(Nf, S, nil)
+
+	// Расчёт окна Блэкмана_Харриса шириной win
+	// и с заданными коэффициентами
+	BlackManHar := blackmanharris.Blackmanharris(win, blackmanharris.Koef4_74db)
+
 	for j := 0; j < S; j++ {
-		pto_sET12.SetCol(j, pmtmMy(sET12.ColView(j), smopto, win))
+		// Периодограмма Блэкмана_Харриса
+		// pto_sET12(:,j) = periodogram(spw(:,j),blackmanharris(win),win); % Блэкмана-Харриса
+		pto_sET12.SetCol(j, periodogram.Periodogram(oss.Vec_in_ArrFloat(spw.ColView(j)), BlackManHar, win))
+
+		// Периодограмма Томсона
+		// pto_sET12.SetCol(j, pmtmMy(sET12.ColView(j), smopto, win))
 	}
 	return pto_sET12
 }
 func pmtmMy(sET12 mat.Vector, smopto, win int) []float64 {
 	return pmtm.Pmtm(oss.Vec_in_float64(sET12), 1024)
-
 }
 
 // Расчёты вектора PhaAcfNrm, модуль от Акосинуса.

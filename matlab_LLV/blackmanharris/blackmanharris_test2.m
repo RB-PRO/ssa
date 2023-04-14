@@ -23,4 +23,5 @@ x = cos(pi/4*n)+rand(1);
 plot(x);
 
 figure;
-priod=periodogram(x,w,N);
+per=periodogram(x,w,N);
+plot(per)

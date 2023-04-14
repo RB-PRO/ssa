@@ -144,3 +144,12 @@ func (s *SPW) SET_Form() {
 		}
 	}
 }
+
+// Оценка АКФ сингулярных троек для сегментов pw
+func (s *SPW) AKF_Form() {
+	lag := int(math.Floor(float64(s.Win) / 10.0)) // % наибольший лаг АКФ <= win/10
+	lagS := 2 * lag
+	Acf_sET12 := ACF_estimation_of_singular_triples(lagS, s.Win, s.S, *s.SET12)
+
+	oss.SafeToXlsxM(Acf_sET12, "Acf_sET12")
+}

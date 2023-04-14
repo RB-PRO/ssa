@@ -19,24 +19,43 @@
 package periodogram
 
 import (
-	"fmt"
+	"math"
 	"math/cmplx"
 
 	"github.com/mjibson/go-dsp/fft"
 )
 
 func Periodogram(x []float64, window []float64, nfft int) []float64 {
+	/*
+		pxx := make([]float64, nfft/2+1)
+
+		for j := range x {
+			x[j] *= window[j]
+		}
+		FFT := fft.FFTReal(x)
+
+		fmt.Println(len(FFT))
+
+		for j := range pxx {
+			pxx[j] = cmplx.Abs(FFT[j]) // / float64(nfft)
+		}
+		return pxx
+	*/
+
 	pxx := make([]float64, nfft/2+1)
+	for i := 0; i <= len(x)-nfft; i += nfft {
+		block := x[i : i+nfft]
+		for j := range block {
+			block[j] *= window[j]
+		}
+		FFT := fft.FFTReal(block)
 
-	for j := range x {
-		x[j] *= window[j]
-	}
-	fft := fft.FFTReal(x)
+		// fmt.Println(len(FFT), FFT)
 
-	fmt.Println(len(fft))
-
-	for j := range pxx {
-		pxx[j] = cmplx.Abs(fft[j]) // / float64(nfft)
+		for j := range pxx {
+			abs := cmplx.Abs(FFT[j])
+			pxx[j] += math.Pow(abs, 2) / float64(nfft)
+		}
 	}
 	return pxx
 }
