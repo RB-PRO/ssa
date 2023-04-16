@@ -1,6 +1,8 @@
 package pchip
 
-import "math"
+import (
+	"math"
+)
 
 func Pchip2(lgl, x []float64) []float64 {
 

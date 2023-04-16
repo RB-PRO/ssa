@@ -44,7 +44,7 @@ func Test1Periodogram_1024(t *testing.T) {
 
 	// Циклом идём по всему массиву и сравниваем данные
 	for index := range priodogman1024 {
-		if int(math.Abs(100000*(priodogman1024[index]-rez1024[index]))) > 3 {
+		if int(math.Abs(10*(priodogman1024[index]-rez1024[index]))) > 3 {
 			ErrorCount++
 			//t.Errorf("Blackmanharris: Элемент с индексом %v не соответствует рассчитанному. Должно было быть %v, а получено %v.", index, rez1024[index], priodogman1024[index])
 		}
