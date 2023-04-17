@@ -25,26 +25,13 @@ import (
 	"github.com/mjibson/go-dsp/fft"
 )
 
+// Расчёт модифицированной периодограммы с окном
 func Periodogram(x []float64, window []float64, nfft int) []float64 {
-	/*
-		pxx := make([]float64, nfft/2+1)
-
-		for j := range x {
-			x[j] *= window[j]
-		}
-		FFT := fft.FFTReal(x)
-
-		fmt.Println(len(FFT))
-
-		for j := range pxx {
-			pxx[j] = cmplx.Abs(FFT[j]) // / float64(nfft)
-		}
-		return pxx
-	*/
-
 	pxx := make([]float64, nfft/2+1)
 	for i := 0; i <= len(x)-nfft; i += nfft {
-		block := x[i : i+nfft]
+		block := x[i : i+nfft-1]
+
+		//fmt.Println(i, len(x)-nfft, len(block), len(window))
 		for j := range block {
 			block[j] *= window[j]
 		}

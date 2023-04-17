@@ -10,7 +10,7 @@ func Pchip2(lgl, x []float64) []float64 {
 
 	slopes := make([]float64, len(lgl))
 	var d float64
-	for k := 0; k < len(del); k++ {
+	for k := 0; k < len(del)-1; k++ {
 		del[k] = x[k+1] - x[k]
 	}
 

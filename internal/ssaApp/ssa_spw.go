@@ -202,18 +202,16 @@ func SSA_spw(pw, fmp []float64) {
 		NumMax := maxN.SliceVec(0, Nmax+1)
 
 		// Интерполяция огибающей АКФ
-		/*
-			acfEnvelope := pchip(vec_in_ArrFloat(NumMax),
-				vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
-				(lgl),
-				NumMax.Len(), len(lgl))
-		*/
 
-		//acfEnvelope, _, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax), oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),			lgl,			NumMax.Len(), len(lgl))
+		// acfEnvelope := pchip.Pchip(Vec_in_ArrFloat(NumMax),
+		// 	oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
+		// 	(lgl),
+		// 	NumMax.Len(), len(lgl))
 
-		fmt.Println(len(lgl), NumMax.Len())
+		acfEnvelope, _, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax), oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)), lgl, NumMax.Len(), len(lgl))
 
-		acfEnvelope := pchip.Pchip2(lgl, oss.Vec_in_ArrFloat(NumMax))
+		//fmt.Println(len(lgl), NumMax.Len())
+		//acfEnvelope := pchip.Pchip2(lgl, oss.Vec_in_ArrFloat(NumMax))
 
 		//fmt.Println(Nmax, len(lgl))
 

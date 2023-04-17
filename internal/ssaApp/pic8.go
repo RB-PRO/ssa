@@ -16,6 +16,8 @@ func Instantaneous_frequency_of_normalized_ACF_sET12(AcfNrm_sET12 mat.Dense, S, 
 
 		//_, _, coef := pchip.Pchip(oss.VecDense_in_float64(*PhaAcfNrm), lgl,			lgl,			PhaAcfNrm.Len(), len(lgl))
 
+		//fmt.Println(len(lgl), PhaAcfNrm.Len())
+
 		slopes := pchip.Pchip2(lgl, oss.VecDense_in_float64(*PhaAcfNrm))
 
 		//spline := pchip.NewCubic(lgl, oss.VecDense_in_float64(PhaAcfNrm))
