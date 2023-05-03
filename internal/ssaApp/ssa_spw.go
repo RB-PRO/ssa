@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"time"
 
 	"github.com/RB-PRO/ssa/pkg/blackmanharris"
 	"github.com/RB-PRO/ssa/pkg/graph"
@@ -28,7 +29,7 @@ func SSS_spw2(pw, fmp []float64) {
 }
 
 func SSA_spw(pw, fmp []float64) {
-
+	defer timer("SSA_spw")()
 	// Сегменты отсчётов pw
 	N := len(pw) // Количество отсчетов pw
 	win := 1024
@@ -286,59 +287,58 @@ func SSA_spw(pw, fmp []float64) {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
 
-	// Оценки СПМ сингулярных троек для сегменов pw
-	var iGmin, iGmax int
-	smopto := 3 // параметр сглаживания периодограммы Томсона
-	// Визуализация СПМ сингулярных троек сегменов pw
-	fmi := 40.0 / 60.0                                            // частота среза для 40 уд/мин (0.6667 Гц)
-	fma := 240.0 / 60.0                                           // частота среза для 240 уд/мин (4.0 Гц)
-	Nf := 1 + win/2                                               // кол-во отсчетов частоты
-	df := float64(cad) / float64(win-1)                           // интервал дискретизации частоты, Гц
-	Fmin := fmi - float64(10*df)                                  // частота в Гц, min
-	Fmax := fma + float64(10*df)                                  // частота в Гц, max
-	pto_sET12 := pto_sET12_init(*sET12, *spw, smopto, win, Nf, S) // Расчёт оценки СПМ сингулярных троек для сегменов pw
-	oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12")                  // Сохранить в Xlsx матрицу оценки СПМ
+	// // Оценки СПМ сингулярных троек для сегменов pw
+	// var iGmin, iGmax int
+	// smopto := 3 // параметр сглаживания периодограммы Томсона
+	// // Визуализация СПМ сингулярных троек сегменов pw
+	// fmi := 40.0 / 60.0                                            // частота среза для 40 уд/мин (0.6667 Гц)
+	// fma := 240.0 / 60.0                                           // частота среза для 240 уд/мин (4.0 Гц)
+	// Nf := 1 + win/2                                               // кол-во отсчетов частоты
+	// df := float64(cad) / float64(win-1)                           // интервал дискретизации частоты, Гц
+	// Fmin := fmi - float64(10*df)                                  // частота в Гц, min
+	// Fmax := fma + float64(10*df)                                  // частота в Гц, max
+	// pto_sET12 := pto_sET12_init(*sET12, *spw, smopto, win, Nf, S) // Расчёт оценки СПМ сингулярных троек для сегменов pw
+	// oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12")                  // Сохранить в Xlsx матрицу оценки СПМ
 
-	f := make([]float64, Nf)
-	for i := 2; i < Nf; i++ {
-		f[i] = f[i-1] + df // частота в герцах
-		if math.Abs(f[i]-Fmin) <= df {
-			iGmin = i
-		}
-		if math.Abs(f[i]-Fmax) <= df {
-			iGmax = i
-		}
-	}
-	fG := make([]float64, iGmax)
-	for i := 0; i < iGmax; i++ {
-		fG[i] = f[i] // сетка частот 3D-графика
-	}
-	oss.Matlab_arr_float(ns, 9, "ns")
-	oss.Matlab_arr_float(fG, 9, "fG")
-	oss.Matlab_mat_Dense(*pto_sET12, 9, "pto_sET12")
-	oss.Matlab_variable(iGmin, 9, "iGmin")
-	oss.Matlab_variable(iGmax, 9, "iGmax")
+	// f := make([]float64, Nf)
+	// for i := 2; i < Nf; i++ {
+	// 	f[i] = f[i-1] + df // частота в герцах
+	// 	if math.Abs(f[i]-Fmin) <= df {
+	// 		iGmin = i
+	// 	}
+	// 	if math.Abs(f[i]-Fmax) <= df {
+	// 		iGmax = i
+	// 	}
+	// }
+	// fG := make([]float64, iGmax)
+	// for i := 0; i < iGmax; i++ {
+	// 	fG[i] = f[i] // сетка частот 3D-графика
+	// }
+	// oss.Matlab_arr_float(ns, 9, "ns")
+	// oss.Matlab_arr_float(fG, 9, "fG")
+	// oss.Matlab_mat_Dense(*pto_sET12, 9, "pto_sET12")
+	// oss.Matlab_variable(iGmin, 9, "iGmin")
+	// oss.Matlab_variable(iGmax, 9, "iGmax")
 
-	// Оценки средних частот основного тона сингулярных троек сегментов pw
-	pto_fMAX12 := make([]float64, S)
-	for index := range pto_fMAX12 {
-		_, I := oss.MaxArrFloat64(oss.Vec_in_ArrFloat(pto_sET12.ColView(index))) // Поиск индекса максимального значения массива
-		pto_fMAX12[index] = f[I]
-	}
-	oss.Matlab_arr_float(ns, 10, "ns")
-	oss.Matlab_arr_float(pto_fMAX12, 10, "pto_fMAX12")
-	err_pto_fMAX12 := graph.MakeGraphYX_float64(
-		pto_fMAX12,
-		ns,
-		"pto_fMAX12")
-	if err_pto_fMAX12 != nil {
-		fmt.Println(err_pto_fMAX12)
-	}
+	// // Оценки средних частот основного тона сингулярных троек сегментов pw
+	// pto_fMAX12 := make([]float64, S)
+	// for index := range pto_fMAX12 {
+	// 	_, I := oss.MaxArrFloat64(oss.Vec_in_ArrFloat(pto_sET12.ColView(index))) // Поиск индекса максимального значения массива
+	// 	pto_fMAX12[index] = f[I]
+	// }
+	// oss.Matlab_arr_float(ns, 10, "ns")
+	// oss.Matlab_arr_float(pto_fMAX12, 10, "pto_fMAX12")
+	// err_pto_fMAX12 := graph.MakeGraphYX_float64(
+	// 	pto_fMAX12,
+	// 	ns,
+	// 	"pto_fMAX12")
+	// if err_pto_fMAX12 != nil {
+	// 	fmt.Println(err_pto_fMAX12)
+	// }
 
-	oss.SafeToXlsx(f, "f")
+	// oss.SafeToXlsx(f, "f")
 
 	// ***
-
 	// Агрегирование сегментов очищенной пульсовой волны cpw
 	/*
 			NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, S, win, res, *sET12)
@@ -352,7 +352,12 @@ func SSA_spw(pw, fmp []float64) {
 		matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
 	*/
 }
-
+func timer(name string) func() {
+	start := time.Now()
+	return func() {
+		fmt.Printf("%s took %v\n", name, time.Since(start))
+	}
+}
 func wav(N, S, W, res int, sET mat.Dense) ([]float64, []float64, []float64, []float64) {
 	NS := make([]float64, N)
 	w_avr := make([]float64, N)
