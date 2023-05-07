@@ -18,7 +18,7 @@ func New() *GUI {
 	win := a.NewWindow("Hello World")
 	win.SetContent(widget.NewVBox(
 
-		widget.NewLabel("Hello World!"),
+		widget.NewLabel("Hello SSA!"),
 		widget.NewButton("Quit", func() {
 			a.Quit()
 		}),
@@ -26,8 +26,8 @@ func New() *GUI {
 	win.SetFixedSize(true)
 	win.Resize(fyne.NewSize(480, 320))
 
-	image := canvas.NewImageFromFile("png/LBD.png")
-	win.SetContent(container.NewGridWithColumns(1, image))
+	// image := canvas.NewImageFromFile("png/LBD.png")
+	// win.SetContent(container.NewGridWithColumns(1, image))
 
 	win.ShowAndRun()
 	return &GUI{a: a, win: win}
