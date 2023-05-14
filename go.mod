@@ -13,6 +13,7 @@ require github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 require (
 	fyne.io/fyne v1.4.3
 	github.com/pconstantinou/savitzkygolay v0.0.1
+	github.com/sbinet/go-gnuplot v0.0.0-20130514120836-9167d8eb1ac4
 )
 
 require (

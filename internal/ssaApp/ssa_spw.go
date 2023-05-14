@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/RB-PRO/ssa/pkg/blackmanharris"
@@ -237,6 +238,9 @@ func SSA_spw(pw, fmp []float64) {
 	oss.Matlab_arr_float(time, 6, "time")
 	oss.Matlab_mat_Dense(EnvAcf_sET12, 6, "EnvAcf_sET12")
 	log.Println("Огибающие АКФ сингулярных троек sET12 сегментов pw")
+	graph.SaveDat_2(EnvAcf_sET12, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"EnvAcf_sET12"+".dat")
+	graph.SaveDat(ns, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"ns"+".dat")
+	graph.SaveDat(time, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"time"+".dat")
 
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
 	oss.Matlab_arr_float(ns, 7, "ns")

@@ -56,14 +56,25 @@ func MakeGraphOfArray(vals []float64, filename string) error {
 // Построить график по координатам X и Y. Источник - float64[]
 func MakeGraphYX_float64(x, y []float64, filename string) error {
 	if len(x) != len(y) {
-		return errors.New("Length different for " + filename)
+		return errors.New("MakeGraphYX_float64: Length different for " + filename)
 	}
 	dimensions := 2
 	persist := false
 	debug := false
-	plot, _ := glot.NewPlot(dimensions, persist, debug)
-	plot.AddPointGroup(filename, "lines", [][]float64{y, x})
-	plot.SavePlot("png" + oss.OpSystemFilder + filename + ".png")
+	plot, ErrorPloting := glot.NewPlot(dimensions, persist, debug)
+	if ErrorPloting != nil {
+		return ErrorPloting
+	}
+
+	ErrorPointGroup := plot.AddPointGroup(filename, "lines", [][]float64{y, x})
+	if ErrorPointGroup != nil {
+		return ErrorPointGroup
+	}
+
+	ErrorSave := plot.SavePlot("png" + oss.OpSystemFilder + filename + ".png")
+	if ErrorSave != nil {
+		return ErrorSave
+	}
 	return nil
 }
 

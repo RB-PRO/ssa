@@ -6,6 +6,6 @@ import (
 	"github.com/RB-PRO/ssa/pkg/graph"
 )
 
-func TestTreeXDXD(t *testing.T) {
+func Test3D(t *testing.T) {
 	graph.TreeXDXD([]float64{}, []float64{}, []float64{})
 }

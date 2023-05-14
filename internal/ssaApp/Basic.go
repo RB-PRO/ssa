@@ -1,7 +1,6 @@
 package ssaApp
 
 import (
-	"github.com/RB-PRO/ssa/internal/gui"
 	"github.com/RB-PRO/ssa/pkg/graph"
 	"github.com/RB-PRO/ssa/pkg/oss"
 )
@@ -15,8 +14,10 @@ func SsaAnalysis() {
 	oss.SafeToXlsx(fmp, "fmp") // Сохранить данные сигнала fmp в xlsx
 	oss.SafeToXlsx(pw, "pw")   // Сохранить данные сигнала pw в xlsx
 
-	gui.New()
+	// gui.New()
 	// g.VievImage()
+
+	// graph.TreeXDXD([]float64{}, []float64{}, []float64{})
 
 	SSA_spw(pw, fmp)
 
