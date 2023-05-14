@@ -1,21 +1,32 @@
 package graph
 
-import "github.com/Arafatk/glot"
+import (
+	"fmt"
+
+	"github.com/sbinet/go-gnuplot"
+)
 
 func TreeXDXD(x, y, z []float64) {
-	// plot, _ := glot.NewPlot(dimensions, persist, debug)
-	dimensions := 3
+
+	fname := ""
 	persist := false
-	debug := false
-	plot, _ := glot.NewPlot(dimensions, persist, debug)
-	fct := func(x, y float64) float64 { return x - y }
-	groupName := "Stright Line"
-	style := "lines"
-	pointsY := []float64{1, 2, 3, 4, 5}
-	pointsX := []float64{1, 2, 3, 4, 5}
-	plot.AddFunc3d(groupName, style, pointsX, pointsY, fct)
-	plot.SetXrange(0, 5)
-	plot.SetYrange(0, 5)
-	plot.SetZrange(0, 5)
-	plot.SavePlot("1.png")
+	debug := true
+
+	p, err := gnuplot.NewPlotter(fname, persist, debug)
+	if err != nil {
+		err_string := fmt.Sprintf("** err: %v\n", err)
+		panic(err_string)
+	}
+	defer p.Close()
+
+	p.CheckedCmd("plot %f*x", 23.0)
+	p.CheckedCmd("plot %f * cos(%f * x)", 32.0, -3.0)
+	//p.CheckedCmd("save foo.ps")
+	p.CheckedCmd("set terminal pdf")
+	p.CheckedCmd("set output 'plot001.pdf'")
+	p.CheckedCmd("replot")
+
+	p.CheckedCmd("q")
+
+	fmt.Println(1)
 }
