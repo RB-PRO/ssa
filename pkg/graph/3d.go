@@ -2,6 +2,7 @@ package graph
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/sbinet/go-gnuplot"
 )
@@ -32,9 +33,10 @@ func TreeXDXD(x, y, z []float64) {
 }
 
 // Сделать 3D mash
-func SplotMatrixFromFile(FileNameDat, FileNameOut string) {
-	FileNameDat = `File_For_MatLab\7\AcfNrm_sET12.dat`
-	FileNameOut = `File_For_MatLab\7\AcfNrm_sET12.png`
+func SplotMatrixFromFile(Folder int, FileNameDat, FileNameOut string) {
+	FolderStr := `File_For_MatLab/` + strconv.Itoa(Folder) + `/`
+	// FileNameDat = `File_For_MatLab/7/AcfNrm_sET12.dat`
+	// FileNameOut = `File_For_MatLab/7/AcfNrm_sET12.png`
 	fname := ""
 	persist := false
 
@@ -45,11 +47,22 @@ func SplotMatrixFromFile(FileNameDat, FileNameOut string) {
 	}
 	defer p.Close()
 
-	p.CheckedCmd(`splot "` + FileNameDat + `.dat" matrix w l`)
+	// p.CheckedCmd(`set term png`)
+
+	p.CheckedCmd(`set terminal png font "Helvetica 9"`)
+	p.CheckedCmd(`set output "` + FolderStr + FileNameOut + `.png` + `"`)
+
+	p.CheckedCmd(`splot "` + FolderStr + FileNameOut + `.dat` + `" matrix w l`)
 	p.CheckedCmd("set pm3d")
 	p.CheckedCmd("unset surface")
+	p.CheckedCmd("replot")
+	p.CheckedCmd(`set terminal png font "Helvetica 9"`)
+	p.CheckedCmd(`set output "` + FolderStr + FileNameOut + `.png` + `"`)
+	p.CheckedCmd("replot")
+
 	p.CheckedCmd("set view map")
-	p.CheckedCmd(`set terminal png font "Microsoft YaHei, 9"`)
-	p.CheckedCmd(`set output "` + FileNameOut + `"`)
+	p.CheckedCmd(`set terminal png font "Helvetica 9"`)
+	p.CheckedCmd(`set output "` + FolderStr + FileNameOut + `_Head.png` + `"`)
+	p.CheckedCmd("replot")
 
 }

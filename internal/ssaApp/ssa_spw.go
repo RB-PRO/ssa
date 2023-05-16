@@ -250,7 +250,7 @@ func SSA_spw(pw, fmp []float64) {
 	graph.SaveDat_2(AcfNrm_sET12, Folder7+"AcfNrm_sET12"+".dat")
 	graph.SaveDat(ns, Folder7+"ns"+".dat")
 	graph.SaveDat(time, Folder7+"time"+".dat")
-	graph.SplotMatrixFromFile(Folder7+"AcfNrm_sET12"+".dat", Folder7+"AcfNrm_sET12.png")
+	graph.SplotMatrixFromFile(7, "AcfNrm_sET12", "AcfNrm_sET12")
 	log.Println("Нормированные АКФ сингулярных троек sET12 сегментов pw")
 
 	// ********************************************************************
