@@ -29,5 +29,27 @@ func TreeXDXD(x, y, z []float64) {
 	p.CheckedCmd("replot")
 	p.CheckedCmd("q")
 
-	fmt.Println(1)
+}
+
+// Сделать 3D mash
+func SplotMatrixFromFile(FileNameDat, FileNameOut string) {
+	FileNameDat = `File_For_MatLab\7\AcfNrm_sET12.dat`
+	FileNameOut = `File_For_MatLab\7\AcfNrm_sET12.png`
+	fname := ""
+	persist := false
+
+	p, err := gnuplot.NewPlotter(fname, persist, true)
+	if err != nil {
+		err_string := fmt.Sprintf("** err: %v\n", err)
+		panic(err_string)
+	}
+	defer p.Close()
+
+	p.CheckedCmd(`splot "` + FileNameDat + `.dat" matrix w l`)
+	p.CheckedCmd("set pm3d")
+	p.CheckedCmd("unset surface")
+	p.CheckedCmd("set view map")
+	p.CheckedCmd(`set terminal png font "Microsoft YaHei, 9"`)
+	p.CheckedCmd(`set output "` + FileNameOut + `"`)
+
 }

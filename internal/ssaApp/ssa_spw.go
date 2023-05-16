@@ -246,6 +246,11 @@ func SSA_spw(pw, fmp []float64) {
 	oss.Matlab_arr_float(ns, 7, "ns")
 	oss.Matlab_arr_float(time, 7, "time")
 	oss.Matlab_mat_Dense(AcfNrm_sET12, 7, "AcfNrm_sET12")
+	Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
+	graph.SaveDat_2(AcfNrm_sET12, Folder7+"AcfNrm_sET12"+".dat")
+	graph.SaveDat(ns, Folder7+"ns"+".dat")
+	graph.SaveDat(time, Folder7+"time"+".dat")
+	graph.SplotMatrixFromFile(Folder7+"AcfNrm_sET12"+".dat", Folder7+"AcfNrm_sET12.png")
 	log.Println("Нормированные АКФ сингулярных троек sET12 сегментов pw")
 
 	// ********************************************************************

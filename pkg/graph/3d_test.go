@@ -9,3 +9,9 @@ import (
 func Test3D(t *testing.T) {
 	graph.TreeXDXD([]float64{}, []float64{}, []float64{})
 }
+
+func TestSplotMatrixFromDat(t *testing.T) {
+
+	// graph.TreeXDXD([]float64{}, []float64{}, []float64{})
+
+}
