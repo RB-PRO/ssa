@@ -1,4 +1,4 @@
-files/*.xlsx
+files
 report
-/File_For_MatLab/
-matlab_ASTRES/
+File_For_MatLab
+matlab_ASTRES
