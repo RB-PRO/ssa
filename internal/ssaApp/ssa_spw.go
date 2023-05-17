@@ -250,7 +250,14 @@ func SSA_spw(pw, fmp []float64) {
 	graph.SaveDat_2(AcfNrm_sET12, Folder7+"AcfNrm_sET12"+".dat")
 	graph.SaveDat(ns, Folder7+"ns"+".dat")
 	graph.SaveDat(time, Folder7+"time"+".dat")
-	graph.SplotMatrixFromFile(7, "AcfNrm_sET12", "AcfNrm_sET12")
+	graph.SplotMatrixFromFile(graph.Option3D{ // Задаём настройки 3D графика
+		FileNameDat: Folder7 + "AcfNrm_sET12.dat",
+		FileNameOut: Folder7 + "AcfNrm_sET12.png",
+		Titile:      "Нормированные АКФ сингулярных троек sET12 сегментов pw",
+		Xlabel:      "ns",
+		Ylabel:      "lag,s",
+		Zlabel:      "Acf_Nrm",
+	}) // Делаем график
 	log.Println("Нормированные АКФ сингулярных троек sET12 сегментов pw")
 
 	// ********************************************************************
@@ -296,54 +303,69 @@ func SSA_spw(pw, fmp []float64) {
 		fmt.Println(err_insFrc_AcfNrm)
 	}
 
-	// // Оценки СПМ сингулярных троек для сегменов pw
-	// var iGmin, iGmax int
-	// smopto := 3 // параметр сглаживания периодограммы Томсона
-	// // Визуализация СПМ сингулярных троек сегменов pw
-	// fmi := 40.0 / 60.0                                            // частота среза для 40 уд/мин (0.6667 Гц)
-	// fma := 240.0 / 60.0                                           // частота среза для 240 уд/мин (4.0 Гц)
-	// Nf := 1 + win/2                                               // кол-во отсчетов частоты
-	// df := float64(cad) / float64(win-1)                           // интервал дискретизации частоты, Гц
-	// Fmin := fmi - float64(10*df)                                  // частота в Гц, min
-	// Fmax := fma + float64(10*df)                                  // частота в Гц, max
-	// pto_sET12 := pto_sET12_init(*sET12, *spw, smopto, win, Nf, S) // Расчёт оценки СПМ сингулярных троек для сегменов pw
-	// oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12")                  // Сохранить в Xlsx матрицу оценки СПМ
+	// Оценки СПМ сингулярных троек для сегменов pw
+	var iGmin, iGmax int
+	smopto := 3 // параметр сглаживания периодограммы Томсона
+	// Визуализация СПМ сингулярных троек сегменов pw
+	fmi := 40.0 / 60.0                                            // частота среза для 40 уд/мин (0.6667 Гц)
+	fma := 240.0 / 60.0                                           // частота среза для 240 уд/мин (4.0 Гц)
+	Nf := 1 + win/2                                               // кол-во отсчетов частоты
+	df := float64(cad) / float64(win-1)                           // интервал дискретизации частоты, Гц
+	Fmin := fmi - float64(10*df)                                  // частота в Гц, min
+	Fmax := fma + float64(10*df)                                  // частота в Гц, max
+	pto_sET12 := pto_sET12_init(*sET12, *spw, smopto, win, Nf, S) // Расчёт оценки СПМ сингулярных троек для сегменов pw
+	oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12")                  // Сохранить в Xlsx матрицу оценки СПМ
 
-	// f := make([]float64, Nf)
-	// for i := 2; i < Nf; i++ {
-	// 	f[i] = f[i-1] + df // частота в герцах
-	// 	if math.Abs(f[i]-Fmin) <= df {
-	// 		iGmin = i
-	// 	}
-	// 	if math.Abs(f[i]-Fmax) <= df {
-	// 		iGmax = i
-	// 	}
-	// }
-	// fG := make([]float64, iGmax)
-	// for i := 0; i < iGmax; i++ {
-	// 	fG[i] = f[i] // сетка частот 3D-графика
-	// }
-	// oss.Matlab_arr_float(ns, 9, "ns")
-	// oss.Matlab_arr_float(fG, 9, "fG")
-	// oss.Matlab_mat_Dense(*pto_sET12, 9, "pto_sET12")
-	// oss.Matlab_variable(iGmin, 9, "iGmin")
-	// oss.Matlab_variable(iGmax, 9, "iGmax")
+	f := make([]float64, Nf)
+	for i := 2; i < Nf; i++ {
+		f[i] = f[i-1] + df // частота в герцах
+		if math.Abs(f[i]-Fmin) <= df {
+			iGmin = i
+		}
+		if math.Abs(f[i]-Fmax) <= df {
+			iGmax = i
+		}
+	}
+	fG := make([]float64, iGmax)
+	for i := 0; i < iGmax; i++ {
+		fG[i] = f[i] // сетка частот 3D-графика
+	}
+	oss.Matlab_arr_float(ns, 9, "ns")
+	oss.Matlab_arr_float(fG, 9, "fG")
+	oss.Matlab_mat_Dense(*pto_sET12, 9, "pto_sET12")
+	oss.Matlab_variable(iGmin, 9, "iGmin")
+	oss.Matlab_variable(iGmax, 9, "iGmax")
 
-	// // Оценки средних частот основного тона сингулярных троек сегментов pw
-	// pto_fMAX12 := make([]float64, S)
-	// for index := range pto_fMAX12 {
-	// 	_, I := oss.MaxArrFloat64(oss.Vec_in_ArrFloat(pto_sET12.ColView(index))) // Поиск индекса максимального значения массива
-	// 	pto_fMAX12[index] = f[I]
-	// }
-	// oss.Matlab_arr_float(ns, 10, "ns")
-	// oss.Matlab_arr_float(pto_fMAX12, 10, "pto_fMAX12")
-	// err_pto_fMAX12 := graph.MakeGraphYX_float64(
-	// 	pto_fMAX12,
-	// 	ns,
-	// 	"pto_fMAX12")
-	// if err_pto_fMAX12 != nil {
-	// 	fmt.Println(err_pto_fMAX12)
-	// }
+	// Оценки средних частот основного тона сингулярных троек сегментов pw
+	pto_fMAX12 := make([]float64, S)
+	for index := range pto_fMAX12 {
+		_, I := oss.MaxArrFloat64(oss.Vec_in_ArrFloat(pto_sET12.ColView(index))) // Поиск индекса максимального значения массива
+		pto_fMAX12[index] = f[I]
+	}
+	oss.Matlab_arr_float(ns, 10, "ns")
+	oss.Matlab_arr_float(pto_fMAX12, 10, "pto_fMAX12")
+	err_pto_fMAX12 := graph.MakeGraphYX_float64(
+		pto_fMAX12,
+		ns,
+		"pto_fMAX12")
+	if err_pto_fMAX12 != nil {
+		fmt.Println(err_pto_fMAX12)
+	}
+	Folder9 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(9) + oss.OpSystemFilder
+	graph.SaveDat_2(*pto_sET12, Folder9+"pto_sET12"+".dat")
+	graph.SaveDat(ns, Folder9+"ns"+".dat")
+	graph.SaveDat(time, Folder9+"time"+".dat")
+
+	graph.SplotMatrixFromFile(graph.Option3D{ // Задаём настройки 3D графика
+		FileNameDat: Folder9 + "pto_sET12.dat",
+		FileNameOut: Folder9 + "pto_sET12.png",
+		Titile:      "Периодограмма Блэкмана–Харриса sET12 сегментов pw",
+		Xlabel:      "ns",
+		Ylabel:      "f,Hz",
+		Zlabel:      "P(f)",
+	}) // Делаем график
+
+	log.Println("Нормированные АКФ сингулярных троек sET12 сегментов pw")
 
 	// oss.SafeToXlsx(f, "f")
 

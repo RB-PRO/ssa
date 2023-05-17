@@ -2,7 +2,6 @@ package graph
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/sbinet/go-gnuplot"
 )
@@ -32,37 +31,46 @@ func TreeXDXD(x, y, z []float64) {
 
 }
 
-// Сделать 3D mash
-func SplotMatrixFromFile(Folder int, FileNameDat, FileNameOut string) {
-	FolderStr := `File_For_MatLab/` + strconv.Itoa(Folder) + `/`
-	// FileNameDat = `File_For_MatLab/7/AcfNrm_sET12.dat`
-	// FileNameOut = `File_For_MatLab/7/AcfNrm_sET12.png`
-	fname := ""
-	persist := false
+// Стуктура-настройка для реализации графика
+type Option3D struct {
+	FileNameDat string // Файл формата .dat, который содержит данные, которые необходимо построить
+	FileNameOut string // Файл формата .png, который будет сохранён
+	Titile      string // Подпись графика
+	Xlabel      string // Подпись оси X
+	Ylabel      string // Подпись оси Y
+	Zlabel      string // Подпись оси Z
+}
 
-	p, err := gnuplot.NewPlotter(fname, persist, true)
+// Сделать 3D mash
+func SplotMatrixFromFile(opt Option3D) error {
+
+	// Запускаем термина
+	p, err := gnuplot.NewPlotter("", false, false)
 	if err != nil {
-		err_string := fmt.Sprintf("** err: %v\n", err)
-		panic(err_string)
+		return err
 	}
 	defer p.Close()
 
-	// p.CheckedCmd(`set term png`)
+	p.CheckedCmd(`set terminal png size 1024,768 font "Helvetica,15.0"`)
+	p.CheckedCmd(`set output "` + opt.FileNameOut + `"`)
 
-	p.CheckedCmd(`set terminal png font "Helvetica 9"`)
-	p.CheckedCmd(`set output "` + FolderStr + FileNameOut + `.png` + `"`)
-
-	p.CheckedCmd(`splot "` + FolderStr + FileNameOut + `.dat` + `" matrix w l`)
+	p.CheckedCmd(`splot "` + opt.FileNameDat + `" matrix w l`)
 	p.CheckedCmd("set pm3d")
 	p.CheckedCmd("unset surface")
-	p.CheckedCmd("replot")
-	p.CheckedCmd(`set terminal png font "Helvetica 9"`)
-	p.CheckedCmd(`set output "` + FolderStr + FileNameOut + `.png` + `"`)
+	p.CheckedCmd(`set title "` + opt.Titile + `"`)
+	p.CheckedCmd(`set xlabel "` + opt.Xlabel + `"`)
+	p.CheckedCmd(`set ylabel "` + opt.Ylabel + `"`)
+	p.CheckedCmd(`set zlabel "` + opt.Zlabel + `"`)
+
+	p.CheckedCmd(`set terminal png size 1024,768 font "Helvetica,15.0"`)
+	p.CheckedCmd(`set output "` + opt.FileNameOut + `"`)
 	p.CheckedCmd("replot")
 
 	p.CheckedCmd("set view map")
-	p.CheckedCmd(`set terminal png font "Helvetica 9"`)
-	p.CheckedCmd(`set output "` + FolderStr + FileNameOut + `_Head.png` + `"`)
+
+	p.CheckedCmd(`set terminal png size 1024,768 font "Helvetica,15.0"`)
+	p.CheckedCmd(`set output "` + opt.FileNameOut + `"`)
 	p.CheckedCmd("replot")
 
+	return nil
 }
