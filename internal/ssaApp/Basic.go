@@ -19,7 +19,8 @@ func SsaAnalysis() {
 
 	// graph.TreeXDXD([]float64{}, []float64{}, []float64{})
 
-	SSA_spw(pw, fmp)
+	// SSA_spw(pw, fmp)
+	SSS_spw2(pw, fmp)
 
 	//sgl, _ := make_singnal_xn("sgl") // Загрузить сигнал из файла pw.xlsx
 	//safeToXlsx(sgl, "sgl")

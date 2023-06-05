@@ -1,11 +1,8 @@
 package ssa
 
 import (
-	"fmt"
-	"log"
 	"math"
 
-	"github.com/RB-PRO/ssa/pkg/graph"
 	"github.com/RB-PRO/ssa/pkg/oss"
 	"gonum.org/v1/gonum/mat"
 )
@@ -32,7 +29,11 @@ type SPW struct {
 	Dt  float64
 	Tim []float64 // Set general parameters
 	Ns2 []int
-	L   []int
+	L   []float64
+
+	lag  int // к-во отсчётов
+	lgl  []float64
+	time []float64 // Слайс со временем
 
 	K int
 	M int // параметр вложения в траекторное пространство
@@ -44,12 +45,19 @@ type SPW struct {
 
 	SET12 *mat.Dense
 	SET34 *mat.Dense
+
+	Acf_sET12 *mat.Dense
+
+	EnvAcf_sET12 *mat.Dense
+	AcfNrm_sET12 *mat.Dense
 }
 
 func New() *SPW {
 	return &SPW{}
 }
-func (s *SPW) Init(pw []float64) {
+
+// Инициализируем сигнал pw
+func (s *SPW) Init(pw, fmp []float64) *SPW {
 	s.N = len(pw)
 	s.Win = 1024
 	s.Res = s.N - s.Win*int(math.Floor(float64(s.N)/float64(s.Win)))
@@ -67,9 +75,38 @@ func (s *SPW) Init(pw []float64) {
 		s.S++
 	}
 	s.S-- // кол-во перекрывающихся сегментов pw в пределах N
+
+	// Различные глобальные переменные
+	s.Cad = 30                // 30 кадров/сек
+	s.Dt = 1 / float64(s.Cad) // интервал дискретизации времени, сек
+	tim := make([]float64, s.N)
+	for index := 1; index < s.N; index++ {
+		tim[index] = tim[index-1] + s.Dt
+	}
+	s.Tim = tim
+
+	ns2 := make([]int, s.S)
+	for index := range ns2 {
+		ns2[index] = (index + 1)
+	}
+	s.Ns2 = ns2
+
+	L := make([]float64, s.S)
+	for index := range L { // цикл по сегментам pw
+		L[index] = math.Floor(float64(s.Cad) / fmp[index]) // кол-во отсчетов основного тона pw
+	}
+	s.L = L
+
+	s.K = 5
+	s.M = int(float64(s.K) * oss.Max(s.L)) // параметр вложения в траекторное пространство
+	// SSA - анализ сегментов pw
+	s.Seg = 100 // номер сегмента pw для визуализации
+	s.NET = 4   // кол-во сингулярных троек для сегментов pw
+
+	return s
 }
 
-func (s *SPW) Spw_Form(pw []float64) {
+func (s *SPW) Spw_Form(pw []float64) *SPW {
 	s.Spw = mat.NewDense(s.Win, s.S, nil)
 	for j := 0; j < s.S; j++ {
 		for i := 0; i < s.Win; i++ {
@@ -77,79 +114,5 @@ func (s *SPW) Spw_Form(pw []float64) {
 			s.Spw.Set(i, j, pw[k+i])
 		}
 	}
-}
-
-func (s *SPW) SET_Form() {
-	sET12_sum2 := mat.NewDense(s.Win, 2, nil) // НЕ ФАКТ, ЧТО К-во строк win
-	sET34_sum2 := mat.NewDense(s.Win, 2, nil) // НЕ ФАКТ, ЧТО К-во строк win
-	s.SET12 = mat.NewDense(s.Win, s.S, nil)   // НЕ ФАКТ, ЧТО К-во строк win
-	s.SET34 = mat.NewDense(s.Win, s.S, nil)   // НЕ ФАКТ, ЧТО К-во строк win
-
-	for j := 0; j < s.S; j++ {
-		C, LBD, RC := SSA(s.Win, s.M, s.Spw.ColView(j), s.NET)
-		//fmt.Println(j, S)
-		RC_T := mat.DenseCopyOf(RC.T())
-
-		sET12_sum2.SetCol(0, RC_T.RawRowView(0))
-		sET12_sum2.SetCol(1, RC_T.RawRowView(1))
-		s.SET12.SetCol(j, oss.Sum2(*sET12_sum2))
-		sET12_sum2.Zero()
-
-		sET34_sum2.SetCol(0, RC_T.RawRowView(2))
-		sET34_sum2.SetCol(1, RC_T.RawRowView(3))
-		s.SET34.SetCol(j, oss.Sum2(*sET34_sum2))
-		sET34_sum2.Zero()
-
-		if j == s.Seg {
-			// Если есть настрока формирования графика
-			if s.Graph {
-				graph.Imagesc(C, "C")
-				graph.MakeGraphOfArray(LBD, "LBD")
-
-				// Создаём график 1 и 2 коэффициента
-				err_makeGraphYX_sET12 := graph.MakeGraphYX_VecDense(
-					*mat.NewVecDense(s.Win, s.Tim[0:s.Win]),
-					*(mat.VecDenseCopyOf(s.Spw.ColView(j))),
-					*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(s.SET12.ColView(j))), oss.Vec_in_ArrFloat(s.SET12.ColView(j)))),
-					"origin", "sET12")
-				if err_makeGraphYX_sET12 != nil {
-					fmt.Println(err_makeGraphYX_sET12)
-				}
-
-				// Создаём график 3 и 4 коэффициента
-				err_makeGraphYX_sET34 := graph.MakeGraphYX_VecDense(
-					*mat.NewVecDense(s.Win, s.Tim[0:s.Win]),
-					*(mat.VecDenseCopyOf(s.Spw.ColView(j))),
-					*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(s.SET34.ColView(j))), oss.Vec_in_ArrFloat(s.SET34.ColView(j)))),
-					"origin", "sET34")
-				if err_makeGraphYX_sET34 != nil {
-					fmt.Println(err_makeGraphYX_sET34)
-				}
-			}
-			// Если есть настрока сохранения данных в Xlsx
-			if s.Xlsx {
-				oss.Matlab_mat_Dense(C, 1, "C")
-				oss.Matlab_arr_float(LBD, 2, "LBD")
-
-				oss.Matlab_arr_float(s.Tim, 3, "tim")
-				oss.Matlab_mat_Dense(*s.Spw, 3, "spw")
-				oss.Matlab_mat_Dense(*s.SET12, 3, "sET12")
-				log.Println("Original time series and reconstruction sET12")
-
-				oss.Matlab_arr_float(s.Tim, 4, "tim")
-				oss.Matlab_mat_Dense(*s.Spw, 4, "spw")
-				oss.Matlab_mat_Dense(*s.SET34, 4, "sET34")
-				log.Println("Original time series and reconstruction sET34")
-			}
-		}
-	}
-}
-
-// Оценка АКФ сингулярных троек для сегментов pw
-func (s *SPW) AKF_Form() {
-	lag := int(math.Floor(float64(s.Win) / 10.0)) // % наибольший лаг АКФ <= win/10
-	lagS := 2 * lag
-	Acf_sET12 := ACF_estimation_of_singular_triples(lagS, s.Win, s.S, *s.SET12)
-
-	oss.SafeToXlsxM(Acf_sET12, "Acf_sET12")
+	return s
 }

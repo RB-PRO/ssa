@@ -12,7 +12,6 @@ import (
 	"github.com/RB-PRO/ssa/pkg/oss"
 	"github.com/RB-PRO/ssa/pkg/pchip"
 	"github.com/RB-PRO/ssa/pkg/periodogram"
-	"github.com/RB-PRO/ssa/pkg/pmtm"
 	"github.com/RB-PRO/ssa/pkg/ssa"
 	"github.com/pconstantinou/savitzkygolay"
 	"gonum.org/v1/gonum/mat"
@@ -22,11 +21,34 @@ func SSS_spw2(pw, fmp []float64) {
 	s := ssa.New()
 	s.Graph = true // Создавать графики
 	s.Xlsx = true  // Сохранять в Xlsx
-	s.Init(pw)
-	s.Spw_Form(pw)
+	s.Init(pw, fmp)
+	s.Spw_Form(pw) // Создать spw
+
+	// # 1, 2, 3, 4
 	s.SET_Form() // SSA - анализ сегментов pw
 
+	// # 5
+	// Оценка АКФ сингулярных троек для сегментов pw
+	// Визуализация АКФ сингулярных троек для сегментов pw
 	s.AKF_Form() // Оценка АКФ сингулярных троек для сегментов pw
+
+	// # 6, 7
+	// Огибающие АКФ сингулярных троек sET12 сегментов pw
+	// Нормированные АКФ сингулярных троек sET12 сегментов pw
+	s.Envelope()
+
+	// # 8
+	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
+	s.MomentFrequency()
+
+	// # 9
+	// Визуализация СПМ сингулярных троек сегменов pw
+	s.VisibleSPM()
+
+	// # 10
+	// Агрегирование сегментов очищенной пульсовой волны cpw
+	s.AggregationPW()
+
 }
 
 func SSA_spw(pw, fmp []float64) {
@@ -50,7 +72,6 @@ func SSA_spw(pw, fmp []float64) {
 		S++
 	}
 	S-- // кол-во перекрывающихся сегментов pw в пределах N
-	//NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
 
 	spw := mat.NewDense(win, S, nil)
 	//fmt.Println("Размеры spw:", win, S)
@@ -108,7 +129,7 @@ func SSA_spw(pw, fmp []float64) {
 
 		if j == seg {
 			graph.Imagesc(C, "C")
-			oss.Matlab_mat_Dense(C, 1, "C")
+			oss.Matlab_mat_Dense(&C, 1, "C")
 			log.Println("Covariance matrix")
 			graph.MakeGraphOfArray(LBD, "LBD")
 
@@ -121,8 +142,8 @@ func SSA_spw(pw, fmp []float64) {
 				*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(sET12.ColView(j))), oss.Vec_in_ArrFloat(sET12.ColView(j)))),
 				"origin", "sET12")
 			oss.Matlab_arr_float(tim, 3, "tim")
-			oss.Matlab_mat_Dense(*spw, 3, "spw")
-			oss.Matlab_mat_Dense(*sET12, 3, "sET12")
+			oss.Matlab_mat_Dense(spw, 3, "spw")
+			oss.Matlab_mat_Dense(sET12, 3, "sET12")
 			log.Println("Original time series and reconstruction sET12")
 
 			err_makeGraphYX_sET34 := graph.MakeGraphYX_VecDense(
@@ -131,8 +152,8 @@ func SSA_spw(pw, fmp []float64) {
 				*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(sET34.ColView(j))), oss.Vec_in_ArrFloat(sET34.ColView(j)))),
 				"origin", "sET34")
 			oss.Matlab_arr_float(tim, 4, "tim")
-			oss.Matlab_mat_Dense(*spw, 4, "spw")
-			oss.Matlab_mat_Dense(*sET34, 4, "sET34")
+			oss.Matlab_mat_Dense(spw, 4, "spw")
+			oss.Matlab_mat_Dense(sET34, 4, "sET34")
 			log.Println("Original time series and reconstruction sET34")
 
 			if err_makeGraphYX_sET12 != nil {
@@ -152,7 +173,7 @@ func SSA_spw(pw, fmp []float64) {
 	lag := int(math.Floor(float64(win) / 10.0)) // % наибольший лаг АКФ <= win/10
 	lagS := 2 * lag
 	Acf_sET12 := ssa.ACF_estimation_of_singular_triples(lagS, win, S, *sET12)
-	oss.SafeToXlsxM(Acf_sET12, "Acf_sET12")
+	oss.SafeToXlsxM(*Acf_sET12, "Acf_sET12")
 	// *****************
 	// Визуализация АКФ сингулярных троек для сегментов pw
 	lgl := make([]float64, lag)
@@ -236,7 +257,7 @@ func SSA_spw(pw, fmp []float64) {
 	// 6 - Огибающие АКФ сингулярных троек sET12 сегментов pw
 	oss.Matlab_arr_float(ns, 6, "ns")
 	oss.Matlab_arr_float(time, 6, "time")
-	oss.Matlab_mat_Dense(EnvAcf_sET12, 6, "EnvAcf_sET12")
+	oss.Matlab_mat_Dense(&EnvAcf_sET12, 6, "EnvAcf_sET12")
 	log.Println("Огибающие АКФ сингулярных троек sET12 сегментов pw")
 	graph.SaveDat_2(EnvAcf_sET12, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"EnvAcf_sET12"+".dat")
 	graph.SaveDat(ns, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"ns"+".dat")
@@ -245,7 +266,7 @@ func SSA_spw(pw, fmp []float64) {
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
 	oss.Matlab_arr_float(ns, 7, "ns")
 	oss.Matlab_arr_float(time, 7, "time")
-	oss.Matlab_mat_Dense(AcfNrm_sET12, 7, "AcfNrm_sET12")
+	oss.Matlab_mat_Dense(&AcfNrm_sET12, 7, "AcfNrm_sET12")
 	Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
 	graph.SaveDat_2(AcfNrm_sET12, Folder7+"AcfNrm_sET12"+".dat")
 	graph.SaveDat(ns, Folder7+"ns"+".dat")
@@ -332,7 +353,7 @@ func SSA_spw(pw, fmp []float64) {
 	}
 	oss.Matlab_arr_float(ns, 9, "ns")
 	oss.Matlab_arr_float(fG, 9, "fG")
-	oss.Matlab_mat_Dense(*pto_sET12, 9, "pto_sET12")
+	oss.Matlab_mat_Dense(pto_sET12, 9, "pto_sET12")
 	oss.Matlab_variable(iGmin, 9, "iGmin")
 	oss.Matlab_variable(iGmax, 9, "iGmax")
 
@@ -371,17 +392,15 @@ func SSA_spw(pw, fmp []float64) {
 
 	// ***
 	// Агрегирование сегментов очищенной пульсовой волны cpw
-	/*
-			NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, S, win, res, *sET12)
-			safeToXlsx(NumS, "NumS")
+	NSF := win + res*(S-1) // номер финального отсчета финального сегмента <= N
+	NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, S, win, res, *sET12)
+	oss.SafeToXlsx(NumS, "NumS")
 
-
-		matlab_variable(NSF, 10, "NSF")
-		matlab_arr_float(tim, 10, "tim")
-		matlab_arr_float(cpw_avr, 10, "cpw_avr")
-		matlab_arr_float(cpw_med, 10, "cpw_med")
-		matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
-	*/
+	oss.Matlab_variable(NSF, 10, "NSF")
+	oss.Matlab_arr_float(tim, 10, "tim")
+	oss.Matlab_arr_float(cpw_avr, 10, "cpw_avr")
+	oss.Matlab_arr_float(cpw_med, 10, "cpw_med")
+	oss.Matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
 }
 func timer(name string) func() {
 	start := time.Now()
@@ -442,9 +461,10 @@ func pto_sET12_init(sET12 mat.Dense, spw mat.Dense, smopto, win, Nf, S int) *mat
 	}
 	return pto_sET12
 }
-func pmtmMy(sET12 mat.Vector, smopto, win int) []float64 {
-	return pmtm.Pmtm(oss.Vec_in_float64(sET12), 1024)
-}
+
+// func pmtmMy(sET12 mat.Vector, smopto, win int) []float64 {
+// 	return pmtm.Pmtm(oss.Vec_in_float64(sET12), 1024)
+// }
 
 // Расчёты вектора PhaAcfNrm, модуль от Акосинуса.
 func MakePhaAcfNrm(vect mat.Vector) *mat.VecDense {

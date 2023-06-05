@@ -8,7 +8,7 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
-// #Расчёт мгновенной частота нормированной АКФ сингулярных троек sET12 для сегментов pw
+// # Расчёт мгновенной частота нормированной АКФ сингулярных троек sET12 для сегментов pw
 func Instantaneous_frequency_of_normalized_ACF_sET12(AcfNrm_sET12 mat.Dense, S, lag int, dt float64, lgl []float64) ([]float64, error) {
 	insFrc_AcfNrm := make([]float64, S)
 	for j := 0; j < S; j++ {

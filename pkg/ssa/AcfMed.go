@@ -6,13 +6,13 @@ import (
 )
 
 // Оценка АКФ сингулярных троек для сегментов pw
-func ACF_estimation_of_singular_triples(lagS, win, S int, sET12 mat.Dense) mat.Dense {
+func ACF_estimation_of_singular_triples(lagS, win, S int, sET12 mat.Dense) *mat.Dense {
 	//var Acf_sET12 mat.Dense
 	Acf_sET12 := mat.NewDense(lagS, S, nil)
 	for j := 0; j < S; j++ {
 		Acf_sET12.SetCol(j, AcfMed(lagS, win, *mat.VecDenseCopyOf(sET12.ColView(j))))
 	}
-	return *Acf_sET12
+	return Acf_sET12
 }
 func AcfMed(lagS, win int, sET12_vec mat.VecDense) []float64 {
 	// lagS - параметр погружения временного ряда (ВР) TS в траекторное пространство

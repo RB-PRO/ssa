@@ -131,7 +131,7 @@ func Prctile(input []float64, percent float64) float64 {
 // *****************************************************************************
 
 // Сохранить данные матрицы mat.Dense
-func Matlab_mat_Dense(X mat.Dense, number int, fileName string) error {
+func Matlab_mat_Dense(X *mat.Dense, number int, fileName string) error {
 	err := Matlab_mkDir(number)
 	if err != nil {
 		fmt.Println(err)
