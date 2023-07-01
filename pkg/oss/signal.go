@@ -7,25 +7,6 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-/*
-func make_singnal(n int) []float64 { //waveform := make_singnal(1000, 0.01)
-
-		var lambda1 float64 = 0.025
-		var lambda2 float64 = 0.01
-		var lambda3 float64 = 0.1625
-		var lambdaC float64 = 1.0 / 600.0
-		var a1 float64 = 1.0
-		var a2 float64 = 0.8
-		var a3 float64 = 0.63
-		waveform := make([]float64, n)
-		for index := range waveform {
-			waveform[index] += a1 * math.Sin(2*math.Pi*lambda1*float64(index))
-			waveform[index] += a2 * math.Sin(2*math.Pi*lambda2*float64(index)+30.0*math.Sin(2.0*float64(math.Pi)*lambdaC*float64(index)))
-			waveform[index] += a3 * math.Sin(2*math.Pi*lambda3*float64(index)+52.5*math.Sin(2.0*float64(math.Pi)*lambdaC*float64(index)))
-		}
-		return waveform
-	}
-*/
 func Make_singnal(n int) []float64 {
 	waveform := make([]float64, n)
 	for index := range waveform {

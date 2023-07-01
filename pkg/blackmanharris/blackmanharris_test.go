@@ -53,4 +53,5 @@ func TestBlackmanharris(t *testing.T) {
 				index, int(MatLabBlackman[index]*1000000), int(blackman[index]*1000000))
 		}
 	}
+
 }
