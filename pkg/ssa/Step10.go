@@ -12,11 +12,11 @@ func (s *SPW) AggregationPW() *SPW {
 	NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, s.S, s.Win, s.Res, s.SET12)
 
 	oss.SafeToXlsx(NumS, "NumS")
-	oss.Matlab_variable(NSF, 10, "NSF")
-	oss.Matlab_arr_float(s.Tim, 10, "tim")
-	oss.Matlab_arr_float(cpw_avr, 10, "cpw_avr")
-	oss.Matlab_arr_float(cpw_med, 10, "cpw_med")
-	oss.Matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
+	oss.Matlab_variable(NSF, 10, "NSF", s.Path)
+	oss.Matlab_arr_float(s.Tim, 10, "tim", s.Path)
+	oss.Matlab_arr_float(cpw_avr, 10, "cpw_avr", s.Path)
+	oss.Matlab_arr_float(cpw_med, 10, "cpw_med", s.Path)
+	oss.Matlab_arr_float(cpw_iqr, 10, "cpw_iqr", s.Path)
 
 	return s
 }

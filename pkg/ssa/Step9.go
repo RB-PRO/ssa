@@ -43,11 +43,11 @@ func (s *SPW) VisibleSPM() *SPW {
 		oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12") // Сохранить в Xlsx матрицу оценки СПМ
 	}
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 9, "ns")
-		oss.Matlab_arr_float(fG, 9, "fG")
-		oss.Matlab_mat_Dense(pto_sET12, 9, "pto_sET12")
-		oss.Matlab_variable(iGmin, 9, "iGmin")
-		oss.Matlab_variable(iGmax, 9, "iGmax")
+		oss.Matlab_arr_float(s.Ns, 9, "ns", s.Path)
+		oss.Matlab_arr_float(fG, 9, "fG", s.Path)
+		oss.Matlab_mat_Dense(pto_sET12, 9, "pto_sET12", s.Path)
+		oss.Matlab_variable(iGmin, 9, "iGmin", s.Path)
+		oss.Matlab_variable(iGmax, 9, "iGmax", s.Path)
 	}
 	return s
 }

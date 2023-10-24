@@ -9,18 +9,18 @@ import (
 )
 
 // ***
-func SafeToXlsx(sig []float64, name string) {
+func SafeToXlsx(sig []float64, name string, Path string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
 	for ind, val := range sig {
 		file_graph.SetCellValue("main", "A"+strconv.Itoa(ind+1), val)
 	}
-	if err := file_graph.SaveAs("files" + OpSystemFilder + name + ".xlsx"); err != nil {
+	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + name + ".xlsx"); err != nil {
 		fmt.Println(err)
 	}
 }
-func SafeToXlsxMatrix(X *mat.Dense, xlsxName string) {
+func SafeToXlsxMatrix(X *mat.Dense, xlsxName string, Path string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -30,12 +30,12 @@ func SafeToXlsxMatrix(X *mat.Dense, xlsxName string) {
 			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
-	if err := file_graph.SaveAs("files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
+	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()
 }
-func SafeToXlsxDualArray(X [][]float64, xlsxName string) {
+func SafeToXlsxDualArray(X [][]float64, xlsxName string, Path string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -44,12 +44,12 @@ func SafeToXlsxDualArray(X [][]float64, xlsxName string) {
 			file_graph.SetCellValue("main", GetColumnName(ind2+1)+strconv.Itoa(ind1), val2)
 		}
 	}
-	if err := file_graph.SaveAs("files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
+	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()
 }
-func SafeToXlsxM(X mat.Dense, xlsxName string) {
+func SafeToXlsxM(X mat.Dense, xlsxName string, Path string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -59,7 +59,7 @@ func SafeToXlsxM(X mat.Dense, xlsxName string) {
 			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
-	if err := file_graph.SaveAs("files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
+	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()

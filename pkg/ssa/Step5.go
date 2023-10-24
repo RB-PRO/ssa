@@ -30,9 +30,9 @@ func (s *SPW) AKF_Form() *SPW {
 		oss.SafeToXlsxMatrix(s.Acf_sET12, "Acf_sET12")
 	}
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 5, "ns")
-		oss.Matlab_arr_float(time, 5, "time")
-		oss.Matlab_mat_Dense(s.Acf_sET12, 5, "Acf_sET12")
+		oss.Matlab_arr_float(s.Ns, 5, "ns", s.Path)
+		oss.Matlab_arr_float(time, 5, "time", s.Path)
+		oss.Matlab_mat_Dense(s.Acf_sET12, 5, "Acf_sET12", s.Path)
 	}
 	return s
 }

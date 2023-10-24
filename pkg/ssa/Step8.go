@@ -30,9 +30,9 @@ func (s *SPW) MomentFrequency() *SPW {
 	smo_insFrc_AcfNrm, _ := filter.Process(insFrc_AcfNrm, s.lgl)
 
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 8, "ns")
-		oss.Matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm")
-		oss.Matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm")
+		oss.Matlab_arr_float(s.Ns, 8, "ns", s.Path)
+		oss.Matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm", s.Path)
+		oss.Matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm", s.Path)
 		err_insFrc_AcfNrm := graph.MakeGraphYX_float64(
 			insFrc_AcfNrm,
 			s.Ns,

@@ -15,8 +15,8 @@ import (
 )
 
 // Сохранить данные массива float64
-func Matlab_arr_float(arr []float64, number int, fileName string) error {
-	err := Matlab_mkDir(number)
+func Matlab_arr_float(arr []float64, number int, fileName string, Path string) error {
+	err := Matlab_mkDir(number, Path)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -34,8 +34,8 @@ func Matlab_arr_float(arr []float64, number int, fileName string) error {
 }
 
 // Сохранить данные массива float64
-func Matlab_mat_Vector(vect mat.Vector, number int, fileName string) error {
-	err := Matlab_mkDir(number)
+func Matlab_mat_Vector(vect mat.Vector, number int, fileName string, Path string) error {
+	err := Matlab_mkDir(number, Path)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -53,13 +53,13 @@ func Matlab_mat_Vector(vect mat.Vector, number int, fileName string) error {
 }
 
 // Сохранить данные переменной int
-func Matlab_variable(data int, number int, fileName string) error {
-	err := Matlab_mkDir(number)
+func Matlab_variable(data int, number int, fileName string, Path string) error {
+	err := Matlab_mkDir(number, Path)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// create file
-	f, err := os.Create("File_For_MatLab" + OpSystemFilder + strconv.Itoa(number) + OpSystemFilder + fileName + ".txt")
+	f, err := os.Create(Path + "File_For_MatLab" + OpSystemFilder + strconv.Itoa(number) + OpSystemFilder + fileName + ".txt")
 	if err != nil {
 		log.Println(err)
 	}
@@ -131,8 +131,8 @@ func Prctile(input []float64, percent float64) float64 {
 // *****************************************************************************
 
 // Сохранить данные матрицы mat.Dense
-func Matlab_mat_Dense(X *mat.Dense, number int, fileName string) error {
-	err := Matlab_mkDir(number)
+func Matlab_mat_Dense(X *mat.Dense, number int, fileName string, Path string) error {
+	err := Matlab_mkDir(number, Path)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -146,7 +146,7 @@ func Matlab_mat_Dense(X *mat.Dense, number int, fileName string) error {
 			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
-	if err := file_graph.SaveAs("File_For_MatLab" + OpSystemFilder + strconv.Itoa(number) + OpSystemFilder + fileName + ".xlsx"); err != nil {
+	if err := file_graph.SaveAs(Path + "File_For_MatLab" + OpSystemFilder + strconv.Itoa(number) + OpSystemFilder + fileName + ".xlsx"); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()
@@ -154,9 +154,9 @@ func Matlab_mat_Dense(X *mat.Dense, number int, fileName string) error {
 }
 
 // В случае несуществования создать папку umber в matlab папке
-func Matlab_mkDir(number int) error {
-	if !exists("File_For_MatLab" + OpSystemFilder + strconv.Itoa(number)) { // Если файл не создан
-		err := os.Mkdir("File_For_MatLab"+OpSystemFilder+strconv.Itoa(number), 0777)
+func Matlab_mkDir(number int, Path string) error {
+	if !exists(Path+"File_For_MatLab"+OpSystemFilder+strconv.Itoa(number), Path) { // Если файл не создан
+		err := os.Mkdir(Path+"File_For_MatLab"+OpSystemFilder+strconv.Itoa(number), 0777)
 		if err != nil {
 			return err
 		}
@@ -165,8 +165,8 @@ func Matlab_mkDir(number int) error {
 }
 
 // Проверка на существование папки
-func exists(path string) bool {
-	_, err := os.Stat(path)
+func exists(PathChild, Path string) bool {
+	_, err := os.Stat(Path + PathChild)
 	if err == nil {
 		return true
 	}

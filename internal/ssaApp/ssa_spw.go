@@ -129,11 +129,11 @@ func SSA_spw(pw, fmp []float64) {
 
 		if j == seg {
 			graph.Imagesc(C, "C")
-			oss.Matlab_mat_Dense(&C, 1, "C")
+			oss.Matlab_mat_Dense(&C, 1, "C", "")
 			log.Println("Covariance matrix")
 			graph.MakeGraphOfArray(LBD, "LBD")
 
-			oss.Matlab_arr_float(LBD, 2, "LBD")
+			oss.Matlab_arr_float(LBD, 2, "LBD", "")
 			log.Println("Eigenvalues")
 
 			err_makeGraphYX_sET12 := graph.MakeGraphYX_VecDense(
@@ -141,9 +141,9 @@ func SSA_spw(pw, fmp []float64) {
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
 				*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(sET12.ColView(j))), oss.Vec_in_ArrFloat(sET12.ColView(j)))),
 				"origin", "sET12")
-			oss.Matlab_arr_float(tim, 3, "tim")
-			oss.Matlab_mat_Dense(spw, 3, "spw")
-			oss.Matlab_mat_Dense(sET12, 3, "sET12")
+			oss.Matlab_arr_float(tim, 3, "tim", "")
+			oss.Matlab_mat_Dense(spw, 3, "spw", "")
+			oss.Matlab_mat_Dense(sET12, 3, "sET12", "")
 			log.Println("Original time series and reconstruction sET12")
 
 			err_makeGraphYX_sET34 := graph.MakeGraphYX_VecDense(
@@ -151,9 +151,9 @@ func SSA_spw(pw, fmp []float64) {
 				*(mat.VecDenseCopyOf(spw.ColView(j))),
 				*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(sET34.ColView(j))), oss.Vec_in_ArrFloat(sET34.ColView(j)))),
 				"origin", "sET34")
-			oss.Matlab_arr_float(tim, 4, "tim")
-			oss.Matlab_mat_Dense(spw, 4, "spw")
-			oss.Matlab_mat_Dense(sET34, 4, "sET34")
+			oss.Matlab_arr_float(tim, 4, "tim", "")
+			oss.Matlab_mat_Dense(spw, 4, "spw", "")
+			oss.Matlab_mat_Dense(sET34, 4, "sET34", "")
 			log.Println("Original time series and reconstruction sET34")
 
 			if err_makeGraphYX_sET12 != nil {
@@ -184,9 +184,9 @@ func SSA_spw(pw, fmp []float64) {
 	for m := 1; m < len(time); m++ {
 		time[m] = time[m-1] + dt
 	}
-	oss.Matlab_arr_float(ns, 5, "ns")
-	oss.Matlab_arr_float(time, 5, "time")
-	oss.Matlab_mat_Dense(Acf_sET12, 5, "Acf_sET12")
+	oss.Matlab_arr_float(ns, 5, "ns", "")
+	oss.Matlab_arr_float(time, 5, "time", "")
+	oss.Matlab_mat_Dense(Acf_sET12, 5, "Acf_sET12", "")
 	log.Println("Визуализация АКФ сингулярных троек для сегментов pw")
 
 	// *****************
@@ -255,18 +255,18 @@ func SSA_spw(pw, fmp []float64) {
 	oss.SafeToXlsxM(AcfNrm_sET12, "AcfNrm_sET12")
 
 	// 6 - Огибающие АКФ сингулярных троек sET12 сегментов pw
-	oss.Matlab_arr_float(ns, 6, "ns")
-	oss.Matlab_arr_float(time, 6, "time")
-	oss.Matlab_mat_Dense(&EnvAcf_sET12, 6, "EnvAcf_sET12")
+	oss.Matlab_arr_float(ns, 6, "ns", "")
+	oss.Matlab_arr_float(time, 6, "time", "")
+	oss.Matlab_mat_Dense(&EnvAcf_sET12, 6, "EnvAcf_sET12", "")
 	log.Println("Огибающие АКФ сингулярных троек sET12 сегментов pw")
 	graph.SaveDat_2(EnvAcf_sET12, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"EnvAcf_sET12"+".dat")
 	graph.SaveDat(ns, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"ns"+".dat")
 	graph.SaveDat(time, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"time"+".dat")
 
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
-	oss.Matlab_arr_float(ns, 7, "ns")
-	oss.Matlab_arr_float(time, 7, "time")
-	oss.Matlab_mat_Dense(&AcfNrm_sET12, 7, "AcfNrm_sET12")
+	oss.Matlab_arr_float(ns, 7, "ns", "")
+	oss.Matlab_arr_float(time, 7, "time", "")
+	oss.Matlab_mat_Dense(&AcfNrm_sET12, 7, "AcfNrm_sET12", "")
 	Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
 	graph.SaveDat_2(AcfNrm_sET12, Folder7+"AcfNrm_sET12"+".dat")
 	graph.SaveDat(ns, Folder7+"ns"+".dat")
@@ -298,9 +298,9 @@ func SSA_spw(pw, fmp []float64) {
 
 	//smo_insFrc_AcfNrm := savitzky_goley(insFrc_AcfNrm, 33, 2)
 
-	oss.Matlab_arr_float(ns, 8, "ns")
-	oss.Matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm")
-	oss.Matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm")
+	oss.Matlab_arr_float(ns, 8, "ns", "")
+	oss.Matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm", "")
+	oss.Matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm", "")
 	err_insFrc_AcfNrm := graph.MakeGraphYX_float64(
 		insFrc_AcfNrm,
 		ns,
@@ -351,11 +351,11 @@ func SSA_spw(pw, fmp []float64) {
 	for i := 0; i < iGmax; i++ {
 		fG[i] = f[i] // сетка частот 3D-графика
 	}
-	oss.Matlab_arr_float(ns, 9, "ns")
-	oss.Matlab_arr_float(fG, 9, "fG")
-	oss.Matlab_mat_Dense(pto_sET12, 9, "pto_sET12")
-	oss.Matlab_variable(iGmin, 9, "iGmin")
-	oss.Matlab_variable(iGmax, 9, "iGmax")
+	oss.Matlab_arr_float(ns, 9, "ns", "")
+	oss.Matlab_arr_float(fG, 9, "fG", "")
+	oss.Matlab_mat_Dense(pto_sET12, 9, "pto_sET12", "")
+	oss.Matlab_variable(iGmin, 9, "iGmin", "")
+	oss.Matlab_variable(iGmax, 9, "iGmax", "")
 
 	// Оценки средних частот основного тона сингулярных троек сегментов pw
 	pto_fMAX12 := make([]float64, S)
@@ -363,8 +363,8 @@ func SSA_spw(pw, fmp []float64) {
 		_, I := oss.MaxArrFloat64(oss.Vec_in_ArrFloat(pto_sET12.ColView(index))) // Поиск индекса максимального значения массива
 		pto_fMAX12[index] = f[I]
 	}
-	oss.Matlab_arr_float(ns, 10, "ns")
-	oss.Matlab_arr_float(pto_fMAX12, 10, "pto_fMAX12")
+	oss.Matlab_arr_float(ns, 10, "ns", "")
+	oss.Matlab_arr_float(pto_fMAX12, 10, "pto_fMAX12", "")
 	err_pto_fMAX12 := graph.MakeGraphYX_float64(
 		pto_fMAX12,
 		ns,
@@ -396,11 +396,11 @@ func SSA_spw(pw, fmp []float64) {
 	NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, S, win, res, *sET12)
 	oss.SafeToXlsx(NumS, "NumS")
 
-	oss.Matlab_variable(NSF, 10, "NSF")
-	oss.Matlab_arr_float(tim, 10, "tim")
-	oss.Matlab_arr_float(cpw_avr, 10, "cpw_avr")
-	oss.Matlab_arr_float(cpw_med, 10, "cpw_med")
-	oss.Matlab_arr_float(cpw_iqr, 10, "cpw_iqr")
+	oss.Matlab_variable(NSF, 10, "NSF", "")
+	oss.Matlab_arr_float(tim, 10, "tim", "")
+	oss.Matlab_arr_float(cpw_avr, 10, "cpw_avr", "")
+	oss.Matlab_arr_float(cpw_med, 10, "cpw_med", "")
+	oss.Matlab_arr_float(cpw_iqr, 10, "cpw_iqr", "")
 }
 func timer(name string) func() {
 	start := time.Now()

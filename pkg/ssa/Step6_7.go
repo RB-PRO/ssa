@@ -70,9 +70,9 @@ func (s *SPW) Envelope() *SPW {
 	}
 	// 6 - Огибающие АКФ сингулярных троек sET12 сегментов pw
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 6, "ns")
-		oss.Matlab_arr_float(s.time, 6, "time")
-		oss.Matlab_mat_Dense(s.EnvAcf_sET12, 6, "EnvAcf_sET12")
+		oss.Matlab_arr_float(s.Ns, 6, "ns", s.Path)
+		oss.Matlab_arr_float(s.time, 6, "time", s.Path)
+		oss.Matlab_mat_Dense(s.EnvAcf_sET12, 6, "EnvAcf_sET12", s.Path)
 		graph.SaveDat_2(EnvAcf_sET12, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"EnvAcf_sET12"+".dat")
 		graph.SaveDat(s.Ns, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"ns"+".dat")
 		graph.SaveDat(s.time, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"time"+".dat")
@@ -80,9 +80,9 @@ func (s *SPW) Envelope() *SPW {
 
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 7, "ns")
-		oss.Matlab_arr_float(s.time, 7, "time")
-		oss.Matlab_mat_Dense(s.AcfNrm_sET12, 7, "AcfNrm_sET12")
+		oss.Matlab_arr_float(s.Ns, 7, "ns", s.Path)
+		oss.Matlab_arr_float(s.time, 7, "time", s.Path)
+		oss.Matlab_mat_Dense(s.AcfNrm_sET12, 7, "AcfNrm_sET12", s.Path)
 		Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
 		graph.SaveDat_2(AcfNrm_sET12, Folder7+"AcfNrm_sET12"+".dat")
 		graph.SaveDat(s.Ns, Folder7+"ns"+".dat")

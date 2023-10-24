@@ -58,17 +58,17 @@ func (s *SPW) SET_Form() *SPW {
 			}
 			// Если есть настрока сохранения данных в Xlsx
 			if s.Xlsx {
-				oss.Matlab_mat_Dense(&C, 1, "C")
-				oss.Matlab_arr_float(LBD, 2, "LBD")
+				oss.Matlab_mat_Dense(&C, 1, "C", s.Path)
+				oss.Matlab_arr_float(LBD, 2, "LBD", s.Path)
 
-				oss.Matlab_arr_float(s.Tim, 3, "tim")
-				oss.Matlab_mat_Dense(s.Spw, 3, "spw")
-				oss.Matlab_mat_Dense(s.SET12, 3, "sET12")
+				oss.Matlab_arr_float(s.Tim, 3, "tim", s.Path)
+				oss.Matlab_mat_Dense(s.Spw, 3, "spw", s.Path)
+				oss.Matlab_mat_Dense(s.SET12, 3, "sET12", s.Path)
 				// log.Println("Original time series and reconstruction sET12")
 
-				oss.Matlab_arr_float(s.Tim, 4, "tim")
-				oss.Matlab_mat_Dense(s.Spw, 4, "spw")
-				oss.Matlab_mat_Dense(s.SET34, 4, "sET34")
+				oss.Matlab_arr_float(s.Tim, 4, "tim", s.Path)
+				oss.Matlab_mat_Dense(s.Spw, 4, "spw", s.Path)
+				oss.Matlab_mat_Dense(s.SET34, 4, "sET34", s.Path)
 				// log.Println("Original time series and reconstruction sET34")
 			}
 		}

@@ -41,6 +41,8 @@ type SPW struct {
 	Seg int // номер сегмента pw для визуализации
 	NET int // кол-во сингулярных троек для сегментов pw
 
+	Path string // Путь к рабочей папке
+
 	Spw *mat.Dense
 
 	SET12 *mat.Dense
