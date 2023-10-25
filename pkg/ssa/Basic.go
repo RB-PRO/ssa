@@ -41,7 +41,7 @@ type SPW struct {
 	Seg int // номер сегмента pw для визуализации
 	NET int // кол-во сингулярных троек для сегментов pw
 
-	Path string // Путь к рабочей папке
+	Dir *Direction
 
 	Spw *mat.Dense
 
@@ -53,9 +53,14 @@ type SPW struct {
 	EnvAcf_sET12 *mat.Dense
 	AcfNrm_sET12 *mat.Dense
 }
+type Direction struct {
+	zeropath string // Путь к рабочей папке
+}
 
-func New() *SPW {
-	return &SPW{}
+func New(Path string) *SPW {
+	Dir, _ := NewDirection(Path)
+	spw := SPW{Dir: Dir}
+	return &spw
 }
 
 // Инициализируем сигнал pw

@@ -1,6 +1,7 @@
 package ssa
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/RB-PRO/ssa/pkg/blackmanharris"
@@ -39,15 +40,17 @@ func (s *SPW) VisibleSPM() *SPW {
 		fG[i] = f[i] // сетка частот 3D-графика
 	}
 
+	Folder9 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 9)
+	oss.СreateFolderIfNotExists(Folder9)
 	if s.Xlsx {
-		oss.SafeToXlsxMatrix(pto_sET12, "pto_sET12") // Сохранить в Xlsx матрицу оценки СПМ
+		oss.SafeToXlsxMatrix(pto_sET12, Folder9, "pto_sET12"+".xlsx") // Сохранить в Xlsx матрицу оценки СПМ
 	}
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 9, "ns", s.Path)
-		oss.Matlab_arr_float(fG, 9, "fG", s.Path)
-		oss.Matlab_mat_Dense(pto_sET12, 9, "pto_sET12", s.Path)
-		oss.Matlab_variable(iGmin, 9, "iGmin", s.Path)
-		oss.Matlab_variable(iGmax, 9, "iGmax", s.Path)
+		oss.Matlab_arr_float(s.Ns, Folder9, "ns"+".xlsx")
+		oss.Matlab_arr_float(fG, Folder9, "fG"+".xlsx")
+		oss.Matlab_mat_Dense(pto_sET12, Folder9, "pto_sET12"+".xlsx")
+		oss.Matlab_variable(iGmin, Folder9, "iGmin"+".txt")
+		oss.Matlab_variable(iGmax, Folder9, "iGmax"+".txt")
 	}
 	return s
 }

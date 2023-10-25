@@ -1,6 +1,8 @@
 package ssa
 
 import (
+	"fmt"
+
 	"github.com/RB-PRO/ssa/pkg/oss"
 	"gonum.org/v1/gonum/mat"
 )
@@ -11,12 +13,14 @@ func (s *SPW) AggregationPW() *SPW {
 	NSF := s.Win + s.Res*(s.S-1) // номер финального отсчета финального сегмента <= N
 	NumS, cpw_avr, cpw_med, cpw_iqr := wav(NSF, s.S, s.Win, s.Res, s.SET12)
 
-	oss.SafeToXlsx(NumS, "NumS")
-	oss.Matlab_variable(NSF, 10, "NSF", s.Path)
-	oss.Matlab_arr_float(s.Tim, 10, "tim", s.Path)
-	oss.Matlab_arr_float(cpw_avr, 10, "cpw_avr", s.Path)
-	oss.Matlab_arr_float(cpw_med, 10, "cpw_med", s.Path)
-	oss.Matlab_arr_float(cpw_iqr, 10, "cpw_iqr", s.Path)
+	Folder10 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 10)
+	oss.СreateFolderIfNotExists(Folder10)
+	oss.SafeToXlsx(NumS, Folder10, "NumS"+".xlsx")
+	oss.Matlab_variable(NSF, Folder10, "NSF"+".txt")
+	oss.Matlab_arr_float(s.Tim, Folder10, "tim"+".xlsx")
+	oss.Matlab_arr_float(cpw_avr, Folder10, "cpw_avr"+".xlsx")
+	oss.Matlab_arr_float(cpw_med, Folder10, "cpw_med"+".xlsx")
+	oss.Matlab_arr_float(cpw_iqr, Folder10, "cpw_iqr"+".xlsx")
 
 	return s
 }

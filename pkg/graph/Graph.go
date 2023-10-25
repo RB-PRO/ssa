@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 
 	"github.com/Arafatk/glot"
 	"github.com/RB-PRO/ssa/pkg/oss"
@@ -35,43 +34,45 @@ func MakeGraph(n int, dt float64, pointsX []float64, filename string) error {
 	plot.SavePlot(filename)
 	return nil
 }
-func MakeGraphOfArray(vals []float64, filename string) error {
+
+// "png" + oss.OpSystemFilder + filename + ".png"
+func MakeGraphOfArray(vals []float64, Path, FileName string) error {
 	dimensions := 2
 	persist := false
 	debug := false
 	plot, _ := glot.NewPlot(dimensions, persist, debug)
 	fct := func(x float64) float64 { return (vals[int(x)]) }
-	groupName := strings.Replace("png"+oss.OpSystemFilder+filename+".png", ".png", "", 1)
-	groupName = strings.Replace("png"+oss.OpSystemFilder+filename+".png", "png/", "", 1)
 	style := "lines"
 	x := make([]float64, len(vals))
 	for i := 0; i < len(vals); i++ {
 		x[i] = float64(i)
 	}
-	plot.AddFunc2d(groupName, style, x, fct)
-	plot.SavePlot("png" + oss.OpSystemFilder + filename + ".png")
+	plot.AddFunc2d(FileName, style, x, fct)
+	plot.SavePlot(Path + FileName)
 	return nil
 }
 
 // Построить график по координатам X и Y. Источник - float64[]
-func MakeGraphYX_float64(x, y []float64, filename string) error {
+//
+//	"png" + oss.OpSystemFilder + filename + ".png"
+func MakeGraphYX_float64(x, y []float64, Path, FileName string) error {
 	if len(x) != len(y) {
-		return errors.New("MakeGraphYX_float64: Length different for " + filename)
+		return errors.New("MakeGraphYX_float64: Length different for " + FileName)
 	}
 	dimensions := 2
-	persist := false
-	debug := false
+	persist := true // false
+	debug := true   // false
 	plot, ErrorPloting := glot.NewPlot(dimensions, persist, debug)
 	if ErrorPloting != nil {
 		return ErrorPloting
 	}
 
-	ErrorPointGroup := plot.AddPointGroup(filename, "lines", [][]float64{y, x})
+	ErrorPointGroup := plot.AddPointGroup(FileName, "lines", [][]float64{y, x})
 	if ErrorPointGroup != nil {
 		return ErrorPointGroup
 	}
 
-	ErrorSave := plot.SavePlot("png" + oss.OpSystemFilder + filename + ".png")
+	ErrorSave := plot.SavePlot(Path + FileName)
 	if ErrorSave != nil {
 		return ErrorSave
 	}
@@ -79,7 +80,7 @@ func MakeGraphYX_float64(x, y []float64, filename string) error {
 }
 
 // Построить график по координатам X и Y. Источник - mat.VecDense
-func MakeGraphYX_VecDense(x, y1, y2 mat.VecDense, f1, f2 string) error {
+func MakeGraphYX_VecDense(x, y1, y2 mat.VecDense, f1, Path, f2 string) error {
 	x_arr := oss.VecDense_in_float64(x)
 	y1_arr := oss.VecDense_in_float64(y1)
 	y2_arr := oss.VecDense_in_float64(y2)
@@ -97,11 +98,14 @@ func MakeGraphYX_VecDense(x, y1, y2 mat.VecDense, f1, f2 string) error {
 	plot.AddPointGroup(f1, "lines", [][]float64{x_arr, y1_arr})
 	plot.AddPointGroup(f2, "lines", [][]float64{x_arr, y2_arr})
 
-	plot.SavePlot("png" + oss.OpSystemFilder + f2 + ".png")
+	plot.SavePlot(Path + f2 + ".png")
 	return nil
 }
 
-func Imagesc(C mat.Dense, filename string) {
+// Создать в Excel пригодную матрицу цветов
+//
+//	"files" + oss.OpSystemFilder + filename + ".xlsx"
+func Imagesc(C mat.Dense, Path, FileName string) {
 	r1 := color{r: 0, g: 255, b: 255}
 	r2 := color{r: 255, g: 255, b: 0}
 
@@ -142,7 +146,8 @@ func Imagesc(C mat.Dense, filename string) {
 	if err := file_graph.SetColVisible("main", "A:"+oss.GetColumnName(c), true); err != nil {
 		fmt.Println(err)
 	}
-	if err := file_graph.SaveAs("files" + oss.OpSystemFilder + filename + ".xlsx"); err != nil {
+	// "files" + oss.OpSystemFilder + filename + ".xlsx"
+	if err := file_graph.SaveAs(Path + FileName); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()

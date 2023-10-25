@@ -1,7 +1,7 @@
 package ssa
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/RB-PRO/ssa/pkg/graph"
 	"github.com/RB-PRO/ssa/pkg/oss"
@@ -70,23 +70,28 @@ func (s *SPW) Envelope() *SPW {
 	}
 	// 6 - Огибающие АКФ сингулярных троек sET12 сегментов pw
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 6, "ns", s.Path)
-		oss.Matlab_arr_float(s.time, 6, "time", s.Path)
-		oss.Matlab_mat_Dense(s.EnvAcf_sET12, 6, "EnvAcf_sET12", s.Path)
-		graph.SaveDat_2(EnvAcf_sET12, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"EnvAcf_sET12"+".dat")
-		graph.SaveDat(s.Ns, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"ns"+".dat")
-		graph.SaveDat(s.time, "File_For_MatLab"+oss.OpSystemFilder+strconv.Itoa(6)+oss.OpSystemFilder+"time"+".dat")
+		Folder6 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 6)
+		oss.СreateFolderIfNotExists(Folder6)
+		oss.Matlab_arr_float(s.Ns, Folder6, "ns"+".xlsx")
+		oss.Matlab_arr_float(s.time, Folder6, "time"+".xlsx")
+		oss.Matlab_mat_Dense(s.EnvAcf_sET12, Folder6, "EnvAcf_sET12"+".xlsx")
+
+		graph.SaveDat_2(EnvAcf_sET12, Folder6, "EnvAcf_sET12"+".dat")
+		graph.SaveDat(s.Ns, Folder6, "ns"+".dat")
+		graph.SaveDat(s.time, Folder6, "time"+".dat")
 	}
 
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 7, "ns", s.Path)
-		oss.Matlab_arr_float(s.time, 7, "time", s.Path)
-		oss.Matlab_mat_Dense(s.AcfNrm_sET12, 7, "AcfNrm_sET12", s.Path)
-		Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
-		graph.SaveDat_2(AcfNrm_sET12, Folder7+"AcfNrm_sET12"+".dat")
-		graph.SaveDat(s.Ns, Folder7+"ns"+".dat")
-		graph.SaveDat(s.time, Folder7+"time"+".dat")
+		// Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
+		Folder7 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 7)
+		oss.СreateFolderIfNotExists(Folder7)
+		oss.Matlab_arr_float(s.Ns, Folder7, "ns"+".xlsx")
+		oss.Matlab_arr_float(s.time, Folder7, "time"+".xlsx")
+		oss.Matlab_mat_Dense(s.AcfNrm_sET12, Folder7, "AcfNrm_sET12"+".xlsx")
+		graph.SaveDat_2(AcfNrm_sET12, Folder7, "AcfNrm_sET12"+".dat")
+		graph.SaveDat(s.Ns, Folder7, "ns"+".dat")
+		graph.SaveDat(s.time, Folder7, "time"+".dat")
 		graph.SplotMatrixFromFile(graph.Option3D{ // Задаём настройки 3D графика
 			FileNameDat: Folder7 + "AcfNrm_sET12.dat",
 			FileNameOut: Folder7 + "AcfNrm_sET12.png",

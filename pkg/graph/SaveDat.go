@@ -8,10 +8,10 @@ import (
 )
 
 // Сохранить двумерный массив в формате .dat
-func SaveDat_2(Data mat.Dense, FileName string) error {
+func SaveDat_2(Data mat.Dense, Path, FileName string) error {
 
 	// Создаём файл
-	f, ErrorCreateFile := os.Create(FileName)
+	f, ErrorCreateFile := os.Create(Path + FileName)
 	if ErrorCreateFile != nil {
 		return ErrorCreateFile
 	}
@@ -38,9 +38,9 @@ func SaveDat_2(Data mat.Dense, FileName string) error {
 }
 
 // Сохранить массив в формат .dat
-func SaveDat(Data []float64, FileName string) error {
+func SaveDat(Data []float64, Path, FileName string) error {
 	// Создаём файл
-	f, ErrorCreateFile := os.Create(FileName)
+	f, ErrorCreateFile := os.Create(Path + FileName)
 	if ErrorCreateFile != nil {
 		return ErrorCreateFile
 	}

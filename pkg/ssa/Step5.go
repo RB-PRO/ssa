@@ -1,6 +1,7 @@
 package ssa
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/RB-PRO/ssa/pkg/oss"
@@ -26,13 +27,15 @@ func (s *SPW) AKF_Form() *SPW {
 	}
 	s.time = time // Сохраняем результат
 
+	Folder5 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 5)
+	oss.СreateFolderIfNotExists(Folder5)
 	if s.Xlsx {
-		oss.SafeToXlsxMatrix(s.Acf_sET12, "Acf_sET12")
+		oss.SafeToXlsxMatrix(s.Acf_sET12, Folder5, "Acf_sET12"+".xlsx")
 	}
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 5, "ns", s.Path)
-		oss.Matlab_arr_float(time, 5, "time", s.Path)
-		oss.Matlab_mat_Dense(s.Acf_sET12, 5, "Acf_sET12", s.Path)
+		oss.Matlab_arr_float(s.Ns, Folder5, "ns"+".xlsx")
+		oss.Matlab_arr_float(time, Folder5, "time"+".xlsx")
+		oss.Matlab_mat_Dense(s.Acf_sET12, Folder5, "Acf_sET12"+".xlsx")
 	}
 	return s
 }

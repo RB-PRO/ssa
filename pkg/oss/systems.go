@@ -2,6 +2,7 @@ package oss
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/xuri/excelize/v2"
@@ -9,18 +10,19 @@ import (
 )
 
 // ***
-func SafeToXlsx(sig []float64, name string, Path string) {
+func SafeToXlsx(sig []float64, Path, FileName string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
 	for ind, val := range sig {
 		file_graph.SetCellValue("main", "A"+strconv.Itoa(ind+1), val)
 	}
-	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + name + ".xlsx"); err != nil {
+	// "files" + OpSystemFilder + name + ".xlsx"
+	if err := file_graph.SaveAs(Path + FileName); err != nil {
 		fmt.Println(err)
 	}
 }
-func SafeToXlsxMatrix(X *mat.Dense, xlsxName string, Path string) {
+func SafeToXlsxMatrix(X *mat.Dense, Path, FileName string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -30,12 +32,13 @@ func SafeToXlsxMatrix(X *mat.Dense, xlsxName string, Path string) {
 			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
-	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
+	// Path + "files" + OpSystemFilder + xlsxName + ".xlsx"
+	if err := file_graph.SaveAs(Path + FileName); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()
 }
-func SafeToXlsxDualArray(X [][]float64, xlsxName string, Path string) {
+func SafeToXlsxDualArray(X [][]float64, Path, FileName string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -44,12 +47,13 @@ func SafeToXlsxDualArray(X [][]float64, xlsxName string, Path string) {
 			file_graph.SetCellValue("main", GetColumnName(ind2+1)+strconv.Itoa(ind1), val2)
 		}
 	}
-	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
+	// Path + "files" + OpSystemFilder + xlsxName + ".xlsx"
+	if err := file_graph.SaveAs(Path + FileName); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()
 }
-func SafeToXlsxM(X mat.Dense, xlsxName string, Path string) {
+func SafeToXlsxM(X mat.Dense, FilePathName string) {
 	file_graph := excelize.NewFile()
 	file_graph.NewSheet("main")
 	file_graph.DeleteSheet("Sheet1")
@@ -59,7 +63,8 @@ func SafeToXlsxM(X mat.Dense, xlsxName string, Path string) {
 			file_graph.SetCellValue("main", GetColumnName(j+1)+strconv.Itoa(i+1), X.At(i, j))
 		}
 	}
-	if err := file_graph.SaveAs(Path + "files" + OpSystemFilder + xlsxName + ".xlsx"); err != nil {
+	// Path + "files" + OpSystemFilder + xlsxName + ".xlsx"
+	if err := file_graph.SaveAs(FilePathName); err != nil {
 		fmt.Println(err)
 	}
 	file_graph.Close()
@@ -77,4 +82,20 @@ func GetColumnName(col int) string { /*
 	*/
 	asd, _ := excelize.ColumnNumberToName(col)
 	return asd
+}
+
+// Создать вложенные подпапки, если их не существует
+func СreateFolderIfNotExists(folderPath string) error {
+	_, err := os.Stat(folderPath)
+	if os.IsNotExist(err) {
+		err := os.MkdirAll(folderPath, os.ModePerm)
+		if err != nil {
+			return err
+		}
+		// fmt.Printf("Папка %s создана\n", folderPath)
+	} else if err != nil {
+		return err
+	}
+	// else { fmt.Printf("Папка %s уже существует\n", folderPath)	}
+	return nil
 }

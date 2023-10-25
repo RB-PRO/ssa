@@ -30,20 +30,26 @@ func (s *SPW) MomentFrequency() *SPW {
 	smo_insFrc_AcfNrm, _ := filter.Process(insFrc_AcfNrm, s.lgl)
 
 	if s.Graph {
-		oss.Matlab_arr_float(s.Ns, 8, "ns", s.Path)
-		oss.Matlab_arr_float(insFrc_AcfNrm, 8, "insFrc_AcfNrm", s.Path)
-		oss.Matlab_arr_float(smo_insFrc_AcfNrm, 8, "smo_insFrc_AcfNrm", s.Path)
+		Folder8 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 8)
+		oss.СreateFolderIfNotExists(Folder8)
+
+		oss.Matlab_arr_float(s.Ns, Folder8, "ns"+".xlsx")
+		oss.Matlab_arr_float(insFrc_AcfNrm, Folder8, "insFrc_AcfNrm"+".xlsx")
+		oss.Matlab_arr_float(smo_insFrc_AcfNrm, Folder8, "smo_insFrc_AcfNrm"+".xlsx")
+
+		FolderPNG := fmt.Sprintf("%s/png/", s.Dir.zeropath)
+		oss.СreateFolderIfNotExists(FolderPNG)
 		err_insFrc_AcfNrm := graph.MakeGraphYX_float64(
 			insFrc_AcfNrm,
 			s.Ns,
-			"insFrc_AcfNrm")
+			FolderPNG, "insFrc_AcfNrm"+".png")
 		if err_insFrc_AcfNrm != nil {
 			fmt.Println(err_insFrc_AcfNrm)
 		}
 		err_insFrc_AcfNrm = graph.MakeGraphYX_float64(
 			smo_insFrc_AcfNrm,
 			s.Ns,
-			"smo_insFrc_AcfNrm")
+			FolderPNG, "smo_insFrc_AcfNrm"+".png")
 		if err_insFrc_AcfNrm != nil {
 			fmt.Println(err_insFrc_AcfNrm)
 		}
@@ -51,7 +57,7 @@ func (s *SPW) MomentFrequency() *SPW {
 			*mat.NewVecDense(len(s.Ns), s.Ns),
 			*mat.NewVecDense(len(insFrc_AcfNrm), insFrc_AcfNrm),
 			*mat.NewVecDense(len(smo_insFrc_AcfNrm), smo_insFrc_AcfNrm),
-			"origin", "insFrc_AcfNrm")
+			"origin", FolderPNG, "insFrc_AcfNrm")
 		if err_insFrc_AcfNrm != nil {
 			fmt.Println(err_insFrc_AcfNrm)
 		}

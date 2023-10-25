@@ -33,15 +33,20 @@ func (s *SPW) SET_Form() *SPW {
 		if j == s.Seg {
 			// Если есть настрока формирования графика
 			if s.Graph {
-				graph.Imagesc(C, "C")
-				graph.MakeGraphOfArray(LBD, "LBD")
+				FolderSave := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 5)
+				oss.СreateFolderIfNotExists(FolderSave)
 
+				graph.Imagesc(C, FolderSave, "C"+".xlsx")
+				graph.MakeGraphOfArray(LBD, FolderSave, "LBD"+".png")
+
+				FolderPNG := fmt.Sprintf("%s/png/", s.Dir.zeropath)
+				oss.СreateFolderIfNotExists(FolderPNG)
 				// Создаём график 1 и 2 коэффициента
 				err_makeGraphYX_sET12 := graph.MakeGraphYX_VecDense(
 					*mat.NewVecDense(s.Win, s.Tim[0:s.Win]),
 					*(mat.VecDenseCopyOf(s.Spw.ColView(j))),
 					*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(s.SET12.ColView(j))), oss.Vec_in_ArrFloat(s.SET12.ColView(j)))),
-					"origin", "sET12")
+					"origin", FolderPNG, "sET12")
 				if err_makeGraphYX_sET12 != nil {
 					fmt.Println(err_makeGraphYX_sET12)
 				}
@@ -51,24 +56,30 @@ func (s *SPW) SET_Form() *SPW {
 					*mat.NewVecDense(s.Win, s.Tim[0:s.Win]),
 					*(mat.VecDenseCopyOf(s.Spw.ColView(j))),
 					*(mat.NewVecDense(len(oss.Vec_in_ArrFloat(s.SET34.ColView(j))), oss.Vec_in_ArrFloat(s.SET34.ColView(j)))),
-					"origin", "sET34")
+					"origin", FolderPNG, "sET34")
 				if err_makeGraphYX_sET34 != nil {
 					fmt.Println(err_makeGraphYX_sET34)
 				}
 			}
 			// Если есть настрока сохранения данных в Xlsx
 			if s.Xlsx {
-				oss.Matlab_mat_Dense(&C, 1, "C", s.Path)
-				oss.Matlab_arr_float(LBD, 2, "LBD", s.Path)
 
-				oss.Matlab_arr_float(s.Tim, 3, "tim", s.Path)
-				oss.Matlab_mat_Dense(s.Spw, 3, "spw", s.Path)
-				oss.Matlab_mat_Dense(s.SET12, 3, "sET12", s.Path)
+				oss.СreateFolderIfNotExists(fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 1))
+				oss.СreateFolderIfNotExists(fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 2))
+				oss.СreateFolderIfNotExists(fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 3))
+				oss.СreateFolderIfNotExists(fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 4))
+
+				oss.Matlab_mat_Dense(&C, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 1), "C"+".xlsx")
+				oss.Matlab_arr_float(LBD, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 2), "LBD"+".xlsx")
+
+				oss.Matlab_arr_float(s.Tim, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 3), "tim"+".xlsx")
+				oss.Matlab_mat_Dense(s.Spw, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 3), "spw"+".xlsx")
+				oss.Matlab_mat_Dense(s.SET12, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 3), "sET12"+".xlsx")
 				// log.Println("Original time series and reconstruction sET12")
 
-				oss.Matlab_arr_float(s.Tim, 4, "tim", s.Path)
-				oss.Matlab_mat_Dense(s.Spw, 4, "spw", s.Path)
-				oss.Matlab_mat_Dense(s.SET34, 4, "sET34", s.Path)
+				oss.Matlab_arr_float(s.Tim, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 4), "tim"+".xlsx")
+				oss.Matlab_mat_Dense(s.Spw, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 4), "spw"+".xlsx")
+				oss.Matlab_mat_Dense(s.SET34, fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 4), "sET34"+".xlsx")
 				// log.Println("Original time series and reconstruction sET34")
 			}
 		}

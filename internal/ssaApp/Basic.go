@@ -1,18 +1,18 @@
 package ssaApp
 
 import (
-	"github.com/RB-PRO/ssa/pkg/graph"
 	"github.com/RB-PRO/ssa/pkg/oss"
 )
 
 func SsaAnalysis() {
+	// Path := "files/"
 	fmp, _ := oss.Make_singnal_xn("fmp") // Загрузить сигнал из файла fmp.xlsx
 	pw, _ := oss.Make_singnal_xn("pw")   // Загрузить сигнал из файла pw.xlsx
 
-	graph.MakeGraphOfArray(fmp, "fmp")
-	graph.MakeGraphOfArray(pw, "pw")
-	oss.SafeToXlsx(fmp, "fmp") // Сохранить данные сигнала fmp в xlsx
-	oss.SafeToXlsx(pw, "pw")   // Сохранить данные сигнала pw в xlsx
+	// graph.MakeGraphOfArray(fmp, Path+"files/"+"fmp.xlsx")
+	// graph.MakeGraphOfArray(pw, Path+"files/"+"pw.xlsx")
+	// oss.SafeToXlsx(fmp, Path+"files/"+"fmp") // Сохранить данные сигнала fmp в xlsx
+	// oss.SafeToXlsx(pw, Path+"files/"+"pw")   // Сохранить данные сигнала pw в xlsx
 
 	// gui.New()
 	// g.VievImage()

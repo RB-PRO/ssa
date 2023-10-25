@@ -3,7 +3,7 @@ module github.com/RB-PRO/ssa
 go 1.20
 
 require (
-	github.com/Arafatk/glot v0.0.0-20180312013246-79d5219000f0
+	github.com/Arafatk/glot v0.0.0-20230425001707-a00521b72ee4
 	github.com/pkg/errors v0.9.1
 	github.com/xuri/excelize/v2 v2.6.1
 )

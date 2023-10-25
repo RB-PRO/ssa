@@ -26,8 +26,8 @@ func AaT(matr *mat.Dense) *mat.Dense { // Multipy matrix AT*A
 	fmt.Println(ad.Dims())
 	fmt.Print("XT: ")
 	fmt.Println(aTd.Dims())
-	oss.SafeToXlsxMatrix(ad, "ad")
-	oss.SafeToXlsxMatrix(aTd, "aTd")
+	// oss.SafeToXlsxMatrix(ad, "ad")
+	// oss.SafeToXlsxMatrix(aTd, "aTd")
 	output.Mul(ad, aTd)
 	return output
 }
@@ -48,7 +48,7 @@ func SDV(X *mat.Dense, rank int) []SDVs {
 	return SDVsout
 }
 func SDV_single(matT *mat.Dense) SDVs {
-	oss.SafeToXlsxMatrix(matT, "matT")
+	// oss.SafeToXlsxMatrix(matT, "matT")
 
 	var SDVout SDVs
 	var svdMat mat.SVD
