@@ -1,6 +1,7 @@
 package pchip
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -54,12 +55,14 @@ type PchipCoefs struct {
 }
 
 func Pchip(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64, PchipCoefs) {
+	// x_len = 12 // кал
 	new_y := make([]float64, new_x_len)
 	var low_ip1 int
 	var hs float64
 	del := make([]float64, x_len-1)
 	slopes := make([]float64, x_len)
 	h := make([]float64, x_len-1)
+
 	var hs3 float64
 	var w1 float64
 	//var ix int
@@ -102,6 +105,10 @@ func Pchip(x, y, new_x []float64, x_len, new_x_len int) ([]float64, []float64, P
 
 		slopes[low_ip1+1] = hs3
 	}
+	if x_len <= 3 {
+		return new_y, pp_coefs, PchipCoefs{}
+	}
+	fmt.Println("x_len", x_len)
 
 	slopes[0] = exteriorSlope(del[0], del[1], h[0], h[1])
 	slopes[x_len-1] = exteriorSlope(del[x_len-2], del[x_len-3], h[x_len-2], h[x_len-3])

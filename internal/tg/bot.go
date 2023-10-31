@@ -7,24 +7,38 @@ import (
 	"os"
 	"time"
 
+	"github.com/RB-PRO/ssa/pkg/ssa"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func BotStart() {
-	bot, err := tgbotapi.NewBotAPI("6720852434:AAFYUm2yplhsXWVKkXHa--o9tmkXZrNcpew")
-	if err != nil {
-		log.Panic(err)
+// Структура бота
+type TG struct {
+	Bot *tgbotapi.BotAPI
+}
+
+// Создаём бота
+func NewBot(token string) (*TG, error) {
+	bot, ErrNewBotAPI := tgbotapi.NewBotAPI(token)
+	if ErrNewBotAPI != nil {
+		return nil, ErrNewBotAPI
 	}
-
 	bot.Debug = false
+	log.Printf("Авторизовался: %s", bot.Self.UserName)
+	return &TG{bot}, nil
+}
+func BotStart2() {
+	tg, ErrNewBot := NewBot("6720852434:AAFYUm2yplhsXWVKkXHa--o9tmkXZrNcpew")
+	if ErrNewBot != nil {
+		log.Panic(ErrNewBot)
+	}
+	tg.RangeUpdates()
+}
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
+// Слушаем сообшения в телеграме
+func (tg *TG) RangeUpdates() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
-
-	updates := bot.GetUpdatesChan(u)
-
+	updates := tg.Bot.GetUpdatesChan(u)
 	for update := range updates {
 		if update.Message == nil { // ignore any non-Message updates
 			continue
@@ -33,15 +47,15 @@ func BotStart() {
 		if update.Message.VideoNote != nil {
 			// Обработка видео-заметки
 			videoNoteFile := update.Message.VideoNote.FileID
-			videoNote, err := bot.GetFile(tgbotapi.FileConfig{FileID: videoNoteFile})
+			videoNote, err := tg.Bot.GetFile(tgbotapi.FileConfig{FileID: videoNoteFile})
 			if err != nil {
 				log.Println("Ошибка при загрузке видео-заметки:", err)
 				continue
 			}
 
 			// Сохраняем видео-заметку в локальный файл
-			fileURL := "https://api.telegram.org/file/bot" + bot.Token + "/" + videoNote.FilePath
-			FileDirection := update.Message.From.UserName + "_" + time.Now().Format("15-04_02-01-2006")
+			fileURL := "https://api.telegram.org/file/bot" + tg.Bot.Token + "/" + videoNote.FilePath
+			FileDirection := update.Message.From.UserName + "_" + time.Now().Format("2006-01-02_15-04")
 			FilePath := "TelegramVideoNote/" + FileDirection
 			MakeDir(FilePath)
 			err = saveVideoNoteLocally(fileURL, FilePath+"/"+FileDirection+".mp4")
@@ -51,19 +65,25 @@ func BotStart() {
 
 			log.Printf("Пришло новое видео от пользователя %s. Видео в папке: %s",
 				update.Message.From.UserName, FilePath)
-			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Видео получил. Достаю массив RGB(Не более 5 минут)"))
+			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Видео получил. Достаю массив RGB(Не более 5 минут)"))
 
 			// Массив RGB
 			RGBs_float64, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
-			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Достал RGB. Сейчас считаю pw"))
-			bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"RGB.txt")))
+			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Достал RGB. Сейчас считаю pw"))
+			tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"RGB.txt")))
 			log.Printf("Рассчитано RGB")
 
 			// Пульсовая волна
-			CalcPW(RGBs_float64, FilePath+"/")
-			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Посчитал pw(Метод Cr)"))
-			bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"pw.txt")))
+			pw, _ := CalcPW(RGBs_float64, FilePath+"/")
+			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Посчитал pw(Метод Cr)"))
+			tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"pw.txt")))
 			log.Printf("Рассчитано pw")
+
+			////////////////////////////////////////////////////
+			SSA_tgbot(FilePath+"/", pw)
+			file := tgbotapi.FilePath(FilePath + "/smo.png")
+			tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
+
 			continue
 		}
 
@@ -94,11 +114,46 @@ func BotStart() {
 			msg.Text = "Я не знаю такую команду. Попробуй /help"
 		}
 
-		if _, err := bot.Send(msg); err != nil {
+		if _, err := tg.Bot.Send(msg); err != nil {
 			log.Panic(err)
 		}
 	}
 }
+
+// Обработка SSA-алгоритма
+func SSA_tgbot(FilePath string, pw []float64) {
+	s := ssa.New(FilePath + "Files/")
+	s.Graph = false // Создавать графики
+	s.Xlsx = true   // Сохранять в Xlsx
+	s.Init(pw, []float64{})
+	s.Spw_Form(pw) // Создать spw
+
+	// # 1, 2, 3, 4
+	s.SET_Form() // SSA - анализ сегментов pw
+
+	// # 5
+	// Оценка АКФ сингулярных троек для сегментов pw
+	// Визуализация АКФ сингулярных троек для сегментов pw
+	s.AKF_Form() // Оценка АКФ сингулярных троек для сегментов pw
+
+	// # 6, 7
+	// Огибающие АКФ сингулярных троек sET12 сегментов pw
+	// Нормированные АКФ сингулярных троек sET12 сегментов pw
+	s.Envelope()
+
+	// # 8
+	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
+	s.MomentFrequency()
+
+	// Дальнейшая обработка
+	createLineChart(s.Tim, s.Smo_insFrc_AcfNrm, FilePath+"smo.png")
+	// pw, _ := oss.Make_singnal_xn("pw")   // Загрузить сигнал из файла pw.xlsx
+	// createLineChart()
+}
+
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
 
 func saveVideoNoteLocally(url, filename string) error {
 	resp, err := http.Get(url)

@@ -12,6 +12,8 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 	// it ensures a positive semi-definite covariance matrix
 	Y := BuildTrajectoryMatrix(X, M, N) // Создать матрицу траекторий
 
+	// fmt.Println("------", N-M+1, M)
+
 	var Cemb mat.Dense
 	Cemb.Mul(Y, Y.T())
 	Cemb.Scale(1.0/float64(N-M+1), &Cemb)
@@ -76,9 +78,9 @@ func SSA(N int, M int, X mat.Vector, nET int) (mat.Dense, []float64, mat.Dense) 
 }
 
 // Матрица траекторий
-func BuildTrajectoryMatrix(s mat.Vector, L int, N int) *mat.Dense {
-	K := N - L + 1
-	matr := mat.NewDense(L, K, nil)
+func BuildTrajectoryMatrix(s mat.Vector, L, N int) *mat.Dense {
+	//fmt.Println(N, M)
+	matr := mat.NewDense(L, N-L+1, nil)
 	n, m := matr.Dims()
 	for i := 0; i < n; i++ {
 		for j := 0; j < m; j++ {

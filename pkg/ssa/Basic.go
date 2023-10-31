@@ -41,6 +41,9 @@ type SPW struct {
 	Seg int // номер сегмента pw для визуализации
 	NET int // кол-во сингулярных троек для сегментов pw
 
+	InsFrc_AcfNrm     []float64 // Это для сохранения графика
+	Smo_insFrc_AcfNrm []float64 // Это для сохранения графика
+
 	Dir *Direction
 
 	Spw *mat.Dense
@@ -68,8 +71,10 @@ func (s *SPW) Init(pw, fmp []float64) *SPW {
 	s.N = len(pw)
 	s.Win = 1024
 	s.Res = s.N - s.Win*int(math.Floor(float64(s.N)/float64(s.Win)))
-	s.NPart = 20 // Количество долей res
+	s.NPart = 3 //20 // Количество долей res
 	s.Res = int(math.Floor(float64(s.Res) / float64(s.NPart)))
+	// fmt.Println("s.Res", s.Res)
+	//s.Res = 40
 	//overlap := (float64(win) - float64(res)) / float64(win)
 	s.S = 1
 	s.Imin = 1
@@ -100,12 +105,14 @@ func (s *SPW) Init(pw, fmp []float64) *SPW {
 
 	L := make([]float64, s.S)
 	for index := range L { // цикл по сегментам pw
-		L[index] = math.Floor(float64(s.Cad) / fmp[index]) // кол-во отсчетов основного тона pw
+		// L[index] = math.Floor(float64(s.Cad) / fmp[index]) // кол-во отсчетов основного тона pw
+		L[index] = float64(s.Cad)
 	}
 	s.L = L
 
 	s.K = 5
 	s.M = int(float64(s.K) * oss.Max(s.L)) // параметр вложения в траекторное пространство
+
 	// SSA - анализ сегментов pw
 	s.Seg = 100 // номер сегмента pw для визуализации
 	s.NET = 4   // кол-во сингулярных троек для сегментов pw
@@ -117,7 +124,7 @@ func (s *SPW) Spw_Form(pw []float64) *SPW {
 	s.Spw = mat.NewDense(s.Win, s.S, nil)
 	for j := 0; j < s.S; j++ {
 		for i := 0; i < s.Win; i++ {
-			k := (j) * s.Res
+			k := j * s.Res
 			s.Spw.Set(i, j, pw[k+i])
 		}
 	}

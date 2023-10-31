@@ -18,9 +18,13 @@ func (s *SPW) Envelope() *SPW {
 
 	EnvAcf_sET12 := *mat.NewDense(s.lag, s.S, nil)
 	AcfNrm_sET12 := *mat.NewDense(s.lag, s.S, nil)
+	fmt.Println(" s.S", s.S)
 	for j := 0; j < s.S; j++ { // цикл по сегментам АКФ
 		Acf_sET12_col := *mat.VecDenseCopyOf(s.Acf_sET12.ColView(j))
 		absTS := oss.AbsVector(Acf_sET12_col)
+		//
+		// absTS := s.Acf_sET12.RowView(j)
+		//
 		at1 := absTS.AtVec(0)
 		at2 := absTS.AtVec(1)
 
@@ -30,7 +34,7 @@ func (s *SPW) Envelope() *SPW {
 		maxN := *mat.NewVecDense(s.lag, nil)
 		maxN.SetVec(0, 1)
 
-		var Nmax int
+		var Nmax int = 0
 
 		for m := 2; m < s.lag; m++ {
 			at3 := absTS.AtVec(m)
@@ -47,10 +51,18 @@ func (s *SPW) Envelope() *SPW {
 		maxTS.SetVec(Nmax, absTS.AtVec(s.lag)) // отсчет absTS финального узла интерполяции
 		NumMax := maxN.SliceVec(0, Nmax+1)
 
+		//
+
+		fmt.Println("> Nmax", Nmax, "-", at1, at2, s.lag, "//", NumMax)
 		// Интерполяция огибающей АКФ
-		acfEnvelope, _, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax), oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)), s.lgl, NumMax.Len(), len(s.lgl))
+		acfEnvelope, _, _ := pchip.Pchip(oss.Vec_in_ArrFloat(NumMax),
+			oss.Vec_in_ArrFloat(maxTS.SliceVec(0, Nmax+1)),
+			s.lgl,
+			NumMax.Len(),
+			len(s.lgl))
 
 		EnvAcf_sET12.SetCol(j, acfEnvelope)
+		// fmt.Println(s.lag, s.S, "len(acfEnvelope)", j, len(acfEnvelope))
 
 		// нормированные АКФ
 		AcfNrm_sET12.SetCol(j, oss.VecDense_in_float64(oss.Vector_DivElemVec((s.Acf_sET12.Slice(0, s.lag, j, j+1)), EnvAcf_sET12.ColView(j))))
@@ -64,14 +76,22 @@ func (s *SPW) Envelope() *SPW {
 	s.AcfNrm_sET12 = &AcfNrm_sET12
 
 	// *****************
-	if s.Xlsx {
-		oss.SafeToXlsxM(EnvAcf_sET12, "EnvAcf_sET12")
-		oss.SafeToXlsxM(AcfNrm_sET12, "AcfNrm_sET12")
-	}
 	// 6 - Огибающие АКФ сингулярных троек sET12 сегментов pw
+	Folder6 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 6)
+	oss.СreateFolderIfNotExists(Folder6)
+	if s.Xlsx {
+		oss.SafeToXlsxM(EnvAcf_sET12, Folder6+"EnvAcf_sET12_2"+".xlsx")
+		oss.SafeToXlsxM(AcfNrm_sET12, Folder6+"AcfNrm_sET12_2"+".xlsx")
+
+		oss.Matlab_arr_float(s.Ns, Folder6, "ns"+".xlsx")
+		oss.Matlab_arr_float(s.time, Folder6, "time"+".xlsx")
+		oss.Matlab_mat_Dense(s.EnvAcf_sET12, Folder6, "EnvAcf_sET12"+".xlsx")
+
+		graph.SaveDat_2(EnvAcf_sET12, Folder6, "EnvAcf_sET12"+".dat")
+		graph.SaveDat(s.Ns, Folder6, "ns"+".dat")
+		graph.SaveDat(s.time, Folder6, "time"+".dat")
+	}
 	if s.Graph {
-		Folder6 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 6)
-		oss.СreateFolderIfNotExists(Folder6)
 		oss.Matlab_arr_float(s.Ns, Folder6, "ns"+".xlsx")
 		oss.Matlab_arr_float(s.time, Folder6, "time"+".xlsx")
 		oss.Matlab_mat_Dense(s.EnvAcf_sET12, Folder6, "EnvAcf_sET12"+".xlsx")
@@ -82,16 +102,20 @@ func (s *SPW) Envelope() *SPW {
 	}
 
 	// 7 - Нормированные АКФ сингулярных троек sET12 сегментов pw
-	if s.Graph {
-		// Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
-		Folder7 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 7)
-		oss.СreateFolderIfNotExists(Folder7)
+	// Folder7 := "File_For_MatLab" + oss.OpSystemFilder + strconv.Itoa(7) + oss.OpSystemFilder
+	Folder7 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 7)
+	oss.СreateFolderIfNotExists(Folder7)
+	if s.Xlsx {
 		oss.Matlab_arr_float(s.Ns, Folder7, "ns"+".xlsx")
 		oss.Matlab_arr_float(s.time, Folder7, "time"+".xlsx")
 		oss.Matlab_mat_Dense(s.AcfNrm_sET12, Folder7, "AcfNrm_sET12"+".xlsx")
 		graph.SaveDat_2(AcfNrm_sET12, Folder7, "AcfNrm_sET12"+".dat")
 		graph.SaveDat(s.Ns, Folder7, "ns"+".dat")
 		graph.SaveDat(s.time, Folder7, "time"+".dat")
+
+	}
+	if s.Graph {
+
 		graph.SplotMatrixFromFile(graph.Option3D{ // Задаём настройки 3D графика
 			FileNameDat: Folder7 + "AcfNrm_sET12.dat",
 			FileNameOut: Folder7 + "AcfNrm_sET12.png",

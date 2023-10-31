@@ -25,7 +25,9 @@ func ExtractRGB(Path, FileName string) (RGBs []RGB_float64, Err error) {
 
 	MakeDir(Path + "in/")
 	c := exec.Command(
-		"ffmpeg", "-i", Path+FileName, Path+"in/%4d.png",
+		// ffmpeg -an -y -threads 0 -i in.mp4 -vf "select=not(mod(n\,1))" -vsync vfr in/%4d.png
+		"ffmpeg", "-an", "-y", "-threads", "0", "-i", Path+FileName, "-vf", `select=not(mod(n\,1))`, "-vsync", "vfr", Path+"in/%4d.png",
+		//"ffmpeg", "-i", Path+FileName, "-r", "15", Path+"in/%4d.png",
 	) // "P1LC1-edited2.mp4" "P1LC1-edited.avi" "face.mp4"
 	c.Stderr = os.Stderr
 	c.Run()
@@ -49,7 +51,9 @@ func ExtractRGB(Path, FileName string) (RGBs []RGB_float64, Err error) {
 		sort.Slice(Dets, func(i, j int) bool { // Сортировка по вероятности
 			return Dets[i].Q > Dets[j].Q
 		})
+
 		var R, G, B uint32
+		var sizes uint32
 		if len(Dets) > 0 {
 			src, err := getImageFromFilePath(FilePathIn)
 			if err != nil {
@@ -77,15 +81,16 @@ func ExtractRGB(Path, FileName string) (RGBs []RGB_float64, Err error) {
 					}
 				}
 			}
-			var sizes uint32 = uint32((yEnd - yStart) * (xEnd - xStart))
-			// fmt.Printf("\n%d;%d;%d   ---   %d    ---   %15.10f;%15.10f;%15.10f\n", R, G, B, sizes, float64(R)/float64(sizes), float64(G)/float64(sizes), float64(B)/float64(sizes))
-			// fmt.Println(R, G, B, sizes)
-			// rez += fmt.Sprintf("%.8f;%.8f;%.8f\n", float64(R)/float64(sizes), float64(G)/float64(sizes), float64(B)/float64(sizes))
-			RGBs[ientries] = RGB_float64{R: float64(R) / float64(sizes), G: float64(G) / float64(sizes), B: float64(B) / float64(sizes)}
-			if _, err := fileRGB.WriteString(fmt.Sprintf("%.8f;%.8f;%.8f\n", float64(R)/float64(sizes), float64(G)/float64(sizes), float64(B)/float64(sizes))); err != nil {
-				log.Println(err)
-			}
+			sizes = uint32((yEnd - yStart) * (xEnd - xStart))
 		}
+		RGBs[ientries] = RGB_float64{R: float64(R) / float64(sizes), G: float64(G) / float64(sizes), B: float64(B) / float64(sizes)}
+
+		// fmt.Println(FilePathIn, RGBs[ientries])
+
+		if _, err := fileRGB.WriteString(fmt.Sprintf("%.8f;%.8f;%.8f\n", RGBs[ientries].R, RGBs[ientries].G, RGBs[ientries].B)); err != nil {
+			log.Println(err)
+		}
+
 		Bar.Increment()
 		//break
 	}
@@ -153,7 +158,7 @@ func (p Pigs) getCoords(filepath string) []pigo.Detection {
 	// fmt.Printf("%+v\n", dets)
 
 	// Calculate the intersection over union (IoU) of two clusters.
-	dets = p.Classifier.ClusterDetections(dets, 0.2)
+	dets = p.Classifier.ClusterDetections(dets, 0.1)
 
 	// fmt.Printf("%+v\n", dets)
 	// fmt.Println()

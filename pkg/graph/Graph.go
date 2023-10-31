@@ -60,8 +60,8 @@ func MakeGraphYX_float64(x, y []float64, Path, FileName string) error {
 		return errors.New("MakeGraphYX_float64: Length different for " + FileName)
 	}
 	dimensions := 2
-	persist := true // false
-	debug := true   // false
+	persist := false
+	debug := false
 	plot, ErrorPloting := glot.NewPlot(dimensions, persist, debug)
 	if ErrorPloting != nil {
 		return ErrorPloting

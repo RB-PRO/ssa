@@ -28,14 +28,18 @@ func (s *SPW) MomentFrequency() *SPW {
 
 	// Савицкий-Голей
 	smo_insFrc_AcfNrm, _ := filter.Process(insFrc_AcfNrm, s.lgl)
+	s.Smo_insFrc_AcfNrm = smo_insFrc_AcfNrm
+	s.InsFrc_AcfNrm = insFrc_AcfNrm
 
-	if s.Graph {
-		Folder8 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 8)
-		oss.СreateFolderIfNotExists(Folder8)
-
+	Folder8 := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 8)
+	oss.СreateFolderIfNotExists(Folder8)
+	if s.Xlsx {
 		oss.Matlab_arr_float(s.Ns, Folder8, "ns"+".xlsx")
 		oss.Matlab_arr_float(insFrc_AcfNrm, Folder8, "insFrc_AcfNrm"+".xlsx")
 		oss.Matlab_arr_float(smo_insFrc_AcfNrm, Folder8, "smo_insFrc_AcfNrm"+".xlsx")
+	}
+
+	if s.Graph {
 
 		FolderPNG := fmt.Sprintf("%s/png/", s.Dir.zeropath)
 		oss.СreateFolderIfNotExists(FolderPNG)

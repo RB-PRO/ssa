@@ -27,6 +27,9 @@ func Sum2(a mat.Dense) []float64 {
 
 // МАксимальный элемент массива
 func Max(arr []float64) float64 {
+	if len(arr) == 0 {
+		return 0.0
+	}
 	max_num := arr[0]
 	for i := 0; i < len(arr); i++ {
 		if arr[i] > max_num {

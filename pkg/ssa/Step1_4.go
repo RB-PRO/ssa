@@ -23,22 +23,25 @@ func (s *SPW) SET_Form() *SPW {
 		sET12_sum2.SetCol(0, RC_T.RawRowView(0))
 		sET12_sum2.SetCol(1, RC_T.RawRowView(1))
 		s.SET12.SetCol(j, oss.Sum2(*sET12_sum2))
-		sET12_sum2.Zero()
 
 		sET34_sum2.SetCol(0, RC_T.RawRowView(2))
 		sET34_sum2.SetCol(1, RC_T.RawRowView(3))
 		s.SET34.SetCol(j, oss.Sum2(*sET34_sum2))
+
+		/////////////////////////////
+		// fmt.Printf("%f,%f\n",
+		// 	sET12_sum2.At(0, 0), sET12_sum2.At(0, 1))
+		// fmt.Printf("%f,%f\n",
+		// 	sET12_sum2.At(1, 0), sET12_sum2.At(1, 1))
+		// break
+
+		sET12_sum2.Zero()
 		sET34_sum2.Zero()
 
-		if j == s.Seg {
+		// fmt.Println(">>>", j, s.Seg, s.S)
+		if j == s.S/2 {
 			// Если есть настрока формирования графика
 			if s.Graph {
-				FolderSave := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 5)
-				oss.СreateFolderIfNotExists(FolderSave)
-
-				graph.Imagesc(C, FolderSave, "C"+".xlsx")
-				graph.MakeGraphOfArray(LBD, FolderSave, "LBD"+".png")
-
 				FolderPNG := fmt.Sprintf("%s/png/", s.Dir.zeropath)
 				oss.СreateFolderIfNotExists(FolderPNG)
 				// Создаём график 1 и 2 коэффициента
@@ -50,7 +53,6 @@ func (s *SPW) SET_Form() *SPW {
 				if err_makeGraphYX_sET12 != nil {
 					fmt.Println(err_makeGraphYX_sET12)
 				}
-
 				// Создаём график 3 и 4 коэффициента
 				err_makeGraphYX_sET34 := graph.MakeGraphYX_VecDense(
 					*mat.NewVecDense(s.Win, s.Tim[0:s.Win]),
@@ -63,6 +65,11 @@ func (s *SPW) SET_Form() *SPW {
 			}
 			// Если есть настрока сохранения данных в Xlsx
 			if s.Xlsx {
+				FolderSave := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 5)
+				oss.СreateFolderIfNotExists(FolderSave)
+
+				graph.Imagesc(C, FolderSave, "C"+".xlsx")
+				graph.MakeGraphOfArray(LBD, FolderSave, "LBD"+".png")
 
 				oss.СreateFolderIfNotExists(fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 1))
 				oss.СreateFolderIfNotExists(fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 2))
