@@ -6,6 +6,6 @@ import "github.com/RB-PRO/ssa/internal/tg"
 
 func main() {
 	// ssaApp.SsaAnalysis()
-	// tg.BotStart2()
-	tg.ExtractRGB("TelegramVideoNote/test/", "P1LC1-edited.avi")
+	tg.BotStart2()
+	// tg.ExtractRGB("TelegramVideoNote/test/", "P1LC1-edited.avi")
 }

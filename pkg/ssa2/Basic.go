@@ -3,6 +3,7 @@ package ssa2
 import (
 	"fmt"
 	"math"
+	"slices"
 
 	"github.com/RB-PRO/ssa/pkg/ssa2/pmtm"
 )
@@ -136,22 +137,35 @@ func (ssa *SSA) PwEstimation() (*SSA, error) {
 		// Получение периодограммы колонки SPW
 		// pg_spw := periodogram.Periodogram(ColumnSPW, BlackManHar, ssa.set.Win)
 
-		pto_spw := pmtm.Pmtm(ColumnSPW, ssa.res)
+		pto_spw := pmtm.Pmtm(ColumnSPW, 3, ssa.set.Win)
 
 		// Сотртируем, чтобы получить по возрастанию порядковвые номера в слайсе по убыванию
-		_, SorterIndexts_pg_spw := InsertionSort(pto_spw)
+		// _, SorterIndexts_pg_spw := InsertionSort(pto_spw)
+		SorterIndexts_pg_spw := InsertionSort2(pto_spw)
 
-		ssa.Pto_fMAX[i] = ssa.freq[SorterIndexts_pg_spw[0]]
+		// fmt.Println(SorterIndexts_pg_spw[0], len(pto_spw))
+		ssa.Pto_fMAX[i] = ssa.freq[SorterIndexts_pg_spw]
 	}
+
+	fmt.Printf("%+v", ssa.col)
 
 	return ssa, nil
 }
 
 // Сортировка с возвратом номеров изначальных элементов
 func InsertionSort(array []float64) ([]float64, []int) {
+	// var indexArray int
+	// sort.Slice(array, func(i, j int) bool {
+	// 	if array[i] > array[j] {
+	// 		indexArray = j
+	// 	}
+	// 	return array[i] > array[j]
+	// })
+	// fmt.Println(indexArray, array[0], array[1], array[2])
+
 	indexArray := make([]int, len(array))
 	for ind := range indexArray {
-		indexArray[ind] = (ind) + 1
+		indexArray[ind] = (ind)
 	}
 	for i := 1; i < len(array); i++ {
 		j := i
@@ -164,4 +178,9 @@ func InsertionSort(array []float64) ([]float64, []int) {
 		}
 	}
 	return array, indexArray
+}
+
+// Сортировка с возвратом номеров изначальных элементов
+func InsertionSort2(array []float64) int {
+	return slices.Index(array, slices.Max(array))
 }

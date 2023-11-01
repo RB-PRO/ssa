@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/RB-PRO/ssa/pkg/ssa"
+	"github.com/RB-PRO/ssa/pkg/ssa2"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -80,8 +81,23 @@ func (tg *TG) RangeUpdates() {
 			log.Printf("Рассчитано pw")
 
 			////////////////////////////////////////////////////
-			SSA_tgbot(FilePath+"/", pw)
-			file := tgbotapi.FilePath(FilePath + "/smo.png")
+			// SSA_tgbot(FilePath+"/", pw)
+			// file := tgbotapi.FilePath(FilePath + "/smo.png")
+			// tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
+
+			ssaAnalis, ErrNewSSA := ssa2.NewSSA(pw, ssa2.Setup{
+				Cad:   23,
+				Win:   1024,
+				NPart: 20,
+				FMi:   40.0 / 60.0,
+				FMa:   240.0 / 60.0,
+			})
+			if ErrNewSSA != nil {
+				tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, ErrNewSSA.Error()))
+				continue
+			}
+			ssa2.CreateLineChart(ssaAnalis.Pto_fMAX, FilePath+"/pto.png")
+			file := tgbotapi.FilePath(FilePath + "/pto.png")
 			tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
 
 			continue
