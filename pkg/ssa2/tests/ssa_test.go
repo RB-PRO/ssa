@@ -12,21 +12,7 @@ import (
 )
 
 func TestSSA(t *testing.T) {
-	var pw []float64
-	file, err := os.Open("EUT_P1H1.txt") // "P1H1_edited_pw.txt"
-	if err != nil {
-		t.Error(err)
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		str := scanner.Text()
-		strfloat64, _ := strconv.ParseFloat(str, 64)
-		pw = append(pw, strfloat64)
-	}
-	if err := scanner.Err(); err != nil {
-		t.Error(err)
-	}
+	pw := LoadTXT("EUT_P1H1_RGB_pw.txt") // "P1H1_edited_pw.txt"
 	ssaAnalis, ErrNewSSA := ssa2.NewSSA(pw, ssa2.Setup{
 		Cad:   30,
 		Win:   1024,
@@ -46,7 +32,7 @@ func TestSSA(t *testing.T) {
 	ssaAnalis.SpwEstimation()
 	ssaAnalis.PwEstimation()
 	ssa2.CreateLineChart(ssaAnalis.Pto_fMAX, "pto.png")
-	filePW, ErrOpenFile := os.Create("pto.txt")
+	filePW, ErrOpenFile := os.Create("pto2.txt")
 	if ErrOpenFile != nil {
 		t.Error(ErrOpenFile)
 	}
@@ -56,4 +42,24 @@ func TestSSA(t *testing.T) {
 			log.Println(err)
 		}
 	}
+}
+
+func LoadTXT(FileName string) []float64 {
+	var data []float64
+	file, err := os.Open(FileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	// optionally, resize scanner's capacity for lines over 64K, see next example
+	for scanner.Scan() {
+		fl, _ := strconv.ParseFloat(scanner.Text(), 64)
+		data = append(data, fl)
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+	return data
 }

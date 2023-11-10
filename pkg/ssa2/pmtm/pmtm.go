@@ -60,7 +60,7 @@ func Pmtm(x []float64, NW int, NFFT int) []float64 {
 	alpha := 2.0
 
 	for k := 0; k < PxxLen; k++ {
-		freq := float64(k) / float64(NFFT)
+		freq := float64(k+1) / float64(NFFT)
 		sinSum := 0.0
 		cosSum := 0.0
 

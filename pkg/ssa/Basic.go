@@ -2,8 +2,8 @@ package ssa
 
 import (
 	"math"
+	"slices"
 
-	"github.com/RB-PRO/ssa/pkg/oss"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -71,7 +71,7 @@ func (s *SPW) Init(pw, fmp []float64) *SPW {
 	s.N = len(pw)
 	s.Win = 1024
 	s.Res = s.N - s.Win*int(math.Floor(float64(s.N)/float64(s.Win)))
-	s.NPart = 3 //20 // Количество долей res
+	s.NPart = 20 // Количество долей res
 	s.Res = int(math.Floor(float64(s.Res) / float64(s.NPart)))
 	// fmt.Println("s.Res", s.Res)
 	//s.Res = 40
@@ -106,12 +106,12 @@ func (s *SPW) Init(pw, fmp []float64) *SPW {
 	L := make([]float64, s.S)
 	for index := range L { // цикл по сегментам pw
 		// L[index] = math.Floor(float64(s.Cad) / fmp[index]) // кол-во отсчетов основного тона pw
-		L[index] = float64(s.Cad)
+		L[index] = 1.5
 	}
 	s.L = L
 
 	s.K = 5
-	s.M = int(float64(s.K) * oss.Max(s.L)) // параметр вложения в траекторное пространство
+	s.M = int(float64(s.K) * slices.Max(s.L)) // параметр вложения в траекторное пространство
 
 	// SSA - анализ сегментов pw
 	s.Seg = 100 // номер сегмента pw для визуализации

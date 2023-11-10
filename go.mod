@@ -15,6 +15,7 @@ require (
 	github.com/cheggaaa/pb v1.0.29
 	github.com/esimov/pigo v1.4.6
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	github.com/jfcg/butter v0.2.0
 	github.com/pconstantinou/savitzkygolay v0.0.1
 	github.com/sbinet/go-gnuplot v0.0.0-20130514120836-9167d8eb1ac4
 	gonum.org/v1/plot v0.14.0

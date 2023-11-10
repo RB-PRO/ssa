@@ -2,21 +2,15 @@ package tg
 
 import (
 	"fmt"
-	"log"
 	"math"
-	"os"
 	"sort"
+
+	"github.com/RB-PRO/ssa/pkg/oss"
 )
 
 func CalcPW(RGBs []RGB_float64, Path string) (pw []float64, Err error) {
 	pw = make([]float64, len(RGBs))
 	pw2 := make([]float64, len(RGBs))
-
-	filePW, ErrOpenFile := os.Create(Path + "pw.txt")
-	if ErrOpenFile != nil {
-		return nil, ErrOpenFile
-	}
-	defer filePW.Close()
 
 	// CR
 	for i := range RGBs {
@@ -34,7 +28,7 @@ func CalcPW(RGBs []RGB_float64, Path string) (pw []float64, Err error) {
 	// SMO_med := cad / int(fMi)
 
 	DEV_med := medianFilter(pw2, 30*60/40)
-	createLineChart([]float64{}, DEV_med, "..\\..\\TelegramVideoNote/RB_PRO_2023-10-28_16-57/"+"DEV_med.png")
+	createLineChart([]float64{}, DEV_med, Path+"DEV_med.png")
 	// filePWmedianFilter, _ := os.Create(Path + "medianFilter.txt")
 	// for i := range DEV_med {
 	// 	if _, err := filePWmedianFilter.WriteString(fmt.Sprintf("%.8f\n", DEV_med[i])); err != nil {
@@ -44,10 +38,22 @@ func CalcPW(RGBs []RGB_float64, Path string) (pw []float64, Err error) {
 
 	for i := range pw {
 		pw[i] /= math.Sqrt(DEV_med[i])
-		if _, err := filePW.WriteString(fmt.Sprintf("%.8f\n", pw[i])); err != nil {
-			log.Println(err)
+	}
+	prcMi := oss.Prctile(pw, 0.1)
+	prcMa := oss.Prctile(pw, 99.9)
+	prcMi = -0.0197
+	prcMa = 0.0207
+	fmt.Println("prcMi", prcMi, "prcMa", prcMa)
+	createLineChart([]float64{}, pw, Path+"pw2.png")
+	for i := range pw {
+		if pw[i] < prcMi {
+			pw[i] = prcMi
+		}
+		if pw[i] > prcMa {
+			pw[i] = prcMa
 		}
 	}
+	createLineChart([]float64{}, pw, Path+"pw.png")
 
 	return pw, nil
 }

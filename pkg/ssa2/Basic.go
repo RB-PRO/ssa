@@ -2,8 +2,11 @@ package ssa2
 
 import (
 	"fmt"
+	"log"
 	"math"
+	"os"
 	"slices"
+	"sort"
 
 	"github.com/RB-PRO/ssa/pkg/ssa2/pmtm"
 )
@@ -116,6 +119,7 @@ func (ssa *SSA) SpwEstimation() (*SSA, error) {
 		ssa.freq[i] = tecalF
 		tecalF += df
 	}
+	SaveTXT("ssafreq.txt", ssa.freq)
 
 	return ssa, nil
 }
@@ -123,6 +127,9 @@ func (ssa *SSA) SpwEstimation() (*SSA, error) {
 // Оценки средних частот основного тона для сегментов pw
 func (ssa *SSA) PwEstimation() (*SSA, error) {
 	// BlackManHar := blackmanharris.Blackmanharris(ssa.set.Win, blackmanharris.Koef4_74db)
+
+	filePW, _ := os.Create("tests/pto.txt")
+	defer filePW.Close()
 
 	// Выделяем память в слайс
 	ssa.Pto_fMAX = make([]float64, ssa.col)
@@ -133,23 +140,45 @@ func (ssa *SSA) PwEstimation() (*SSA, error) {
 		if ErrSpw != nil {
 			return ssa, fmt.Errorf("SSA: PwEstimation: %w", ErrSpw)
 		}
+		// ColumnSPW := make([]float64, len(ColumnSPW2))
+		// copy(ColumnSPW, ColumnSPW2)
 
 		// Получение периодограммы колонки SPW
 		// pg_spw := periodogram.Periodogram(ColumnSPW, BlackManHar, ssa.set.Win)
 
 		pto_spw := pmtm.Pmtm(ColumnSPW, 3, ssa.set.Win)
 
+		for j := range pto_spw {
+			filePW.WriteString(fmt.Sprintf("%.8f;", pto_spw[j]))
+		}
+		filePW.WriteString(fmt.Sprintf("\n"))
+		pto_spw = medianFilter(pto_spw, 30)
+		// pto_spw = sredFilter(pto_spw, 15)
+
 		// Сотртируем, чтобы получить по возрастанию порядковвые номера в слайсе по убыванию
 		// _, SorterIndexts_pg_spw := InsertionSort(pto_spw)
 		SorterIndexts_pg_spw := InsertionSort2(pto_spw)
+		// _, SorterIndexts_pg_spw := InsertionSortInt(pto_spw)
 
 		// fmt.Println(SorterIndexts_pg_spw[0], len(pto_spw))
-		ssa.Pto_fMAX[i] = ssa.freq[SorterIndexts_pg_spw]
+		ssa.Pto_fMAX[i] = ssa.freq[SorterIndexts_pg_spw] // float64(SorterIndexts_pg_spw)
+		// ssa.Pto_fMAX[i] = float64(SorterIndexts_pg_spw)
 	}
 
-	fmt.Printf("%+v", ssa.col)
-
 	return ssa, nil
+}
+
+func SaveTXT(FileName string, data []float64) {
+	filePW, ErrOpenFile := os.Create(FileName)
+	if ErrOpenFile != nil {
+		panic(ErrOpenFile)
+	}
+	defer filePW.Close()
+	for i := range data {
+		if _, err := filePW.WriteString(fmt.Sprintf("%.8f\n", data[i])); err != nil {
+			log.Println(err)
+		}
+	}
 }
 
 // Сортировка с возвратом номеров изначальных элементов
@@ -181,6 +210,106 @@ func InsertionSort(array []float64) ([]float64, []int) {
 }
 
 // Сортировка с возвратом номеров изначальных элементов
+func InsertionSortInt(array []float64) ([]float64, int) {
+	indexArrayint := 0
+	for i := 1; i < len(array); i++ {
+		j := i
+		for j > 0 {
+			if array[j-1] < array[j] {
+				array[j-1], array[j] = array[j], array[j-1]
+				indexArrayint = i
+			}
+			j = j - 1
+		}
+	}
+	return array, indexArrayint
+}
+
+// Сортировка с возвратом номеров изначальных элементов
 func InsertionSort2(array []float64) int {
 	return slices.Index(array, slices.Max(array))
+}
+
+func medianFilter(x []float64, n int) []float64 {
+	// Проверка на нечетное значение n
+	if n%2 == 0 {
+		n++
+	}
+
+	// Длина входного массива
+	length := len(x)
+
+	// Результат фильтрации
+	y := make([]float64, length)
+
+	for i := 0; i < length; i++ {
+		// Индексы для сбора значений для медианного фильтра
+		start := i - n/2
+		end := i + n/2
+
+		// Гарантия, что индексы не выходят за пределы массива
+		if start < 0 {
+			start = 0
+		}
+		if end >= length {
+			end = length - 1
+		}
+
+		// Извлечение значений для медианы
+		window := x[start : end+1]
+
+		// Сортировка окна значений и выбор медианы
+		sortedWindow := make([]float64, len(window))
+		copy(sortedWindow, window)
+		sort.Float64s(sortedWindow)
+		// Хитрый мув. При делении int(5) на int(2), получается int(2),
+		// т.е. округление в нижнюю сторону, хотя нам нужно в старшую степень.
+		// Поэтому из нечётного делаем чётное, а в случае получения нечётного не имеет разницы
+		medianIndex := (len(sortedWindow) + 1) / 2
+		// fmt.Println("medianIndex", medianIndex, "-", sortedWindow)
+		y[i] = sortedWindow[medianIndex]
+	}
+
+	return y
+}
+
+func sredFilter(x []float64, n int) []float64 {
+	// Проверка на нечетное значение n
+	if n%2 == 0 {
+		n++
+	}
+
+	// Длина входного массива
+	length := len(x)
+
+	// Результат фильтрации
+	y := make([]float64, length)
+
+	for i := 0; i < length; i++ {
+		// Индексы для сбора значений для медианного фильтра
+		start := i - n/2
+		end := i + n/2
+
+		// Гарантия, что индексы не выходят за пределы массива
+		if start < 0 {
+			start = 0
+		}
+		if end >= length {
+			end = length - 1
+		}
+
+		// Извлечение значений для медианы
+		window := x[start : end+1]
+
+		// Сортировка окна значений и выбор медианы
+		// slises
+		sum := 0.0
+		for _, v := range window {
+			sum += v
+		}
+		y[i] = sum / float64(n)
+
+	}
+
+	return y
 }

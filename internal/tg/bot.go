@@ -35,6 +35,41 @@ func BotStart2() {
 	tg.RangeUpdates()
 }
 
+func Full() {
+
+	// FileDirection := update.Message.From.UserName + "_" + time.Now().Format("2006-01-02_15-04")
+	FileDirection := "P1H1_edited"
+	FilePath := "TelegramVideoNote/" + "test2/"
+	// MakeDir(FilePath)
+
+	// Массив RGB
+	// RGB, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
+	RGB, _ := ExtractRGB(FilePath, FileDirection+".avi")
+
+	// Нормирование
+	RGB_but := Butter(RGB)
+
+	// Пульсовая волна
+	pw, _ := CalcPW(RGB_but, FilePath+"/")
+
+	////////////////////////////////////////////////////
+	// SSA_tgbot(FilePath+"/", pw)
+	// file := tgbotapi.FilePath(FilePath + "/smo.png")
+	// tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
+
+	ssaAnalis, _ := ssa2.NewSSA(pw, ssa2.Setup{
+		Cad:   30,
+		Win:   1024,
+		NPart: 20,
+		FMi:   40.0 / 60.0,
+		FMa:   240.0 / 60.0,
+	})
+	ssaAnalis.Col()
+	ssaAnalis.SpwEstimation()
+	ssaAnalis.PwEstimation()
+	ssa2.CreateLineChart(ssaAnalis.Pto_fMAX, FilePath+"/pto.png")
+}
+
 // Слушаем сообшения в телеграме
 func (tg *TG) RangeUpdates() {
 	u := tgbotapi.NewUpdate(0)
@@ -69,16 +104,19 @@ func (tg *TG) RangeUpdates() {
 			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Видео получил. Достаю массив RGB(Не более 5 минут)"))
 
 			// Массив RGB
-			RGBs_float64, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
+			// RGB, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
+			RGB, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
 			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Достал RGB. Сейчас считаю pw"))
 			tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"RGB.txt")))
-			log.Printf("Рассчитано RGB")
+			log.Printf("Рассчитано RGB\n")
+
+			RGB_but := Butter(RGB)
 
 			// Пульсовая волна
-			pw, _ := CalcPW(RGBs_float64, FilePath+"/")
+			pw, _ := CalcPW(RGB_but, FilePath+"/")
 			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Посчитал pw(Метод Cr)"))
 			tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"pw.txt")))
-			log.Printf("Рассчитано pw")
+			log.Printf("Рассчитано pw\n")
 
 			////////////////////////////////////////////////////
 			// SSA_tgbot(FilePath+"/", pw)
@@ -86,8 +124,8 @@ func (tg *TG) RangeUpdates() {
 			// tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
 
 			ssaAnalis, ErrNewSSA := ssa2.NewSSA(pw, ssa2.Setup{
-				Cad:   23,
-				Win:   1024,
+				Cad:   10,
+				Win:   256,
 				NPart: 20,
 				FMi:   40.0 / 60.0,
 				FMa:   240.0 / 60.0,
@@ -96,6 +134,9 @@ func (tg *TG) RangeUpdates() {
 				tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, ErrNewSSA.Error()))
 				continue
 			}
+			ssaAnalis.Col()
+			ssaAnalis.SpwEstimation()
+			ssaAnalis.PwEstimation()
 			ssa2.CreateLineChart(ssaAnalis.Pto_fMAX, FilePath+"/pto.png")
 			file := tgbotapi.FilePath(FilePath + "/pto.png")
 			tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
