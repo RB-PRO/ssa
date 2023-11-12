@@ -252,7 +252,7 @@ std_insF_cpw = abs(sqrt(dev_insF_cpw));
 figure();
 set(gcf,'name','Frequencie and energy pulse wave')
 clf;
-sp1 = subplot(2,1,1); plot(tim(1:NSF),insF_cpw); hold on; 
+sp1 = subplot(2,1,1); plot(tim(1:NSF),insF_cpw); hold on;
 plot(tim(1:NSF),smo_insF_cpw,'Color','r','LineWidth',0.8); hold on;
 % plot(tim(1:NSF),std_insF_cpw);
 xlabel("t,s",'interp','none'); ylabel("insF,Hz",'interp','none');

@@ -18,7 +18,12 @@ function pw = rgb2pw(pwc, VideoFile)
     % pw = pwc(:,2)-pwc(:,1);
     % Алгоритм Cr
 % alg = 'Cr';
- pw = (112.0*pwc(:,1)-93.8*pwc(:,2)-18.2*pwc(:,3))./255.0;
+    pw = (112.0*pwc(:,1)-93.8*pwc(:,2)-18.2*pwc(:,3))./255.0;
+
+%     Вычитаем тренд
+    smoot_pw = smoothdata(pw,"movmean",32);  
+    pw=pw-smoot_pw;
+    
     % Алгоритм CHROM
 %     alg = 'CHROM';
 %     ws(:,1) = (3.0*pwc(:,1)-2.0*pwc(:,2))./sqrt(13.0);
@@ -30,9 +35,9 @@ function pw = rgb2pw(pwc, VideoFile)
     %% Центрированная и нормированная пульсовая волна pw
     SMO_med = floor(cad/fMi);
     % Алгоритмы G, GR, Cr
- DEV_med = medfilt1(pw.*pw,SMO_med); 
- STD_med(:,1) = sqrt(DEV_med);
-% pw = pw./STD_med(:,1);
+    DEV_med = medfilt1(pw.*pw,SMO_med); 
+    STD_med(:,1) = sqrt(DEV_med);
+    pw = pw./STD_med(:,1);
     % Алгоритмы CHOM, POS
 % DEV_med = medfilt1(ws(:,1).*ws(:,1),SMO_med); STD_med(:,1) = sqrt(DEV_med);
 % DEV_med = medfilt1(ws(:,2).*ws(:,2),SMO_med); STD_med(:,2) = sqrt(DEV_med);
@@ -58,10 +63,8 @@ function pw = rgb2pw(pwc, VideoFile)
     plot(tim,pw); grid on;
     title('Центрированная и нормированная pw');
     xlabel("t,s",'interp','none'); ylabel("pw",'interp','none');
-
+    
     file=fopen(NameVideoFile(VideoFile)+'_pw.txt','w'); 
     fprintf(file,'%f\n',pw);  
-    fclose(file); 
-    
-    
+    fclose(file);
 end
