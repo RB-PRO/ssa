@@ -21,8 +21,10 @@ function pw = rgb2pw(pwc, VideoFile)
     pw = (112.0*pwc(:,1)-93.8*pwc(:,2)-18.2*pwc(:,3))./255.0;
 
 %     Вычитаем тренд
-    smoot_pw = smoothdata(pw,"movmean",32);  
-    pw=pw-smoot_pw;
+%     pw_smooth = smoothdata(pw,"movmean",32);  
+    pw_smooth = movmean(pw,32);
+%     smoot_pw=smooth(pw); 
+    pw=pw-pw_smooth;
     
     % Алгоритм CHROM
 %     alg = 'CHROM';

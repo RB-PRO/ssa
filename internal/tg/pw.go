@@ -5,6 +5,7 @@ import (
 	"math"
 	"sort"
 
+	"github.com/RB-PRO/ssa/pkg/movmean"
 	"github.com/RB-PRO/ssa/pkg/oss"
 )
 
@@ -17,10 +18,21 @@ func CalcPW(RGBs []RGB_float64, Path string) (pw []float64, Err error) {
 		pw[i] = (RGBs[i].R*112.0 -
 			RGBs[i].G*93.8 -
 			RGBs[i].B*18.2) / 255.0
-		pw2[i] = math.Pow(pw[i], 2)
+
 		// if _, err := filePW.WriteString(fmt.Sprintf("%.8f\n", pw[i])); err != nil {
 		// 	log.Println(err)
 		// }
+	}
+
+	// Вычитаем тренд
+	pw_smooth, _ := movmean.Movmean(pw, 32)
+	for i := range pw {
+		pw[i] -= pw_smooth[i]
+	}
+
+	// Квадрат
+	for i := range pw {
+		pw2[i] = math.Pow(pw[i], 2)
 	}
 
 	// fMi := 40.0 / 60.0

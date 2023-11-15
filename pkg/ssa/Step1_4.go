@@ -17,7 +17,7 @@ func (s *SPW) SET_Form() *SPW {
 
 	for j := 0; j < s.S; j++ {
 		C, LBD, RC := SSA(s.Win, s.M, s.Spw.ColView(j), s.NET)
-		//fmt.Println(j, S)
+
 		RC_T := mat.DenseCopyOf(RC.T())
 
 		sET12_sum2.SetCol(0, RC_T.RawRowView(0))
@@ -40,6 +40,8 @@ func (s *SPW) SET_Form() *SPW {
 
 		// fmt.Println(">>>", j, s.Seg, s.S)
 		if j == s.S/2 {
+			fmt.Println(C.Dims())
+			fmt.Println(s.Win, s.M, s.NET)
 			// Если есть настрока формирования графика
 			if s.Graph {
 				FolderPNG := fmt.Sprintf("%s/png/", s.Dir.zeropath)
@@ -65,6 +67,7 @@ func (s *SPW) SET_Form() *SPW {
 			}
 			// Если есть настрока сохранения данных в Xlsx
 			if s.Xlsx {
+
 				FolderSave := fmt.Sprintf("%s/MatLab/%d/", s.Dir.zeropath, 5)
 				oss.СreateFolderIfNotExists(FolderSave)
 

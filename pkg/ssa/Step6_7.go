@@ -18,7 +18,6 @@ func (s *SPW) Envelope() *SPW {
 
 	EnvAcf_sET12 := *mat.NewDense(s.lag, s.S, nil)
 	AcfNrm_sET12 := *mat.NewDense(s.lag, s.S, nil)
-	fmt.Println(" s.S", s.S)
 	for j := 0; j < s.S; j++ { // цикл по сегментам АКФ
 		Acf_sET12_col := *mat.VecDenseCopyOf(s.Acf_sET12.ColView(j))
 		absTS := oss.AbsVector(Acf_sET12_col)
@@ -52,6 +51,12 @@ func (s *SPW) Envelope() *SPW {
 		NumMax := maxN.SliceVec(0, Nmax+1)
 
 		//
+		if j == 50 {
+			fmt.Println(absTS)
+			fmt.Println()
+			fmt.Println()
+			fmt.Println()
+		}
 
 		fmt.Println("> Nmax", Nmax, "-", at1, at2, s.lag, "//", NumMax)
 		// Интерполяция огибающей АКФ

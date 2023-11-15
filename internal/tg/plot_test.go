@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/RB-PRO/ssa/pkg/movmean"
 	"github.com/RB-PRO/ssa/pkg/oss"
 	"github.com/RB-PRO/ssa/pkg/ssa"
 )
@@ -115,7 +116,7 @@ func TestExtractRGB(t *testing.T) {
 }
 
 func TestButter(t *testing.T) {
-	FileName := "P1H1_edited_RGB.txt"
+	FileName := "EUT_P1H1_RGB.txt"
 	FileName = strings.ReplaceAll(FileName, ".avi", "")
 	FileName = strings.ReplaceAll(FileName, ".txt", "")
 	FileName = strings.ReplaceAll(FileName, "_RGB", "")
@@ -136,6 +137,7 @@ func TestButter(t *testing.T) {
 	if ErrPW != nil {
 		t.Error(ErrPW)
 	}
+	pw, _ = movmean.Movmean(pw, 5)
 	// SaveTXT(Folder+FileName+"_pw.txt", pw)
 	// pw = LoadTXT(Folder + "tg10" + "_pw.txt")
 
