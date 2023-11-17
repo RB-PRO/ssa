@@ -77,6 +77,14 @@ function RGB = Face_tracking(VideoFile)
 
         % Extract the next video frame
         videoFrame = readFrame(vid_obj);
+         
+%         if frame < 200
+%              continue
+%         end
+%         if frame == 201
+%             break
+%         end
+%         disp(frame);
 
         [~, skmap] = skinmap(videoFrame);
 
@@ -86,7 +94,6 @@ function RGB = Face_tracking(VideoFile)
         % Apply the mask to the image
         Skin = bsxfun(@times, videoFrame, uint8(skmap));
         Face = imcrop(Skin, bbox);
-
 
         red = Face(:,:,1); 
         red = nonzeros(red);
@@ -98,16 +105,19 @@ function RGB = Face_tracking(VideoFile)
         blue = nonzeros(blue);
         RGB(frame, 3) = sum(blue)/length(blue);%mean(blue./length(blue));
        
+%         disp(frame);
+%         disp(RGB(frame, 1));
+%         disp(RGB(frame, 2));
+%         disp(RGB(frame, 3));
+        
         if ((RGB(frame, 1) ~= 0) && (RGB(frame, 2) ~= 0) && (RGB(frame, 3) ~= 0))
             fprintf(file,'%f;%f;%f\n',RGB(frame, 1), RGB(frame, 2), RGB(frame, 3));
         end 
 
         % Insert a bounding box around the object being tracked
         %videoOut = insertObjectAnnotation(Skin,'rectangle',bbox,'Face');
-
         % Display the annotated video frame using the video player object
         %step(videoPlayer, videoOut);
-
         %     disp(sprintf("[%d/%d]", frame, numframes));
     end
     delete(f);

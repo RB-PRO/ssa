@@ -67,7 +67,7 @@ func New(Path string) *SPW {
 }
 
 // Инициализируем сигнал pw
-func (s *SPW) Init(pw, fmp []float64) *SPW {
+func (s *SPW) Var(pw, fmp []float64) *SPW {
 	s.N = len(pw)
 	s.Win = 1024
 	s.Res = s.N - s.Win*int(math.Floor(float64(s.N)/float64(s.Win)))

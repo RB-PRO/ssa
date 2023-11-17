@@ -182,7 +182,7 @@ func SSA_tgbot(FilePath string, pw []float64) {
 	s := ssa.New(FilePath + "Files/")
 	s.Graph = false // Создавать графики
 	s.Xlsx = true   // Сохранять в Xlsx
-	s.Init(pw, []float64{})
+	s.Var(pw, []float64{})
 	s.Spw_Form(pw) // Создать spw
 
 	// # 1, 2, 3, 4

@@ -37,9 +37,13 @@ function pw = rgb2pw(pwc, VideoFile)
     %% Центрированная и нормированная пульсовая волна pw
     SMO_med = floor(cad/fMi);
     % Алгоритмы G, GR, Cr
-    DEV_med = medfilt1(pw.*pw,SMO_med); 
+   pw2 = pw.*pw;
+    DEV_med = medfilt1(pw2,SMO_med); 
+    figure();plot(pw2);
+    figure();plot(DEV_med);
     STD_med(:,1) = sqrt(DEV_med);
     pw = pw./STD_med(:,1);
+    figure();plot(pw);
     % Алгоритмы CHOM, POS
 % DEV_med = medfilt1(ws(:,1).*ws(:,1),SMO_med); STD_med(:,1) = sqrt(DEV_med);
 % DEV_med = medfilt1(ws(:,2).*ws(:,2),SMO_med); STD_med(:,2) = sqrt(DEV_med);
@@ -59,6 +63,7 @@ function pw = rgb2pw(pwc, VideoFile)
        end
     end
     STD = std(pw); 
+    figure();plot(pw);
     pw = pw./STD; % нормированная pw
     
     figure();

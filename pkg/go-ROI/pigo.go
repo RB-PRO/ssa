@@ -1,6 +1,7 @@
 package goroi
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -11,12 +12,12 @@ type Pigs struct {
 	Classifier *pigo.Pigo
 }
 
-func NewPigs() *Pigs {
+func NewPigs(FileCascade string) (*Pigs, error) {
 	// consumers.StartForwardStreamConsumer()
 	// camtron.StartCam()
-	cascadeFile, err := os.ReadFile("cascade/facefinder")
+	cascadeFile, err := os.ReadFile(FileCascade) // "cascade/facefinder"
 	if err != nil {
-		log.Fatalf("Error reading the cascade file: %v", err)
+		return nil, fmt.Errorf("os.ReadFile: Error reading the cascade file: %v", err)
 	}
 
 	pigo := pigo.NewPigo()
@@ -24,12 +25,12 @@ func NewPigs() *Pigs {
 	// the tree depth, the threshold and the prediction from tree's leaf nodes.
 	classifier, err := pigo.Unpack(cascadeFile)
 	if err != nil {
-		log.Fatalf("Error reading the cascade file: %s", err)
+		return nil, fmt.Errorf("pigo.Unpack: Error reading the cascade file: %v", err)
 	}
 
 	return &Pigs{
 		Classifier: classifier,
-	}
+	}, nil
 }
 
 func (p Pigs) getCoords(filepath string) []pigo.Detection {

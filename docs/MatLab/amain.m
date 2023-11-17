@@ -1,17 +1,17 @@
 clear; close all; clc;
-VideoFile = "EUT_P1H1.txt"; Path="Files/"; % P1H1_edited
+VideoFile = "P1H1_edited.avi"; Path="Files/"; % P1H1_edited
 
 % Вычленение RGB из видео
-% Face_tracking(Path+VideoFile);
-% RGB=load(Path+NameVideoFile(VideoFile)+'_RGB.txt');
+Face_tracking(Path+VideoFile);
+RGB=load(Path+NameVideoFile(VideoFile)+'_RGB.txt');
 
-load(Path+'EUT_P1H1_RGB.mat');
-RGB=EUT_P1H1_RGB; 
-    file=fopen(strcat(Path+'EUT_P1H1_RGB.txt', '.txt'),'w'); 
-    for i=1:length(RGB)
-         fprintf(file,'%f;%f;%f\n',RGB(i, 1), RGB(i, 2), RGB(i, 3));
-    end
-    fclose(file);
+% load(Path+'EUT_P1H1_RGB.mat');
+% RGB=EUT_P1H1_RGB; 
+%     file=fopen(strcat(Path+'EUT_P1H1_RGB.txt', '.txt'),'w'); 
+%     for i=1:length(RGB)
+%          fprintf(file,'%f;%f;%f\n',RGB(i, 1), RGB(i, 2), RGB(i, 3));
+%     end
+%     fclose(file);
 
 % Фильтрация
 %    ButterRGB(RGB, Path+VideoFile);

@@ -162,7 +162,7 @@ func SSS_spw2(pw, fmp []float64) {
 	s := ssa.New("File")
 	s.Graph = true // Создавать графики
 	s.Xlsx = true  // Сохранять в Xlsx
-	s.Init(pw, fmp)
+	s.Var(pw, fmp)
 	s.Spw_Form(pw) // Создать spw
 
 	// # 1, 2, 3, 4

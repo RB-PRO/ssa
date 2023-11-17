@@ -15,6 +15,8 @@ func medianFilter(x []float64, n int) ([]float64, error) {
 
 	// Проверка на нечетное значение n
 	// в противном случае из нечётного делаем чётное
+	// %   For N odd, Y(k) is the median of X( k-(N-1)/2 : k+(N-1)/2 ).
+	// %   For N even, Y(k) is the median of X( k-N/2 : k+N/2-1 ).
 	if n%2 == 0 {
 		n++
 	}

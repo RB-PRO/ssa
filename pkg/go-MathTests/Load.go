@@ -59,8 +59,8 @@ func LoadRGB(FileName string) (R, G, B []float64, Err error) {
 			b, _ := strconv.ParseFloat(strs[2], 64)
 
 			R = append(R, r)
-			G = append(R, g)
-			B = append(R, b)
+			G = append(G, g)
+			B = append(B, b)
 		}
 	}
 	if ErrScanner := scanner.Err(); ErrScanner != nil {
@@ -84,7 +84,7 @@ func Save(FileName string, opts ...[]float64) error {
 			for j := range opts {
 				strs[j] = fmt.Sprintf("%.8f", opts[j][i])
 			}
-			fmt.Println()
+			// fmt.Println()
 			if _, ErrWriteString := filePW.WriteString(strings.Join(strs, ";") + "\n"); ErrWriteString != nil {
 				return fmt.Errorf("filePW.WriteString: %v", ErrWriteString)
 			}
