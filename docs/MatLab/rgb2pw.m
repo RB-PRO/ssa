@@ -66,6 +66,8 @@ function pw = rgb2pw(pwc, VideoFile)
     figure();plot(pw);
     pw = pw./STD; % нормированна€ pw
     
+    pw = movmean(pw,5);
+    
     figure();
     plot(tim,pw); grid on;
     title('÷ентрированна€ и нормированна€ pw');

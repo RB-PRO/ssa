@@ -104,7 +104,8 @@ func (s *SPW) Var(pw, fmp []float64) *SPW {
 	s.Ns2 = ns2
 
 	L := make([]float64, s.S)
-	for index := range L { // цикл по сегментам pw
+	for index := 0; index < len(L); index++ {
+		// for index := range L { // цикл по сегментам pw
 		// L[index] = math.Floor(float64(s.Cad) / fmp[index]) // кол-во отсчетов основного тона pw
 		L[index] = float64(s.Cad) / 1.5
 	}
