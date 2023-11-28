@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"sort"
 
+	"github.com/anthonynsimon/bild/adjust"
 	"github.com/cheggaaa/pb"
 	pigo "github.com/esimov/pigo/core"
 )
@@ -128,6 +129,52 @@ func getImageFromFilePath(filePath string) (draw.Image, error) {
 	return img, err
 }
 
+// Рассчёт процентилей
+func illumgray(img image.Image, percentiles int) (float64, float64, float64) {
+	Rectangle := img.Bounds()
+	width := Rectangle.Max.X - Rectangle.Min.X
+	height := Rectangle.Max.Y - Rectangle.Min.Y
+	// fmt.Printf("\n%+v, (%d;%d)\n", Rectangle, width, height)
+	// R := make([]uint32, height*width)
+	// G := make([]uint32, height*width)
+	// B := make([]uint32, height*width)
+	R := make([]uint32, 0, height*width+1)
+	G := make([]uint32, 0, height*width+1)
+	B := make([]uint32, 0, height*width+1)
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			r, g, b, _ := img.At(x, y).RGBA()
+			// R[y*height+width] = r
+			// G[y*height+width] = g
+			// B[y*height+width] = b
+			R = append(G, r)
+			G = append(G, g)
+			B = append(G, b)
+		}
+	}
+	R = sortAndREmDub(R)
+	G = sortAndREmDub(G)
+	B = sortAndREmDub(B)
+
+	return float64(len(R) / (height * width)),
+		float64(len(G) / (height * width)),
+		float64(len(B) / (height * width))
+}
+
+func sortAndREmDub(arr []uint32) []uint32 {
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i] < arr[j]
+	})
+	j := 1
+	for i := 1; i < len(arr); i++ {
+		if arr[i] != arr[i-1] {
+			arr[j] = arr[i]
+			j++
+		}
+	}
+	return arr[:j]
+}
+
 func (p *Pigs) Coords2(FilePathName string) (R float64, G float64, B float64, Err error) {
 
 	Dets := p.getCoords(FilePathName)
@@ -147,12 +194,6 @@ func (p *Pigs) Coords2(FilePathName string) (R float64, G float64, B float64, Er
 			return 0.0, 0.0, 0.0, fmt.Errorf("image.Decode: picture: %v", ErrDecode)
 		}
 
-		// pix := Dets[0].Scale / 2
-		// face_image := img.(interface {
-		// 	SubImage(r image.Rectangle) image.Image
-		// }).SubImage(image.Rect(Dets[0].Col-pix, Dets[0].Row-pix,
-		// 	Dets[0].Col+pix, Dets[0].Row+pix))
-
 		// fmt.Println(img.Bounds().Max.X - img.Bounds().Min.X)
 		// fmt.Println(img.Bounds().Max.Y - img.Bounds().Min.Y)
 
@@ -163,10 +204,23 @@ func (p *Pigs) Coords2(FilePathName string) (R float64, G float64, B float64, Er
 		// yStart, yEnd := Dets[0].Row-pix, Dets[0].Row+pix
 		// xStart, xEnd := Dets[0].Col-pix, Dets[0].Col+pix
 
+		// face_image := img.(interface {
+		// 	SubImage(r image.Rectangle) image.Image
+		// }).SubImage(image.Rect(Dets[0].Col-pix, Dets[0].Row-pix,
+		// 	Dets[0].Col+pix, Dets[0].Row+pix))
+
+		// // гамма и прочее
+		// Rgray, Ggray, Bgray := illumgray(face_image, 10)
+		// fmt.Println(Rgray, Ggray, Bgray)
+		img = adjust.Gamma(img, 2.2)
+
 		var count int
 		for y := Dets[0].Row - pix; y < Dets[0].Row+pix; y++ {
 			// fmt.Println(y)
 			for x := Dets[0].Col - pix; x < Dets[0].Col+pix; x++ {
+				// for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
+				// 	// fmt.Println(y)
+				// 	for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
 				rgb := img.At(x, y)
 				r, g, b, _ := rgb.RGBA()
 

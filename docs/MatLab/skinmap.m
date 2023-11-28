@@ -17,14 +17,14 @@ function [out, bin] = skinmap(img_orig)
     %Initialize the output images
     out = img_orig;
     bin = zeros(height,width);
-     img = img_orig;
+%      img = img_orig;
     
     %Apply Grayworld Algorithm for illumination compensation
-%     A_lin = rgb2lin(img_orig);
-%     percentiles = 10;
-%     illuminant = illumgray(A_lin,percentiles);
-%     B_lin = chromadapt(A_lin,illuminant,'ColorSpace','linear-rgb');
-%     img = lin2rgb(B_lin);
+    A_lin = rgb2lin(img_orig);
+    percentiles = 10;
+    illuminant = illumgray(A_lin,percentiles);
+    B_lin = chromadapt(A_lin,illuminant,'ColorSpace','linear-rgb');
+    img = lin2rgb(B_lin);
     
     %Convert the image from RGB to YCbCr
     img_ycbcr = rgb2ycbcr(img);

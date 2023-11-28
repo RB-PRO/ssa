@@ -81,11 +81,11 @@ function RGB = Face_tracking(VideoFile)
         % Extract the next video frame
         videoFrame = readFrame(vid_obj);
         
-            A_lin = rgb2lin(videoFrame);
-    percentiles = 10;
-    illuminant = illumgray(A_lin,percentiles);
-    B_lin = chromadapt(A_lin,illuminant,'ColorSpace','linear-rgb');
-    videoFrame = lin2rgb(B_lin);
+%             A_lin = rgb2lin(videoFrame);
+%     percentiles = 10;
+%     illuminant = illumgray(A_lin,percentiles);
+%     B_lin = chromadapt(A_lin,illuminant,'ColorSpace','linear-rgb');
+%     videoFrame = lin2rgb(B_lin);
          
 %         if frame < 200
 %              continue

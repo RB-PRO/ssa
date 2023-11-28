@@ -6,9 +6,9 @@ import (
 )
 
 func SSA(Folder string, pw []float64) error {
-	s := ssa.New(Folder + "ssa")
-	s.Graph = true // Создавать графики
-	s.Xlsx = true  // Сохранять в Xlsx
+	s := ssa.New(Folder)
+	s.Graph = false // Создавать графики
+	s.Xlsx = true   // Сохранять в Xlsx
 	s.Var(pw, []float64{})
 	s.Spw_Form(pw) // Создать spw
 
@@ -29,6 +29,7 @@ func SSA(Folder string, pw []float64) error {
 	// Мгновенная частота нормированной АКФ сингулярных троек sET12 для сегментов pw
 	s.MomentFrequency()
 	gomathtests.Plot(Folder+"smo.png", s.Smo_insFrc_AcfNrm)
+	gomathtests.Plot(Folder+"ins.png", s.InsFrc_AcfNrm)
 
 	// # 9
 	// Визуализация СПМ сингулярных троек сегменов pw

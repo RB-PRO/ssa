@@ -12,6 +12,7 @@ require github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
 
 require (
 	fyne.io/fyne v1.4.3
+	github.com/anthonynsimon/bild v0.13.0
 	github.com/cheggaaa/pb v1.0.29
 	github.com/esimov/pigo v1.4.6
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1

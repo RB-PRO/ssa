@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	complexssa "github.com/RB-PRO/ssa/internal/ComplexSSA"
 	"github.com/RB-PRO/ssa/pkg/ssa"
 	"github.com/RB-PRO/ssa/pkg/ssa2"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -80,9 +81,16 @@ func (tg *TG) RangeUpdates() {
 			continue
 		}
 
-		if update.Message.VideoNote != nil {
+		if update.Message.VideoNote != nil || update.Message.Video != nil {
+
 			// Обработка видео-заметки
-			videoNoteFile := update.Message.VideoNote.FileID
+			videoNoteFile := ""
+			if update.Message.VideoNote != nil {
+				videoNoteFile = update.Message.VideoNote.FileID
+			}
+			if update.Message.Video != nil {
+				videoNoteFile = update.Message.Video.FileID
+			}
 			videoNote, err := tg.Bot.GetFile(tgbotapi.FileConfig{FileID: videoNoteFile})
 			if err != nil {
 				log.Println("Ошибка при загрузке видео-заметки:", err)
@@ -103,42 +111,46 @@ func (tg *TG) RangeUpdates() {
 				update.Message.From.UserName, FilePath)
 			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Видео получил. Достаю массив RGB(Не более 5 минут)"))
 
-			// Массив RGB
+			complexssa.Start2(FilePath+"/", FileDirection+".mp4")
+
+			// // Массив RGB
+			// // RGB, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
 			// RGB, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
-			RGB, _ := ExtractRGB(FilePath+"/", FileDirection+".mp4")
-			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Достал RGB. Сейчас считаю pw"))
-			tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"RGB.txt")))
-			log.Printf("Рассчитано RGB\n")
+			// tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Достал RGB. Сейчас считаю pw"))
+			// tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"RGB.txt")))
+			// log.Printf("Рассчитано RGB\n")
 
-			RGB_but := Butter(RGB)
+			// RGB_but := Butter(RGB)
 
-			// Пульсовая волна
-			pw, _ := CalcPW(RGB_but, FilePath+"/")
-			tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Посчитал pw(Метод Cr)"))
-			tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"pw.txt")))
-			log.Printf("Рассчитано pw\n")
+			// // Пульсовая волна
+			// pw, _ := CalcPW(RGB_but, FilePath+"/")
+			// tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Посчитал pw(Метод Cr)"))
+			// tg.Bot.Send(tgbotapi.NewDocument(update.Message.Chat.ID, tgbotapi.FilePath(FilePath+"/"+"pw.txt")))
+			// log.Printf("Рассчитано pw\n")
 
-			////////////////////////////////////////////////////
-			// SSA_tgbot(FilePath+"/", pw)
-			// file := tgbotapi.FilePath(FilePath + "/smo.png")
-			// tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
+			// ////////////////////////////////////////////////////
+			// // SSA_tgbot(FilePath+"/", pw)
+			// // file := tgbotapi.FilePath(FilePath + "/smo.png")
+			// // tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
 
-			ssaAnalis, ErrNewSSA := ssa2.NewSSA(pw, ssa2.Setup{
-				Cad:   10,
-				Win:   256,
-				NPart: 20,
-				FMi:   40.0 / 60.0,
-				FMa:   240.0 / 60.0,
-			})
-			if ErrNewSSA != nil {
-				tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, ErrNewSSA.Error()))
-				continue
-			}
-			ssaAnalis.Col()
-			ssaAnalis.SpwEstimation()
-			ssaAnalis.PwEstimation()
-			ssa2.CreateLineChart(ssaAnalis.Pto_fMAX, FilePath+"/pto.png")
-			file := tgbotapi.FilePath(FilePath + "/pto.png")
+			// ssaAnalis, ErrNewSSA := ssa2.NewSSA(pw, ssa2.Setup{
+			// 	Cad:   10,
+			// 	Win:   256,
+			// 	NPart: 20,
+			// 	FMi:   40.0 / 60.0,
+			// 	FMa:   240.0 / 60.0,
+			// })
+			// if ErrNewSSA != nil {
+			// 	tg.Bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, ErrNewSSA.Error()))
+			// 	continue
+			// }
+			// ssaAnalis.Col()
+			// ssaAnalis.SpwEstimation()
+			// ssaAnalis.PwEstimation()
+			// ssa2.CreateLineChart(ssaAnalis.Pto_fMAX, FilePath+"/pto.png")
+			file := tgbotapi.FilePath(FilePath + "/smo.png")
+			tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
+			file = tgbotapi.FilePath(FilePath + "/ins.png")
 			tg.Bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
 
 			continue
