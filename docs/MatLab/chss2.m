@@ -1,4 +1,4 @@
-function chss2(pw)
+function chss2(pw, Path, Name)
 %  load('EUT_P1H1_Fmaxcr');
 %  fmp = EUT_P1H1_FmaxCr; % частоты основного тона сегментов пульсовой волны
 %% Cегменты pw
@@ -193,18 +193,18 @@ pto_fMAX12 = pto_fMAX12';
 smo_pto_fMAX12 = smoothdata(pto_fMAX12,'rloess',0.3*S); % smo_pto_fMAX12 = smooth(pto_fMAX12,0.3*S,'rloess');
 %
 figure();
-set(gcf,'name','Частоты основного тона sET сегментов pw');
-clf;
-plot(ns,pto_fMAX12,'b'); hold on;
+set(gcf,'name','Частоты основного тона sET сегментов pw'); clf;
+p=plot(ns,pto_fMAX12,'b'); hold on;
 plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
 xlabel("ns",'interp','none'); ylabel("fMAX,Hz",'interp','none');
+ saveas(p,Path+Name+'_ЧСС_sET.png')
 %% Агрегирование сегментов очищенной пульсовой волны cpw
 [NumS,cpw_avr,cpw_med,cpw_iqr] = wav(NSF,S,win,res,sET12);
 %
-figure();
-set(gcf,'name','Pulse wave')
-clf;
-plotwave(1,NSF,tim,cpw_avr,cpw_med,cpw_iqr);
+% figure();
+% set(gcf,'name','Pulse wave')
+% clf;
+% plotwave(1,NSF,tim,cpw_avr,cpw_med,cpw_iqr);
 %% Накопленная мгновенная фаза cpw
 % cpw = cpw_avr; % оценка очищенной пульсовой волны
 cpw = cpw_med; % оценка очищенной пульсовой волны
@@ -261,4 +261,5 @@ ylim([1.0 3.0]);
 sp2 = subplot(2,1,2); plot(tim(1:NSF),insE_cpw.^2); 
 xlabel("t,s",'interp','none'); ylabel("insE^2",'interp','none');
 grid on; title(sp2,'Мгновенная энергия cpw');
+save(Path+Name+"_nc"+".mat")
 end

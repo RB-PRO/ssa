@@ -38,5 +38,6 @@ func SSA(Folder string, pw []float64) error {
 	// # 10
 	// Агрегирование сегментов очищенной пульсовой волны cpw
 	s.AggregationPW()
+	gomathtests.Plot(Folder+"all.png", s.Smo_insFrc_AcfNrm, s.InsFrc_AcfNrm)
 	return nil
 }

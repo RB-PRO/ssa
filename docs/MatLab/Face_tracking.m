@@ -1,5 +1,5 @@
 function RGB = Face_tracking(VideoFile)
-    vid_obj = VideoReader(VideoFile);
+    vid_obj = VideoReader(strrep(VideoFile,"_nc",""));
     VideoFile = NameVideoFile(VideoFile);
     
     %
@@ -13,7 +13,7 @@ function RGB = Face_tracking(VideoFile)
     bbox = step(FDetect, videoFrame);
 
     videoFrame = insertShape(videoFrame, "rectangle", bbox);
-    figure(); imshow(videoFrame); title("Detected face");
+%     figure(); imshow(videoFrame); title("Detected face");
 
     %РџРѕРїС‹С‚РєРё СЃРµРіРјРµРЅС‚Р°С†РёРё РёР·РѕР±СЂР°Р¶РµРЅРёР№
     %РњРµС‚РѕРґ 1
@@ -33,8 +33,8 @@ function RGB = Face_tracking(VideoFile)
     [~, skmap] = skinmap(videoFrame);
 
     % Display the Skinmap data and draw the bounding box around the face.
-    figure(); imshow(skmap); title('Skinmap data');
-    rectangle('Position',bbox(1,:),'LineWidth',2,'EdgeColor',[1 1 0]);
+%     figure(); imshow(skmap); title('Skinmap data');
+%     rectangle('Position',bbox(1,:),'LineWidth',2,'EdgeColor',[1 1 0]);
 
     % Skin = bsxfun(@times, videoFrame, uint8(skmap));
     % Skin_gray = rgb2gray(Skin);
@@ -50,10 +50,10 @@ function RGB = Face_tracking(VideoFile)
     ny = bbox(1,2);
 
     %eyeBBox = step(EyeDetect, videoFrame, bbox(1,:));
-    rectangle('Position',noseBBox(1,:),'LineWidth',3,'EdgeColor',[1 1 0]);
-    rectangle('Position',noseBBox(1,:),'LineWidth',3,'EdgeColor',[1 1 0]);
-    hold on;
-    plot(nx,ny, 'Marker','+','Color','red','MarkerSize',10);
+%     rectangle('Position',noseBBox(1,:),'LineWidth',3,'EdgeColor',[1 1 0]);
+%     rectangle('Position',noseBBox(1,:),'LineWidth',3,'EdgeColor',[1 1 0]);
+%     hold on;
+%     plot(nx,ny, 'Marker','+','Color','red','MarkerSize',10);
 
     % Create a tracker object.
     tracker = vision.HistogramBasedTracker;
@@ -76,7 +76,7 @@ function RGB = Face_tracking(VideoFile)
     
     while  hasFrame(vid_obj)
         frame = frame + 1;
-        waitbar(frame/numframes, f, sprintf("Обработка кадров [%d/%d]", frame, numframes))
+        waitbar(frame/numframes, f, sprintf("Обработка кадров [%d/%d] - %s", frame, numframes, VideoFile))
 
         % Extract the next video frame
         videoFrame = readFrame(vid_obj);
@@ -123,7 +123,7 @@ function RGB = Face_tracking(VideoFile)
             fprintf(file,'%f;%f;%f\n',RGB(frame, 1), RGB(frame, 2), RGB(frame, 3));
         end 
 
-        % Insert a bounding box around the object being tracked
+        % Insert a bounding box around the object being trackenamesd
         %videoOut = insertObjectAnnotation(Skin,'rectangle',bbox,'Face');
         % Display the annotated video frame using the video player object
         %step(videoPlayer, videoOut);

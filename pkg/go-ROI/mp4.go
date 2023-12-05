@@ -212,6 +212,8 @@ func (p *Pigs) Coords2(FilePathName string) (R float64, G float64, B float64, Er
 		// // гамма и прочее
 		// Rgray, Ggray, Bgray := illumgray(face_image, 10)
 		// fmt.Println(Rgray, Ggray, Bgray)
+
+		// Видео-коменсация
 		img = adjust.Gamma(img, 2.2)
 
 		var count int

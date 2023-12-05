@@ -9,7 +9,7 @@ import (
 
 func Start() {
 	Folder := "WorkPath/"               // Рабочая папка
-	VideoName := "P2LC1_edited.avi"     // Название видео
+	VideoName := "video.avi"            // Название видео
 	ObjName := NameVideoFile(VideoName) //  Получить название объекта исследования
 
 	// % Вычленение RGB из видео
