@@ -6,7 +6,7 @@ clear; close all; clc;
 VideoFile = "P2LC1.avi"; Path="Files/"; % P1H1_edited
 
 % Extracting a time series of RGB segments
-Face_tracking(Path+VideoFile);
+% Face_tracking(Path+VideoFile);
 RGB=load(Path+NameVideoFile(VideoFile)+'_RGB.txt');
 
 % Calculation of the photoplethysmography signal

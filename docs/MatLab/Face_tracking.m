@@ -2,10 +2,6 @@ function RGB = Face_tracking(VideoFile)
     vid_obj = VideoReader(strrep(VideoFile,"_nc",""));
     VideoFile = NameVideoFile(VideoFile);
     
-    %
-
-
-
     FDetect = vision.CascadeObjectDetector('FrontalFaceCART','MergeThreshold',10); %Viola-Jones Algorithm
     %EyeDetect = vision.CascadeObjectDetector('EyePairSmall','UseROI', true);
 
@@ -72,7 +68,7 @@ function RGB = Face_tracking(VideoFile)
     
     % ќбъ€вление матрицы RGB
     RGB = zeros(numframes, 3);
-    file=fopen(strcat(VideoFile, '_RGB', '.txt'),'w'); 
+%     file=fopen(strcat(VideoFile, '_RGB', '.txt'),'w'); 
     
     while  hasFrame(vid_obj)
         frame = frame + 1;
@@ -119,9 +115,9 @@ function RGB = Face_tracking(VideoFile)
 %         disp(RGB(frame, 2));
 %         disp(RGB(frame, 3));
         
-        if ((RGB(frame, 1) ~= 0) && (RGB(frame, 2) ~= 0) && (RGB(frame, 3) ~= 0))
-            fprintf(file,'%f;%f;%f\n',RGB(frame, 1), RGB(frame, 2), RGB(frame, 3));
-        end 
+%         if ((RGB(frame, 1) ~= 0) && (RGB(frame, 2) ~= 0) && (RGB(frame, 3) ~= 0))
+%             fprintf(file,'%f;%f;%f\n',RGB(frame, 1), RGB(frame, 2), RGB(frame, 3));
+%         end 
 
         % Insert a bounding box around the object being trackenamesd
         %videoOut = insertObjectAnnotation(Skin,'rectangle',bbox,'Face');
@@ -131,7 +127,7 @@ function RGB = Face_tracking(VideoFile)
     end
     delete(f);
     
-fclose(file); 
+% fclose(file); 
 %     writematrix([RGB(:, 1).',RGB(:, 2).',RGB(:, 3).'], strcat(VideoFile, '.txt'));
 end 
 % Release resources

@@ -8,3 +8,6 @@ TelegramVideoNote/
 *.mp4
 *.MTS
 WorkPath/
+*.dta
+*.fys
+*.rr
