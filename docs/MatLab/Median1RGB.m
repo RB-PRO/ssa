@@ -11,11 +11,12 @@ function RGB = Median1RGB(RGB)
     title("RGB до медианной фильтрации"); xlabel("seconds"); grid on;
     
     % Медианная фильтрация
-    RGB(:,1)=medfilt1(RGB(:,1),Nmed);
-    RGB(:,2)=medfilt1(RGB(:,2),Nmed);
-    RGB(:,3)=medfilt1(RGB(:,3),Nmed);
+    RGB(:,1)=RGB(:,1)-medfilt1(RGB(:,1),Nmed);
+    RGB(:,2)=RGB(:,2)-medfilt1(RGB(:,2),Nmed);
+    RGB(:,3)=RGB(:,3)-medfilt1(RGB(:,3),Nmed);
     
     subplot(1,2,2);
     plot(nc, RGB(:,1),"red", nc, RGB(:,2),"green", nc, RGB(:,3),"blue");
     title("RGB после медианной фильтрации"); xlabel("seconds"); grid on;
+    ylim([-4 4]);
 end
