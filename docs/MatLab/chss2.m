@@ -138,9 +138,11 @@ function chss2(pw, Path, Name)
         % yyaxis right; 
         plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
         % legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
-        hr_med=hr-medfilt1(hr,Nmed);
-        plot(ns_hr,hr_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
-        legend('ins FrcAcfNrm','smoothdata','HR[bpm]','medfilt1')
+        hr_med=medfilt1(hr,Nmed*5);
+        hr_diff_med=hr-hr_med;
+        plot(ns_hr,hr_med./60,'cyan--');
+        plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+        legend('pto sET12','smoothdata','HR[bpm]','medfilt1','hr-medfilt1')
     end
 
     %% Оценки СПМ сингулярных троек для сегменов pw
@@ -192,9 +194,11 @@ function chss2(pw, Path, Name)
         % yyaxis right;
         plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
         % legend(p,'pto_fMAX12','rloess','HR[bpm]');
-        hr_med=hr-medfilt1(hr,Nmed);
-        plot(ns_hr,hr_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
-        legend('pto sET12','smoothdata','HR[bpm]','medfilt1')
+        hr_med=medfilt1(hr,Nmed*5);
+        hr_diff_med=hr-hr_med;
+        plot(ns_hr,hr_med./60,'cyan--');
+        plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+        legend('pto sET12','smoothdata','HR[bpm]','medfilt1','hr-medfilt1')
     end
     saveas(p,Path+Name+'_ЧСС_sET.png');
 
