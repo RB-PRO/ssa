@@ -21,12 +21,13 @@ function [out, bin] = skinmap(img_orig)
 %        img = img_orig;
     %Apply Grayworld Algorithm for illumination compensation
 %     Компенсация яркости
+figure(); imshow(img_orig); title('Исходное фото');
     A_lin = rgb2lin(img_orig);
     percentiles = 10;
     illuminant = illumgray(A_lin,percentiles);
     B_lin = chromadapt(A_lin,illuminant,'ColorSpace','linear-rgb');
     img = lin2rgb(B_lin);
- 
+figure(); imshow(img); title('Обработанное фото');
     
     %Convert the image from RGB to YCbCr
     img_ycbcr = rgb2ycbcr(img);

@@ -1,4 +1,8 @@
 function chss2(pw, Path, Name)
+    dt=1/30;     % интервал временной дискретизации
+    fmin=0.15; % нижняя граница - частотный диапазон дыхательной волны
+    dt=1/30;     % интервал временной дискретизации
+    Nmed=1/(dt*fmin); % апертура фильтра
     PathHR=Path+replace(Name,"_nc","")+"_rPPG_output.csv";
     hr = LoadHR(PathHR);
     % PathHR=Path+replace(Name,"_nc","")+"_Mobi_RR-intervals.rr";
@@ -123,7 +127,7 @@ function chss2(pw, Path, Name)
         insFrc_AcfNrm(j) = median(FrcAcfNrm); % средняя мгновенная частотта j-го сегмента pw 
     end
     smo_insFrc_AcfNrm = smoothdata(insFrc_AcfNrm, 'rloess', 0.25*S); % smo_insFrc_AcfNrm = smooth(insFrc_AcfNrm,0.25*S,'rlowess');
-    figure('name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw','Position', [0 0 400 400]); clf;
+    figure('name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw','Position', [0 0 800 600]); clf;
     p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
     plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
     xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
@@ -131,9 +135,12 @@ function chss2(pw, Path, Name)
 %     legend(p1,'sET12');
     if length(hr)>100
         ns_hr = (length(ns)/length(hr) : length(ns)/length(hr) : length(ns))';
-%         yyaxis right; 
+        % yyaxis right; 
         plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
-%         legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
+        % legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
+        hr_med=hr-medfilt1(hr,Nmed);
+        plot(ns_hr,hr_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+        legend('ins FrcAcfNrm','smoothdata','HR[bpm]','medfilt1')
     end
 
     %% Оценки СПМ сингулярных троек для сегменов pw
@@ -175,18 +182,21 @@ function chss2(pw, Path, Name)
     pto_fMAX12 = pto_fMAX12';
     smo_pto_fMAX12 = smoothdata(pto_fMAX12,'rloess',0.3*S); 
     % smo_pto_fMAX12 = smooth(pto_fMAX12,0.3*S,'rloess');
-    figure('name','Частоты основного тона sET сегментов pw','Position', [0 0 400 400]); clf;
+    figure('name','Частоты основного тона sET сегментов pw','Position', [800 0 800 600]); clf;
     p=plot(ns,pto_fMAX12,'b'); hold on;
     plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
     xlabel("ns",'interp','none'); ylabel("fMAX,Hz",'interp','none');
     title("Частоты основного тона sET сегментов pw");
     if length(hr)>100
         ns_hr = (length(ns)/length(hr) : length(ns)/length(hr) : length(ns))';
-%         yyaxis right;
+        % yyaxis right;
         plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
-%         legend(p,'pto_fMAX12','rloess','HR[bpm]');
+        % legend(p,'pto_fMAX12','rloess','HR[bpm]');
+        hr_med=hr-medfilt1(hr,Nmed);
+        plot(ns_hr,hr_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+        legend('pto sET12','smoothdata','HR[bpm]','medfilt1')
     end
-    saveas(p,Path+Name+'_ЧСС_sET.png')
+    saveas(p,Path+Name+'_ЧСС_sET.png');
 
     %% Агрегирование сегментов очищенной пульсовой волны cpw
     [NumS,cpw_avr,cpw_med,cpw_iqr] = wav(NSF,S,win,res,sET12);

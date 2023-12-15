@@ -1,7 +1,8 @@
 clear; close all; clc;
 % Names
 names = ["P1H1"    "P1LC1" "P1LC2" "P1LC3" "P1LC4" "P1LC5" "P1LC6" "P1LC7"     "P1M1" "P1M2" "P1M3"     "P2LC1" "P2LC2" "P2LC3" "P2LC4" "P2LC5"     "P3LC1" "P3LC2" "P3LC3" "P3LC4" "P3LC5"];
-%   names = ["P1H1" "P1LC1"];
+names = ["P1H1" "P1LC1"];
+names = ["P1H1"];
 zrp="endh/"; % Zero Folder
 
 %%% Отчёт по видеоряду:
