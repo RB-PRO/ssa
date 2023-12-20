@@ -9,7 +9,7 @@ function RGB = Face_tracking(VideoFile)
     bbox = step(FDetect, videoFrame);
 
     videoFrame = insertShape(videoFrame, "rectangle", bbox);
-%     figure(); imshow(videoFrame); title("Detected face");
+     figure(); imshow(videoFrame); title("Detected face");
 
     %Попытки сегментации изображений
     %Метод 1
@@ -29,8 +29,8 @@ function RGB = Face_tracking(VideoFile)
     [~, skmap] = skinmap(videoFrame);
 
     % Display the Skinmap data and draw the bounding box around the face.
-%     figure(); imshow(skmap); title('Skinmap data');
-%     rectangle('Position',bbox(1,:),'LineWidth',2,'EdgeColor',[1 1 0]);
+    figure(); imshow(skmap); title('Skinmap data');
+    rectangle('Position',bbox(1,:),'LineWidth',2,'EdgeColor',[1 1 0]);
 
     % Skin = bsxfun(@times, videoFrame, uint8(skmap));
     % Skin_gray = rgb2gray(Skin);

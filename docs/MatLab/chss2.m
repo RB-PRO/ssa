@@ -1,5 +1,5 @@
 function chss2(pw, Path, Name)
-    dt=1/30;     % интервал временной дискретизации
+%     dt=1/30;     % интервал временной дискретизации
     fmin=0.15; % нижн€€ граница - частотный диапазон дыхательной волны
     dt=1/30;     % интервал временной дискретизации
     Nmed=1/(dt*fmin); % апертура фильтра
@@ -126,9 +126,31 @@ function chss2(pw, Path, Name)
         %    FrcAcfNrm = abs(diff(PhaAcfNrm))/pi2/dt; % мгновенна€ частота нормиров-ой ј ‘, √ц
         insFrc_AcfNrm(j) = median(FrcAcfNrm); % средн€€ мгновенна€ частотта j-го сегмента pw 
     end
+    disp("јпертура фильтра дл€ insFrc_AcfNrm: " + Nmed);
+    insFrc_AcfNrm=medfilt1(insFrc_AcfNrm,Nmed);
     smo_insFrc_AcfNrm = smoothdata(insFrc_AcfNrm, 'rloess', 0.25*S); % smo_insFrc_AcfNrm = smooth(insFrc_AcfNrm,0.25*S,'rlowess');
-    figure('name','„астоты нормир-ой ј ‘ сингул€р-х троек сегментов pw','Position', [0 0 800 600]); clf;
-    p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
+    figure('name','„астоты нормир-ой ј ‘ сингул€р-х троек сегментов pw','Position', [0 0 1400 800]); clf;
+%             insFrc_AcfNrm=medfilt1(insFrc_AcfNrm,Nmed);
+
+%     p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
+%     plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
+%     xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
+%     title("„астоты нормир-ой ј ‘ сингул€р-х троек сегментов pw");
+% %     legend(p1,'sET12');
+%     if length(hr)>100
+%         ns_hr = (length(ns)/length(hr) : length(ns)/length(hr) : length(ns))';
+%         % yyaxis right; 
+%         plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
+%         % legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
+%         hr_med=medfilt1(hr,Nmed*5);
+%         hr_diff_med=hr-hr_med;
+%         plot(ns_hr,hr_med./60,'cyan--');
+%         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+%         legend('insFrc AcfNrm','rloess','HR','HR[medfilt]','HR[HR-medfilt1]')
+%     end
+    
+    subplot(1,3,[1 2]);
+    plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
     plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
     xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
     title("„астоты нормир-ой ј ‘ сингул€р-х троек сегментов pw");
@@ -141,8 +163,11 @@ function chss2(pw, Path, Name)
         hr_med=medfilt1(hr,Nmed*5);
         hr_diff_med=hr-hr_med;
         plot(ns_hr,hr_med./60,'cyan--');
+        legend('insFrc AcfNrm','rloess','HR','HR[medfilt]');
+        
+    subplot(1,3,3);
         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
-        legend('pto sET12','smoothdata','HR[bpm]','medfilt1','hr-medfilt1')
+        legend('HR[HR-medfilt1]');  ylabel("HR[bpm]",'interp','none'); xlabel("ns",'interp','none'); grid on;
     end
 
     %% ќценки —ѕћ сингул€рных троек дл€ сегменов pw
@@ -185,6 +210,7 @@ function chss2(pw, Path, Name)
     smo_pto_fMAX12 = smoothdata(pto_fMAX12,'rloess',0.3*S); 
     % smo_pto_fMAX12 = smooth(pto_fMAX12,0.3*S,'rloess');
     figure('name','„астоты основного тона sET сегментов pw','Position', [800 0 800 600]); clf;
+%             pto_fMAX12=medfilt1(pto_fMAX12,Nmed);
     p=plot(ns,pto_fMAX12,'b'); hold on;
     plot(ns,smo_pto_fMAX12,'r','LineWidth',0.8); grid on;
     xlabel("ns",'interp','none'); ylabel("fMAX,Hz",'interp','none');

@@ -6,7 +6,7 @@ clear; close all; clc;
 % "P2LC1" "P2LC2" "P2LC3" "P2LC4" "P2LC5"
 % "P3LC1" "P3LC2" "P3LC3" "P3LC4" "P3LC5"
 
-Name = "P1LC1"; % Name of experiment
+Name = "P1H1"; % Name of experiment
 zrp="endh/"; % Zero FolderP
 Path=zrp+Name+'/';
 % ncPrefix=""; %Prefix for modework

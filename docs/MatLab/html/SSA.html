@@ -1,0 +1,138 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>SSA</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-12-20"><meta name="DC.source" content="SSA.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Calculate covariance matrix C (Toeplitz approach)</a></li><li><a href="#3">Calculate covariance matrix (trajectory approach)</a></li><li><a href="#4">Choose covariance estimation</a></li><li><a href="#5">Calculate eigenvalues LAMBDA and eigenvectors RHO</a></li><li><a href="#6">Calculate principal components PC</a></li><li><a href="#7">Calculate reconstructed components RC</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [C,LBD,RC] = SSA(N,M,X,nET)
+</pre><h2 id="2">Calculate covariance matrix C (Toeplitz approach)</h2><pre>  covX  = xcorr(X,M-1,'unbiased');
+  Ctoep = toeplitz(covX(M:end));</pre><h2 id="3">Calculate covariance matrix (trajectory approach)</h2><pre>it ensures a positive semi-definite covariance matrix</pre><pre class="codeinput">   Y = zeros(N-M+1,M);
+   <span class="keyword">for</span> m=1:M
+     Y(:,m) = X((1:N-M+1)+m-1);
+   <span class="keyword">end</span>
+   Cemb = Y'*Y/(N-M+1);
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in SSA (line 7)
+   Y = zeros(N-M+1,M);
+</pre><h2 id="4">Choose covariance estimation</h2><pre>  C = Ctoep;</pre><pre class="codeinput">   C = Cemb;
+</pre><h2 id="5">Calculate eigenvalues LAMBDA and eigenvectors RHO</h2><p>Function eig returns two matrices, the matrix RHO with eigenvectors arranged in columns, the matrix LAMBDA with eigenvalues along the diagonal</p><pre class="codeinput">   [RHO,LBD] = eig(C);
+   LBD       = diag(LBD);           <span class="comment">% extract the diagonal elements</span>
+   [LBD,ind] = sort(LBD,<span class="string">'descend'</span>); <span class="comment">% sort eigenvalues</span>
+   RHO       = RHO(:,ind);          <span class="comment">% and eigenvectors</span>
+</pre><h2 id="6">Calculate principal components PC</h2><p>The principal components are given as the scalar product between Y, the time-delayed embedding of X, and the eigenvectors RHO</p><pre class="codeinput">   PC = Y*RHO;
+</pre><h2 id="7">Calculate reconstructed components RC</h2><p>In order to determine the reconstructed components RC, we have to invert the projecting PC = Y*RHO;i.e. RC = Y*RHO*RHO'=PC*RHO' Averaging along anti-diagonals gives the RCs for the original input X</p><pre class="codeinput">   RC = zeros(N,nET);
+   <span class="keyword">for</span> m=1:nET
+     buf = PC(:,m)*RHO(:,m)'; <span class="comment">% invert projection</span>
+     buf = buf(end:-1:1,:);
+<span class="comment">% Anti-diagonal averaging</span>
+     <span class="keyword">for</span> n=1:N
+       RC(n,m) = mean(diag(buf,-(N-M+1)+n));
+     <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [C,LBD,RC] = SSA(N,M,X,nET)
+%% Calculate covariance matrix C (Toeplitz approach)
+%    covX  = xcorr(X,M-1,'unbiased');
+%    Ctoep = toeplitz(covX(M:end));
+%% Calculate covariance matrix (trajectory approach)
+%  it ensures a positive semi-definite covariance matrix
+   Y = zeros(N-M+1,M);
+   for m=1:M
+     Y(:,m) = X((1:N-M+1)+m-1);
+   end
+   Cemb = Y'*Y/(N-M+1);
+%% Choose covariance estimation
+%    C = Ctoep;
+   C = Cemb;
+%% Calculate eigenvalues LAMBDA and eigenvectors RHO
+% Function eig returns two matrices,
+% the matrix RHO with eigenvectors arranged in columns,
+% the matrix LAMBDA with eigenvalues along the diagonal
+   [RHO,LBD] = eig(C);
+   LBD       = diag(LBD);           % extract the diagonal elements
+   [LBD,ind] = sort(LBD,'descend'); % sort eigenvalues
+   RHO       = RHO(:,ind);          % and eigenvectors
+%% Calculate principal components PC
+% The principal components are given as the scalar product
+% between Y, the time-delayed embedding of X, and the eigenvectors RHO
+   PC = Y*RHO;
+%% Calculate reconstructed components RC
+% In order to determine the reconstructed components RC,
+% we have to invert the projecting PC = Y*RHO;i.e. RC = Y*RHO*RHO'=PC*RHO'
+% Averaging along anti-diagonals gives the RCs for the original input X
+   RC = zeros(N,nET);
+   for m=1:nET
+     buf = PC(:,m)*RHO(:,m)'; % invert projection
+     buf = buf(end:-1:1,:);
+% Anti-diagonal averaging
+     for n=1:N
+       RC(n,m) = mean(diag(buf,-(N-M+1)+n));
+     end
+end
+
+##### SOURCE END #####
+--></body></html>

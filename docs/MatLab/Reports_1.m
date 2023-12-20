@@ -8,6 +8,7 @@ Nmed=1/(dt*fmin); % апертура фильтра
 % Names
 names = [ "P1H1" "P1LC1" "P1LC2" "P1LC3" "P1LC4" "P1LC5" "P1LC6" "P1LC7" "P1M1" "P1M2" "P1M3" "P2LC1" "P2LC2" "P2LC3" "P2LC4" "P2LC5" "P3LC1" "P3LC2" "P3LC3" "P3LC4" "P3LC5" ];
 % names = [ "P1H1" "P1LC1" ];
+  names = ["P1H1"];
 zrp="endh/"; % Zero Folder
 
 %%% Отчёт по видеоряду:
@@ -47,32 +48,28 @@ for iName = 1:length(names)
         title("Временной ряд RGB после компенсации цвета и медианного фильтра с окном N_m_e_d="+Nmed);
         xlabel("Секунды"); ylabel("Интенсивность цветовых каналов"); grid on; ylim([-4;4]);
         
-        %
-        figure('Position', [0 0 1000 100]); title("Исходные данные",'FontSize',24);
+        %% Исходные данные
         try
             chss2(rgb2pw(RGB, "Cr"), Path, Name);
         catch
             disp("ERROR: Ошибка при формировании отчёта из исходных данных");
         end
-    CloseFigure
+        CloseFigure
         
-        %
-        figure('Position', [0 0 1000 100]); title("Компенсация яркости",'FontSize',24);
+        %% Компенсация яркости
         try
             chss2(rgb2pw(RGB_nc, "Cr"), Path, Name);
         catch
             disp("ERROR: Ошибка при формировании отчёта из данных с компенсацией цвета");
         end
-    CloseFigure
+        CloseFigure
         
-        %
-        figure('Position', [0 0 1000 100]); title("Компенсация яркости + медианная фильтрация",'FontSize',24);
+        %% Компенсация яркости + медианная фильтрация
         try
             chss2(rgb2pw(RGB_med, "Cr"), Path, Name);
         catch
             disp("ERROR: Ошибка при формировании отчёта из данных с компенсацией цвета и медианной фильтрации");
         end
-        
-    CloseFigure
+        CloseFigure
 end
 close all;

@@ -15,8 +15,9 @@ for iName = 1:length(names)
     
     % Extracting a time series of RGB segments
     try
-        Face_tracking(Path+Name+ncPrefix+frt);
-        RGB=load(Path+Name+ncPrefix+'_RGB.txt');
+        RGB=Face_tracking(Path+Name+ncPrefix+frt);
+        SaveRGB(RGB,Path+Name+ncPrefix+"_БезКомпенсациейЯркости"+'_RGB.txt');
+%         RGB=load(Path+Name+ncPrefix+"_БезКомпенсациейЯркости"+'_RGB.txt');
     catch
         disp("ОШИБКА: Face_tracking")
     end

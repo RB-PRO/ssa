@@ -1,0 +1,36 @@
+function [RGB,RGB_nc,RGB_med] = Rendes_RGB(Name)
+    fmin=0.15; % нижняя граница - частотный диапазон дыхательной волны
+    dt=1/30;     % интервал временной дискретизации
+    Nmed=1/(dt*fmin); % апертура фильтра
+    zrp="endh/"; % Zero Folder
+    Path=zrp+Name+'/';
+%   P1H1_БезКомпенсациейЯркости_RGB
+%   P1H1_СКомпенсациейЯркости_RGB
+    try
+        RGB=load(Path+Name+"_СКомпенсациейЯркости_RGB.txt");
+        RGB_nc=load(Path+Name+"_БезКомпенсациейЯркости_RGB.txt");
+        nc=0:dt:length(RGB)*dt-dt;
+    catch
+        disp("ERROR: Ошибка при формировании отчёта по "+Name);
+        RGB=[];RGB_nc=[];RGB_med=[];
+        return
+    end
+    
+    figure('Name','RGB','Position', [0 0 1400 900]); set(gcf,'name',"Сравнение медианной фильтрации для "+Name); clf;
+    subplot(2,2,1); plot(nc, RGB_nc(:,1),"red", nc, RGB_nc(:,2),"green", nc, RGB_nc(:,3),"blue");
+    title("Временной ряд RGB до компенсации цвета"); grid on;
+    xlabel("Секунды"); ylabel("Интенсивность цветовых каналов"); % ylim([40;105]);
+
+    subplot(2,2,2); plot(nc, RGB(:,1),"red", nc, RGB(:,2),"green", nc, RGB(:,3),"blue");
+    title("Временной ряд RGB после компенсации цвета"); grid on;
+    xlabel("Секунды"); ylabel("Интенсивность цветовых каналов"); % ylim([40;105]);
+
+    subplot(2,2,[3,4]);
+    RGB_med=RGB;
+    RGB_med(:,1)=RGB_med(:,1)-medfilt1(RGB_med(:,1),Nmed);
+    RGB_med(:,2)=RGB_med(:,2)-medfilt1(RGB_med(:,2),Nmed);
+    RGB_med(:,3)=RGB_med(:,3)-medfilt1(RGB_med(:,3),Nmed);
+    plot(nc, RGB_med(:,1),"red", nc, RGB_med(:,2),"green", nc, RGB_med(:,3),"blue");
+    title("Временной ряд RGB после компенсации цвета и медианного фильтра с окном N_m_e_d="+Nmed);
+    xlabel("Секунды"); ylabel("Интенсивность цветовых каналов"); grid on; ylim([-4;4]);
+end
