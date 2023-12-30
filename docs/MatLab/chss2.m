@@ -126,8 +126,10 @@ function chss2(pw, Path, Name)
         %    FrcAcfNrm = abs(diff(PhaAcfNrm))/pi2/dt; % мгновенная частота нормиров-ой АКФ, Гц
         insFrc_AcfNrm(j) = median(FrcAcfNrm); % средняя мгновенная частотта j-го сегмента pw 
     end
-    disp("Апертура фильтра для insFrc_AcfNrm: " + Nmed);
-    insFrc_AcfNrm=medfilt1(insFrc_AcfNrm,Nmed);
+    
+    disp("Апертура фильтра для insFrc_AcfNrm: " + Nmed);  
+%     insFrc_AcfNrm=medfilt1(insFrc_AcfNrm, 5);
+      
     smo_insFrc_AcfNrm = smoothdata(insFrc_AcfNrm, 'rloess', 0.25*S); % smo_insFrc_AcfNrm = smooth(insFrc_AcfNrm,0.25*S,'rlowess');
     figure('name','Частоты нормир-ой АКФ сингуляр-х троек сегментов pw','Position', [0 0 1400 800]); clf;
 %             insFrc_AcfNrm=medfilt1(insFrc_AcfNrm,Nmed);
@@ -148,7 +150,7 @@ function chss2(pw, Path, Name)
 %         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
 %         legend('insFrc AcfNrm','rloess','HR','HR[medfilt]','HR[HR-medfilt1]')
 %     end
-    
+    %!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subplot(1,3,[1 2]);
     plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
     plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
@@ -163,11 +165,29 @@ function chss2(pw, Path, Name)
         hr_med=medfilt1(hr,Nmed*5);
         hr_diff_med=hr-hr_med;
         plot(ns_hr,hr_med./60,'cyan--');
-        legend('insFrc AcfNrm','rloess','HR','HR[medfilt]');
+        
+        legend('insFrc AcfNrm','rloess','HR','HR[medfilt]'); 
+
+        
         
     subplot(1,3,3);
-        plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
-        legend('HR[HR-medfilt1]');  ylabel("HR[bpm]",'interp','none'); xlabel("ns",'interp','none'); grid on;
+%             [outs, lower_prct, upper_prct] = 
+            RaznFilter(insFrc_AcfNrm, [1 99]); 
+%         plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'black--'); hold on;
+%         plot(rmoutliers_emulated(insFrc_AcfNrm, [10 90])./60,'red'); 
+%         plot(filloutliers(insFrc_AcfNrm,"next")./60,'red'); 
+        
+%         plot(outs, 'blue');
+%         line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','--');
+%         line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','--');
+
+
+        ylabel("Hz",'interp','none'); xlabel("ns",'interp','none'); title("Первая разность"); grid on;
+        legend('Первая разность','down','up','Интерполяция');
+        
+%         разность по исходным данным контактного способа определения
+%         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+%         legend('HR[HR-medfilt1]');  ylabel("HR[bpm]",'interp','none'); xlabel("ns",'interp','none'); grid on;
     end
 
     %% Оценки СПМ сингулярных троек для сегменов pw
