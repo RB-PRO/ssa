@@ -134,22 +134,22 @@ function chss2(pw, Path, Name)
     figure('name','„астоты нормир-ой ј ‘ сингул€р-х троек сегментов pw','Position', [0 0 1400 800]); clf;
 %             insFrc_AcfNrm=medfilt1(insFrc_AcfNrm,Nmed);
 
-%     p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
-%     plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
-%     xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
-%     title("„астоты нормир-ой ј ‘ сингул€р-х троек сегментов pw");
-% %     legend(p1,'sET12');
-%     if length(hr)>100
-%         ns_hr = (length(ns)/length(hr) : length(ns)/length(hr) : length(ns))';
-%         % yyaxis right; 
-%         plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
-%         % legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
-%         hr_med=medfilt1(hr,Nmed*5);
-%         hr_diff_med=hr-hr_med;
-%         plot(ns_hr,hr_med./60,'cyan--');
-%         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
-%         legend('insFrc AcfNrm','rloess','HR','HR[medfilt]','HR[HR-medfilt1]')
-%     end
+    p1 = plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
+    plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
+    xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
+    title("„астоты нормир-ой ј ‘ сингул€р-х троек сегментов pw");
+%     legend(p1,'sET12');
+    if length(hr)>100
+        ns_hr = (length(ns)/length(hr) : length(ns)/length(hr) : length(ns))';
+        % yyaxis right; 
+        plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
+        % legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
+        hr_med=medfilt1(hr,Nmed*5);
+        hr_diff_med=hr-hr_med;
+        plot(ns_hr,hr_med./60,'cyan--');
+        plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+        legend('insFrc AcfNrm','rloess','HR','HR[medfilt]','HR[HR-medfilt1]')
+    end
     %!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     subplot(1,3,[1 2]);
     plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
@@ -171,23 +171,20 @@ function chss2(pw, Path, Name)
         
         
     subplot(1,3,3);
-%             [outs, lower_prct, upper_prct] = 
-            RaznFilter(insFrc_AcfNrm, [1 99]); 
-%         plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'black--'); hold on;
+        [outs, lower_prct, upper_prct] =  RaznFilter(insFrc_AcfNrm, [1 99]); 
+        plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'black--'); hold on;
 %         plot(rmoutliers_emulated(insFrc_AcfNrm, [10 90])./60,'red'); 
 %         plot(filloutliers(insFrc_AcfNrm,"next")./60,'red'); 
         
 %         plot(outs, 'blue');
-%         line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','--');
-%         line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','--');
+        line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','--');
+        line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','--');
 
 
-        ylabel("Hz",'interp','none'); xlabel("ns",'interp','none'); title("ѕерва€ разность"); grid on;
-        legend('ѕерва€ разность','down','up','»нтерпол€ци€');
         
 %         разность по исходным данным контактного способа определени€
 %         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
-%         legend('HR[HR-medfilt1]');  ylabel("HR[bpm]",'interp','none'); xlabel("ns",'interp','none'); grid on;
+        legend('HR[HR-medfilt1]');  ylabel("HR[bpm]",'interp','none'); xlabel("ns",'interp','none'); grid on;
     end
 
     %% ќценки —ѕћ сингул€рных троек дл€ сегменов pw

@@ -1,0 +1,149 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Rendes_RGB</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-01-24"><meta name="DC.source" content="Rendes_RGB.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [RGB,RGB_nc,RGB_med] = Rendes_RGB(Name)
+    fmin=0.15; <span class="comment">% &#1085;&#1080;&#1078;&#1085;&#1103;&#1103; &#1075;&#1088;&#1072;&#1085;&#1080;&#1094;&#1072; - &#1095;&#1072;&#1089;&#1090;&#1086;&#1090;&#1085;&#1099;&#1081; &#1076;&#1080;&#1072;&#1087;&#1072;&#1079;&#1086;&#1085; &#1076;&#1099;&#1093;&#1072;&#1090;&#1077;&#1083;&#1100;&#1085;&#1086;&#1081; &#1074;&#1086;&#1083;&#1085;&#1099;</span>
+    dt=1/30;     <span class="comment">% &#1080;&#1085;&#1090;&#1077;&#1088;&#1074;&#1072;&#1083; &#1074;&#1088;&#1077;&#1084;&#1077;&#1085;&#1085;&#1086;&#1081; &#1076;&#1080;&#1089;&#1082;&#1088;&#1077;&#1090;&#1080;&#1079;&#1072;&#1094;&#1080;&#1080;</span>
+    Nmed=1/(dt*fmin); <span class="comment">% &#1072;&#1087;&#1077;&#1088;&#1090;&#1091;&#1088;&#1072; &#1092;&#1080;&#1083;&#1100;&#1090;&#1088;&#1072;</span>
+    zrp=<span class="string">"endh/"</span>; <span class="comment">% Zero Folder</span>
+    Path=zrp+Name+<span class="string">'/'</span>;
+<span class="comment">%   P1H1_&#1041;&#1077;&#1079;&#1050;&#1086;&#1084;&#1087;&#1077;&#1085;&#1089;&#1072;&#1094;&#1080;&#1077;&#1081;&#1071;&#1088;&#1082;&#1086;&#1089;&#1090;&#1080;_RGB</span>
+<span class="comment">%   P1H1_&#1057;&#1050;&#1086;&#1084;&#1087;&#1077;&#1085;&#1089;&#1072;&#1094;&#1080;&#1077;&#1081;&#1071;&#1088;&#1082;&#1086;&#1089;&#1090;&#1080;_RGB</span>
+    <span class="keyword">try</span>
+        RGB=load(Path+Name+<span class="string">"_&#1057;&#1050;&#1086;&#1084;&#1087;&#1077;&#1085;&#1089;&#1072;&#1094;&#1080;&#1077;&#1081;&#1071;&#1088;&#1082;&#1086;&#1089;&#1090;&#1080;_RGB.txt"</span>);
+        RGB_nc=load(Path+Name+<span class="string">"_&#1041;&#1077;&#1079;&#1050;&#1086;&#1084;&#1087;&#1077;&#1085;&#1089;&#1072;&#1094;&#1080;&#1077;&#1081;&#1071;&#1088;&#1082;&#1086;&#1089;&#1090;&#1080;_RGB.txt"</span>);
+        nc=0:dt:length(RGB)*dt-dt;
+    <span class="keyword">catch</span>
+        disp(<span class="string">"ERROR: &#1054;&#1096;&#1080;&#1073;&#1082;&#1072; &#1087;&#1088;&#1080; &#1092;&#1086;&#1088;&#1084;&#1080;&#1088;&#1086;&#1074;&#1072;&#1085;&#1080;&#1080; &#1086;&#1090;&#1095;&#1105;&#1090;&#1072; &#1087;&#1086; "</span>+Name);
+        RGB=[];RGB_nc=[];RGB_med=[];
+        <span class="keyword">return</span>
+    <span class="keyword">end</span>
+
+    figure(<span class="string">'Name'</span>,<span class="string">'RGB'</span>,<span class="string">'Position'</span>, [0 0 1400 900]); set(gcf,<span class="string">'name'</span>,<span class="string">"&#1057;&#1088;&#1072;&#1074;&#1085;&#1077;&#1085;&#1080;&#1077; &#1084;&#1077;&#1076;&#1080;&#1072;&#1085;&#1085;&#1086;&#1081; &#1092;&#1080;&#1083;&#1100;&#1090;&#1088;&#1072;&#1094;&#1080;&#1080; &#1076;&#1083;&#1103; "</span>+Name); clf;
+    subplot(2,2,1); plot(nc, RGB_nc(:,1),<span class="string">"red"</span>, nc, RGB_nc(:,2),<span class="string">"green"</span>, nc, RGB_nc(:,3),<span class="string">"blue"</span>);
+    title(<span class="string">"&#1042;&#1088;&#1077;&#1084;&#1077;&#1085;&#1085;&#1086;&#1081; &#1088;&#1103;&#1076; RGB &#1076;&#1086; &#1082;&#1086;&#1084;&#1087;&#1077;&#1085;&#1089;&#1072;&#1094;&#1080;&#1080; &#1094;&#1074;&#1077;&#1090;&#1072;"</span>); grid <span class="string">on</span>;
+    xlabel(<span class="string">"&#1057;&#1077;&#1082;&#1091;&#1085;&#1076;&#1099;"</span>); ylabel(<span class="string">"&#1048;&#1085;&#1090;&#1077;&#1085;&#1089;&#1080;&#1074;&#1085;&#1086;&#1089;&#1090;&#1100; &#1094;&#1074;&#1077;&#1090;&#1086;&#1074;&#1099;&#1093; &#1082;&#1072;&#1085;&#1072;&#1083;&#1086;&#1074;"</span>); <span class="comment">% ylim([40;105]);</span>
+
+    subplot(2,2,2); plot(nc, RGB(:,1),<span class="string">"red"</span>, nc, RGB(:,2),<span class="string">"green"</span>, nc, RGB(:,3),<span class="string">"blue"</span>);
+    title(<span class="string">"&#1042;&#1088;&#1077;&#1084;&#1077;&#1085;&#1085;&#1086;&#1081; &#1088;&#1103;&#1076; RGB &#1087;&#1086;&#1089;&#1083;&#1077; &#1082;&#1086;&#1084;&#1087;&#1077;&#1085;&#1089;&#1072;&#1094;&#1080;&#1080; &#1094;&#1074;&#1077;&#1090;&#1072;"</span>); grid <span class="string">on</span>;
+    xlabel(<span class="string">"&#1057;&#1077;&#1082;&#1091;&#1085;&#1076;&#1099;"</span>); ylabel(<span class="string">"&#1048;&#1085;&#1090;&#1077;&#1085;&#1089;&#1080;&#1074;&#1085;&#1086;&#1089;&#1090;&#1100; &#1094;&#1074;&#1077;&#1090;&#1086;&#1074;&#1099;&#1093; &#1082;&#1072;&#1085;&#1072;&#1083;&#1086;&#1074;"</span>); <span class="comment">% ylim([40;105]);</span>
+
+    subplot(2,2,[3,4]);
+    RGB_med=RGB;
+    RGB_med(:,1)=RGB_med(:,1)-medfilt1(RGB_med(:,1),Nmed);
+    RGB_med(:,2)=RGB_med(:,2)-medfilt1(RGB_med(:,2),Nmed);
+    RGB_med(:,3)=RGB_med(:,3)-medfilt1(RGB_med(:,3),Nmed);
+    plot(nc, RGB_med(:,1),<span class="string">"red"</span>, nc, RGB_med(:,2),<span class="string">"green"</span>, nc, RGB_med(:,3),<span class="string">"blue"</span>);
+    title(<span class="string">"&#1042;&#1088;&#1077;&#1084;&#1077;&#1085;&#1085;&#1086;&#1081; &#1088;&#1103;&#1076; RGB &#1087;&#1086;&#1089;&#1083;&#1077; &#1082;&#1086;&#1084;&#1087;&#1077;&#1085;&#1089;&#1072;&#1094;&#1080;&#1080; &#1094;&#1074;&#1077;&#1090;&#1072; &#1080; &#1084;&#1077;&#1076;&#1080;&#1072;&#1085;&#1085;&#1086;&#1075;&#1086; &#1092;&#1080;&#1083;&#1100;&#1090;&#1088;&#1072; &#1089; &#1086;&#1082;&#1085;&#1086;&#1084; N_m_e_d="</span>+Nmed);
+    xlabel(<span class="string">"&#1057;&#1077;&#1082;&#1091;&#1085;&#1076;&#1099;"</span>); ylabel(<span class="string">"&#1048;&#1085;&#1090;&#1077;&#1085;&#1089;&#1080;&#1074;&#1085;&#1086;&#1089;&#1090;&#1100; &#1094;&#1074;&#1077;&#1090;&#1086;&#1074;&#1099;&#1093; &#1082;&#1072;&#1085;&#1072;&#1083;&#1086;&#1074;"</span>); grid <span class="string">on</span>; ylim([-4;4]);
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in Rendes_RGB (line 6)
+    Path=zrp+Name+'/';
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [RGB,RGB_nc,RGB_med] = Rendes_RGB(Name)
+    fmin=0.15; % нижняя граница - частотный диапазон дыхательной волны
+    dt=1/30;     % интервал временной дискретизации
+    Nmed=1/(dt*fmin); % апертура фильтра
+    zrp="endh/"; % Zero Folder
+    Path=zrp+Name+'/';
+%   P1H1_БезКомпенсациейЯркости_RGB
+%   P1H1_СКомпенсациейЯркости_RGB
+    try
+        RGB=load(Path+Name+"_СКомпенсациейЯркости_RGB.txt");
+        RGB_nc=load(Path+Name+"_БезКомпенсациейЯркости_RGB.txt");
+        nc=0:dt:length(RGB)*dt-dt;
+    catch
+        disp("ERROR: Ошибка при формировании отчёта по "+Name);
+        RGB=[];RGB_nc=[];RGB_med=[];
+        return
+    end
+    
+    figure('Name','RGB','Position', [0 0 1400 900]); set(gcf,'name',"Сравнение медианной фильтрации для "+Name); clf;
+    subplot(2,2,1); plot(nc, RGB_nc(:,1),"red", nc, RGB_nc(:,2),"green", nc, RGB_nc(:,3),"blue");
+    title("Временной ряд RGB до компенсации цвета"); grid on;
+    xlabel("Секунды"); ylabel("Интенсивность цветовых каналов"); % ylim([40;105]);
+
+    subplot(2,2,2); plot(nc, RGB(:,1),"red", nc, RGB(:,2),"green", nc, RGB(:,3),"blue");
+    title("Временной ряд RGB после компенсации цвета"); grid on;
+    xlabel("Секунды"); ylabel("Интенсивность цветовых каналов"); % ylim([40;105]);
+
+    subplot(2,2,[3,4]);
+    RGB_med=RGB;
+    RGB_med(:,1)=RGB_med(:,1)-medfilt1(RGB_med(:,1),Nmed);
+    RGB_med(:,2)=RGB_med(:,2)-medfilt1(RGB_med(:,2),Nmed);
+    RGB_med(:,3)=RGB_med(:,3)-medfilt1(RGB_med(:,3),Nmed);
+    plot(nc, RGB_med(:,1),"red", nc, RGB_med(:,2),"green", nc, RGB_med(:,3),"blue");
+    title("Временной ряд RGB после компенсации цвета и медианного фильтра с окном N_m_e_d="+Nmed);
+    xlabel("Секунды"); ylabel("Интенсивность цветовых каналов"); grid on; ylim([-4;4]);
+end
+
+##### SOURCE END #####
+--></body></html>

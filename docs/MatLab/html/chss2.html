@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>chss2</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-12-30"><meta name="DC.source" content="chss2.m"><style type="text/css">
+      --><title>chss2</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-01-04"><meta name="DC.source" content="chss2.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -227,22 +227,23 @@ Error in chss2 (line 6)
         plot(ns_hr,hr_med./60,<span class="string">'cyan--'</span>);
 
         legend(<span class="string">'insFrc AcfNrm'</span>,<span class="string">'rloess'</span>,<span class="string">'HR'</span>,<span class="string">'HR[medfilt]'</span>);
-        [outs, lower_prct, upper_prct] = ProcentileFilter(insFrc_AcfNrm, [1 99]);
-        plot(nc,outs,<span class="string">"r--"</span>);
+
 
 
     subplot(1,3,3);
-        plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),<span class="string">'black--'</span>); hold <span class="string">on</span>;
+<span class="comment">%             [outs, lower_prct, upper_prct] =</span>
+            RaznFilter(insFrc_AcfNrm, [1 99]);
+<span class="comment">%         plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'black--'); hold on;</span>
 <span class="comment">%         plot(rmoutliers_emulated(insFrc_AcfNrm, [10 90])./60,'red');</span>
 <span class="comment">%         plot(filloutliers(insFrc_AcfNrm,"next")./60,'red');</span>
 
-        plot(outs, <span class="string">'blue'</span>);
-        line(<span class="string">'XData'</span>, [0 200], <span class="string">'YData'</span>, [lower_prct lower_prct], <span class="string">'Color'</span>,<span class="string">'red'</span>,<span class="string">'LineStyle'</span>,<span class="string">'--'</span>);
-        line(<span class="string">'XData'</span>, [0 200], <span class="string">'YData'</span>, [upper_prct upper_prct],<span class="string">'Color'</span>,<span class="string">'red'</span>,<span class="string">'LineStyle'</span>,<span class="string">'--'</span>);
+<span class="comment">%         plot(outs, 'blue');</span>
+<span class="comment">%         line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','--');</span>
+<span class="comment">%         line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','--');</span>
 
 
-        ylabel(<span class="string">"Hz"</span>,<span class="string">'interp'</span>,<span class="string">'none'</span>); xlabel(<span class="string">"ns"</span>,<span class="string">'interp'</span>,<span class="string">'none'</span>); title(<span class="string">"Name"</span>); grid <span class="string">on</span>;
-        legend(<span class="string">'ins-medfilt1(ins,5)'</span>,<span class="string">'down'</span>,<span class="string">'up'</span>,<span class="string">'filter'</span>);
+        ylabel(<span class="string">"Hz"</span>,<span class="string">'interp'</span>,<span class="string">'none'</span>); xlabel(<span class="string">"ns"</span>,<span class="string">'interp'</span>,<span class="string">'none'</span>); title(<span class="string">"&#1055;&#1077;&#1088;&#1074;&#1072;&#1103; &#1088;&#1072;&#1079;&#1085;&#1086;&#1089;&#1090;&#1100;"</span>); grid <span class="string">on</span>;
+        legend(<span class="string">'&#1055;&#1077;&#1088;&#1074;&#1072;&#1103; &#1088;&#1072;&#1079;&#1085;&#1086;&#1089;&#1090;&#1100;'</span>,<span class="string">'down'</span>,<span class="string">'up'</span>,<span class="string">'&#1048;&#1085;&#1090;&#1077;&#1088;&#1087;&#1086;&#1083;&#1103;&#1094;&#1080;&#1103;'</span>, <span class="string">'Location'</span>, <span class="string">'east'</span>);
 
 <span class="comment">%         &#1088;&#1072;&#1079;&#1085;&#1086;&#1089;&#1090;&#1100; &#1087;&#1086; &#1080;&#1089;&#1093;&#1086;&#1076;&#1085;&#1099;&#1084; &#1076;&#1072;&#1085;&#1085;&#1099;&#1084; &#1082;&#1086;&#1085;&#1090;&#1072;&#1082;&#1090;&#1085;&#1086;&#1075;&#1086; &#1089;&#1087;&#1086;&#1089;&#1086;&#1073;&#1072; &#1086;&#1087;&#1088;&#1077;&#1076;&#1077;&#1083;&#1077;&#1085;&#1080;&#1103;</span>
 <span class="comment">%         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');</span>
@@ -525,23 +526,24 @@ function chss2(pw, Path, Name)
         hr_diff_med=hr-hr_med;
         plot(ns_hr,hr_med./60,'cyanREPLACE_WITH_DASH_DASH');
         
-        legend('insFrc AcfNrm','rloess','HR','HR[medfilt]');
-        [outs, lower_prct, upper_prct] = ProcentileFilter(insFrc_AcfNrm, [1 99]);
-        plot(nc,outs,"rREPLACE_WITH_DASH_DASH");
+        legend('insFrc AcfNrm','rloess','HR','HR[medfilt]'); 
+
         
         
     subplot(1,3,3);
-        plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'blackREPLACE_WITH_DASH_DASH'); hold on;
+%             [outs, lower_prct, upper_prct] = 
+            RaznFilter(insFrc_AcfNrm, [1 99]); 
+%         plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'blackREPLACE_WITH_DASH_DASH'); hold on;
 %         plot(rmoutliers_emulated(insFrc_AcfNrm, [10 90])./60,'red'); 
 %         plot(filloutliers(insFrc_AcfNrm,"next")./60,'red'); 
         
-        plot(outs, 'blue');
-        line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','REPLACE_WITH_DASH_DASH');
-        line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','REPLACE_WITH_DASH_DASH');
+%         plot(outs, 'blue');
+%         line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','REPLACE_WITH_DASH_DASH');
+%         line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','REPLACE_WITH_DASH_DASH');
 
 
-        ylabel("Hz",'interp','none'); xlabel("ns",'interp','none'); title("Name"); grid on;
-        legend('ins-medfilt1(ins,5)','down','up','filter');
+        ylabel("Hz",'interp','none'); xlabel("ns",'interp','none'); title("Первая разность"); grid on;
+        legend('Первая разность','down','up','Интерполяция', 'Location', 'east');
         
 %         разность по исходным данным контактного способа определения
 %         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
