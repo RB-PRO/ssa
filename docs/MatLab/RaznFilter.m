@@ -51,10 +51,11 @@ function [out, lower_prct, upper_prct] = RaznFilter(signal, threshold)
     
     
 %     figure('Position', [0 0 900 800]);
-    plot(difference,'blue'); hold on; grid on;
+%     plot(difference,'blue'); hold on; grid on;
     len=length(signal);
-    line('XData', [0 len], 'YData', [upper_prct upper_prct], 'Color','black','LineStyle','--');
-    line('XData', [0 len], 'YData', [lower_prct lower_prct], 'Color','black','LineStyle','--');
+%     line('XData', [0 len], 'YData', [upper_prct upper_prct], 'Color','black','LineStyle','--');
+%     line('XData', [0 len], 'YData', [lower_prct lower_prct], 'Color','black','LineStyle','--');
+
 %     line('XData', [0 200], 'YData', [threshold threshold], 'Color','green','LineStyle','--');
 %     line('XData', [0 200], 'YData', [-threshold -threshold], 'Color','green','LineStyle','--');
 
@@ -80,7 +81,7 @@ function [out, lower_prct, upper_prct] = RaznFilter(signal, threshold)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Вычисление первой разницы (аппроксимация производной)
-difference = diff(signal);
+% difference = diff(signal);
 
 % Определение порога для сглаживания провалов
 threshold = 0.1; % Пример порогового значения (замените на ваше реальное значение)
@@ -102,11 +103,12 @@ end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     out = smoothedSignal;
+    out = difference;
     
 %     plot(out,'red'); grid on;
 %     plot(signal,'green--'); grid on;
-    ylabel("Hz",'interp','none'); xlabel("ns",'interp','none'); title("Первая разность"); grid on;
-    legend('Первая разность','down','up','Интерполяция', 'Location', 'southoutside');
+%     ylabel("Hz",'interp','none'); xlabel("ns",'interp','none'); title("Первая разность"); grid on;
+%     legend('Первая разность','down','up','Интерполяция', 'Location', 'southoutside');
     
     
 end

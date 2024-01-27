@@ -151,9 +151,64 @@ function chss2(pw, Path, Name)
         legend('insFrc AcfNrm','rloess','HR','HR[medfilt]','HR[HR-medfilt1]')
     end
     %!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        [outs, lower_prct, upper_prct] =  RaznFilter(insFrc_AcfNrm, [1 99]);
     subplot(1,3,[1 2]);
     plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
     plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
+    plot(ns,[outs outs(length(outs))],'red-o' ); grid on;
+    line('XData', [0 length(outs)], 'YData', [upper_prct upper_prct], 'Color','black','LineStyle','--');
+    line('XData', [0 length(outs)], 'YData', [lower_prct lower_prct], 'Color','black','LineStyle','--');
+    
+%     filtered_signal = insFrc_AcfNrm;
+% diff_signal = diff(insFrc_AcfNrm);
+% for i = 1:(length(diff_signal)-2)
+%     if diff_signal(i) < lower_prct || diff_signal(i) > upper_prct
+%         filtered_signal(i+1) = insFrc_AcfNrm(i+1);
+%     end
+% end  
+% plot(ns, filtered_signal  ,'magenta-x' ); grid on;
+
+% cutoff = 0.1;  % Нижняя частота среза фильтра
+% order = 5;     % Порядок фильтра
+% [b, a] = butter(order, cutoff);
+% smoothed_signal = filter(b, a, signal);
+
+% Определение процентилей от 1 до 99
+% percentiles = prctile(insFrc_AcfNrm, 1:99);
+
+% Применение фильтрации
+% filtered_signal = insFrc_AcfNrm(insFrc_AcfNrm >= upper_prct & insFrc_AcfNrm <= lower_prct);
+%   plot(ns, filtered_signal  ,'magenta-x' ); grid on;
+  
+% filtered_signal=smoothed_signal;
+    
+      GG=insFrc_AcfNrm;
+     delta = 0; 
+for i = 1:(length(GG)-2)
+%     disp(i); disp(GG(i));
+%     if i == 166
+%         disp(166);
+%     end
+    delta = insFrc_AcfNrm(i+1)-insFrc_AcfNrm(i);  
+    if ((outs(i)>upper_prct) || (outs(i)<lower_prct))
+         delta=0; 
+    end
+    
+    GG(i+1)=GG(i)+delta;
+    
+%     if abs(difference(i)) > threshold
+%         % Если разница превышает порог, выполняем сглаживание
+%         smoothedSignal(i+1) = (signal(i) + signal(i+1)) / 2; % Простое сглаживание по среднему значению
+%         % Проверяем следующие отметки на превышение порога и сглаживаем их
+%         j = i + 1;
+%         while j < length(difference) && abs(difference(j)) > threshold
+%             smoothedSignal(j+1) = (signal(j) + signal(j+1)) / 2; % Сглаживаем
+%             j = j + 1;
+%         end
+%     end
+end
+    plot(ns, GG  ,'magenta-x' ); grid on;
+    
     xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
     title("Частоты нормир-ой АКФ сингуляр-х троек сегментов pw");
 %     legend(p1,'sET12');
@@ -170,8 +225,9 @@ function chss2(pw, Path, Name)
 
         
         
-    subplot(1,3,3);
-        [outs, lower_prct, upper_prct] =  RaznFilter(insFrc_AcfNrm, [1 99]); 
+    subplot(1,3,3); 
+        
+        plot(outs,'red-o');
         plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'black--'); hold on;
 %         plot(rmoutliers_emulated(insFrc_AcfNrm, [10 90])./60,'red'); 
 %         plot(filloutliers(insFrc_AcfNrm,"next")./60,'red'); 
