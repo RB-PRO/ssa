@@ -150,98 +150,86 @@ function chss2(pw, Path, Name)
         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
         legend('insFrc AcfNrm','rloess','HR','HR[medfilt]','HR[HR-medfilt1]')
     end
+    
     %!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        [outs, lower_prct, upper_prct] =  RaznFilter(insFrc_AcfNrm, [1 99]);
+    
+    
+    
+%         [outs, lower_prct, upper_prct] =  RaznFilter(insFrc_AcfNrm, [1 99]);
     subplot(1,3,[1 2]);
     plot(ns,insFrc_AcfNrm,'b','LineWidth',0.8); hold on;
     plot(ns,smo_insFrc_AcfNrm,'r','LineWidth',0.8); grid on;
-    plot(ns,[outs outs(length(outs))],'red-o' ); grid on;
-    line('XData', [0 length(outs)], 'YData', [upper_prct upper_prct], 'Color','black','LineStyle','--');
-    line('XData', [0 length(outs)], 'YData', [lower_prct lower_prct], 'Color','black','LineStyle','--');
     
-%     filtered_signal = insFrc_AcfNrm;
-% diff_signal = diff(insFrc_AcfNrm);
-% for i = 1:(length(diff_signal)-2)
-%     if diff_signal(i) < lower_prct || diff_signal(i) > upper_prct
-%         filtered_signal(i+1) = insFrc_AcfNrm(i+1);
-%     end
-% end  
-% plot(ns, filtered_signal  ,'magenta-x' ); grid on;
-
-% cutoff = 0.1;  % Нижняя частота среза фильтра
-% order = 5;     % Порядок фильтра
-% [b, a] = butter(order, cutoff);
-% smoothed_signal = filter(b, a, signal);
-
-% Определение процентилей от 1 до 99
-% percentiles = prctile(insFrc_AcfNrm, 1:99);
-
-% Применение фильтрации
-% filtered_signal = insFrc_AcfNrm(insFrc_AcfNrm >= upper_prct & insFrc_AcfNrm <= lower_prct);
-%   plot(ns, filtered_signal  ,'magenta-x' ); grid on;
-  
-% filtered_signal=smoothed_signal;
+    % Это порог для первой разности может быть как числом, так и
+    % процентилями крч
+    threshold = [1 99];
+    threshold = 0.05;
+    insFrc_AcfNrm_first_diff_filter = first_diff_filter(insFrc_AcfNrm, threshold);
+    plot(ns, insFrc_AcfNrm_first_diff_filter  ,'magenta-x' ); grid on;
     
-      GG=insFrc_AcfNrm;
-     delta = 0; 
-for i = 1:(length(GG)-2)
-%     disp(i); disp(GG(i));
-%     if i == 166
-%         disp(166);
-%     end
-    delta = insFrc_AcfNrm(i+1)-insFrc_AcfNrm(i);  
-    if ((outs(i)>upper_prct) || (outs(i)<lower_prct))
-         delta=0; 
-    end
-    
-    GG(i+1)=GG(i)+delta;
-    
-%     if abs(difference(i)) > threshold
-%         % Если разница превышает порог, выполняем сглаживание
-%         smoothedSignal(i+1) = (signal(i) + signal(i+1)) / 2; % Простое сглаживание по среднему значению
-%         % Проверяем следующие отметки на превышение порога и сглаживаем их
-%         j = i + 1;
-%         while j < length(difference) && abs(difference(j)) > threshold
-%             smoothedSignal(j+1) = (signal(j) + signal(j+1)) / 2; % Сглаживаем
-%             j = j + 1;
-%         end
-%     end
-end
-    plot(ns, GG  ,'magenta-x' ); grid on;
-    
-    xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
-    title("Частоты нормир-ой АКФ сингуляр-х троек сегментов pw");
-%     legend(p1,'sET12');
+%     plot(ns,[outs outs(length(outs))],'red-o' ); grid on;
+%     line('XData', [0 length(outs)], 'YData', [upper_prct upper_prct], 'Color','black','LineStyle','--');
+%     line('XData', [0 length(outs)], 'YData', [lower_prct lower_prct], 'Color','black','LineStyle','--');
     if length(hr)>100
         ns_hr = (length(ns)/length(hr) : length(ns)/length(hr) : length(ns))';
-        % yyaxis right; 
-        plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
-        % legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
-        hr_med=medfilt1(hr,Nmed*5);
-        hr_diff_med=hr-hr_med;
-        plot(ns_hr,hr_med./60,'cyan--');
+        plot(ns_hr,hr./60,'yellow'); ylabel("HR[bpm]",'interp','none');
         
-        legend('insFrc AcfNrm','rloess','HR','HR[medfilt]'); 
+        hr_fd = first_diff_filter(hr, 4.5);
+        plot(ns_hr,hr_fd./60,'black'); ylabel("HR+FD[bpm]",'interp','none');
+        
+    end  
 
-        
-        
-    subplot(1,3,3); 
-        
-        plot(outs,'red-o');
-        plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'black--'); hold on;
-%         plot(rmoutliers_emulated(insFrc_AcfNrm, [10 90])./60,'red'); 
-%         plot(filloutliers(insFrc_AcfNrm,"next")./60,'red'); 
-        
-%         plot(outs, 'blue');
-        line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','--');
-        line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','--');
-
-
-        
-%         разность по исходным данным контактного способа определения
-%         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
-        legend('HR[HR-medfilt1]');  ylabel("HR[bpm]",'interp','none'); xlabel("ns",'interp','none'); grid on;
+    xlabel("ns",'interp','none'); ylabel("insFrc_AcfNrm,Hz",'interp','none');
+    title("Частоты нормир-ой АКФ сингуляр-х троек сегментов pw");
+    
+    
+    subplot(1,3,3);
+    diff_signal = diff(insFrc_AcfNrm);
+    lower_prct=0; upper_prct=0;
+    if length(threshold) == 1
+        lower_prct=-threshold; upper_prct=threshold;
     end
+    if length(threshold) == 2 
+        prct = prctile(diff_signal, threshold);
+        lower_prct=prct(1); upper_prct=prct(2);
+    end
+    
+    plot(diff_signal,'red-o'); hold on; grid on;
+    line('XData', [0 length(diff_signal)], 'YData', [lower_prct lower_prct], 'Color','black','LineStyle','--');
+    line('XData', [0 length(diff_signal)], 'YData', [upper_prct upper_prct],'Color','black','LineStyle','--');
+    
+    
+%     legend(p1,'sET12');
+%     if length(hr)>100
+%         ns_hr = (length(ns)/length(hr) : length(ns)/length(hr) : length(ns))';
+%         % yyaxis right; 
+%         plot(ns_hr,hr./60,'black'); ylabel("HR[bpm]",'interp','none');
+%         % legend(p1,'insFrc_AcfNrm','rloess','HR[bpm]');
+%         hr_med=medfilt1(hr,Nmed*5);
+%         hr_diff_med=hr-hr_med;
+%         plot(ns_hr,hr_med./60,'cyan--');
+%         
+%         legend('insFrc AcfNrm','rloess','HR','HR[medfilt]'); 
+% 
+%         
+%         
+%     subplot(1,3,3); 
+%         
+%         plot(outs,'red-o');
+%         plot((insFrc_AcfNrm-medfilt1(insFrc_AcfNrm, 5)),'black--'); hold on;
+% %         plot(rmoutliers_emulated(insFrc_AcfNrm, [10 90])./60,'red'); 
+% %         plot(filloutliers(insFrc_AcfNrm,"next")./60,'red'); 
+%         
+% %         plot(outs, 'blue');
+%         line('XData', [0 200], 'YData', [lower_prct lower_prct], 'Color','red','LineStyle','--');
+%         line('XData', [0 200], 'YData', [upper_prct upper_prct],'Color','red','LineStyle','--');
+% 
+% 
+%         
+% %         разность по исходным данным контактного способа определения
+% %         plot(ns_hr,hr_diff_med./60,'magenta'); %ylabel("HR[bpm]",'interp','none');
+%         legend('HR[HR-medfilt1]');  ylabel("HR[bpm]",'interp','none'); xlabel("ns",'interp','none'); grid on;
+%     end
 
     %% Оценки СПМ сингулярных троек для сегменов pw
     smopto = 3; % параметр сглаживания периодограммы Томсона
